@@ -1,0 +1,58 @@
+#!/bin/bash
+#####################################################
+#
+# This is a helper script for building a deb package
+#
+# Author: Juhapekka Piiroinen <juhapekka.piiroinen@link-motion.com>
+# (C) 2016 Link Motion Oy
+#####################################################
+
+# exit on error
+set -e
+
+DISTRO=$1
+ARCH=$2
+COWBUILDER_DIST=`which cowbuilder-dist`
+
+if [[ -z ${COWBUILDER_DIST} ]]; then
+  echo "cowbuilder-dist is not installed. Cancelled."
+  echo
+  echo "You should execute:"
+  echo "  apt-get install ubuntu-dev-tools cowbuilder"
+  echo
+  exit 1
+fi
+
+if [[ -z ${ARCH} ]]; then
+  ARCH=amd64
+fi
+
+if [[ -z ${DISTRO} ]]; then
+  DISTRO=xenial
+fi
+
+debuild --no-tgz-check -S -rfakeroot -uc -us
+DSC_FILE=`ls -t ../*.dsc|head -n 1`
+
+function build_package() {
+  cowbuilder-dist ${DISTRO} ${ARCH} build ${DSC_FILE}
+}
+
+# Try to build package
+set +e
+build_package
+# if fails presume that the build root was not there, so create it
+if [[ $? == 1 ]]; then
+ set -e
+ cowbuilder-dist ${DISTRO} ${ARCH} create
+ build_package
+else
+ set -e
+fi
+
+PACKAGE_PREFIX=`echo ${DSC_FILE}|grep -o [a-z\-]*_|sed s/_//g`
+
+set +e
+rm -rf pkg/${DISTRO}
+mkdir -p pkg/${DISTRO}
+cp -v ~/pbuilder/${DISTRO}_result/${PACKAGE_PREFIX}* pkg/${DISTRO}

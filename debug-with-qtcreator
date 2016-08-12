@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "See http://doc.qt.io/qtcreator/creator-project-wizards.html#tips-for-wizard-development for details."
+qtcreator -customwizard-verbose

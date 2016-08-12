@@ -1,0 +1,10 @@
+*.pro.user*
+.moc
+.rcc
+.obj
+Makefile
+*.json
+.o
+builddir
+*.log
+pkg
