@@ -27,3 +27,6 @@ deb.commands += ./package-create
 QMAKE_EXTRA_TARGETS += local
 local.commands += $$[QT_INSTALL_BINS]/qmake -r CONFIG+=BUILDTOHOME;
 local.commands += make
+
+
+OTHER_FILES=$$system(find debian)
