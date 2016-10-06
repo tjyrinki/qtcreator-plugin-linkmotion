@@ -1,11 +1,11 @@
 {
-    \"Name\" : \"LMBuild\",
+    \"Name\" : \"lmbuildplugin\",
     \"Version\" : \"$$QTCREATOR_VERSION\",
     \"CompatVersion\" : \"$$QTCREATOR_COMPAT_VERSION\",
-    \"Vendor\" : \"LinkMotion\",
+    \"Vendor\" : \"LinkMotion Oy\",
     \"Copyright\" : \"(C) Link Motion Oy\",
     \"License\" : [\"Proprietary\"],
-    \"Category\" : \"Device Support\",
+    \"Category\" : \"LinkMotion\",
     \"Description\" : \"Link Motion build plugin\",
     \"Url\" : \"http://www.link-motion.com\",
     $$dependencyList

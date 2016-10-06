@@ -9,7 +9,7 @@
 # (C) 2016 Link Motion Oy
 ####################################################################*/
 
-#include "welcomeplugin.h"
+#include "linkmotionwelcomeplugin.h"
 
 #include <QtGui>
 #include "linkmotionwelcomepage.h"

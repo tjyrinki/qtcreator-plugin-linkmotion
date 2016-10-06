@@ -9,33 +9,35 @@
 # (C) 2016 Link Motion Oy
 ####################################################################*/
 
-#include "buildplugin.h"
+#include "linkmotiondeployplugin.h"
 
 #include <QtGui>
-#include "linkmotionbuildconfigurationfactory.h"
+#include "linkmotiondeploystepfactory.h"
+#include "linkmotiondeployconfigurationfactory.h"
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
 
-BuildPlugin::BuildPlugin()
+DeployPlugin::DeployPlugin()
 {
     qDebug() << Q_FUNC_INFO;
 
 }
 
-BuildPlugin::~BuildPlugin()
+DeployPlugin::~DeployPlugin()
 {
     qDebug() << Q_FUNC_INFO;
 
 }
 
-bool BuildPlugin::initialize(const QStringList &arguments, QString *errorString)
+bool DeployPlugin::initialize(const QStringList &arguments, QString *errorString)
 {
     qDebug() << Q_FUNC_INFO;
     Q_UNUSED(arguments)
     Q_UNUSED(errorString)
 
-    addAutoReleasedObject(new LinkMotionBuildConfigurationFactory);
+    addAutoReleasedObject(new LinkMotionDeployConfigurationFactory);
+    addAutoReleasedObject(new LinkMotionDeployStepFactory);
 
     return true;
 }

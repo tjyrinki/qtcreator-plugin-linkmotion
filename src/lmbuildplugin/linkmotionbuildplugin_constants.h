@@ -18,8 +18,11 @@ namespace LinkMotion {
 namespace Internal {
 namespace Constants {
 
-const char LINKMOTION_BC_ID[]      = "LinkMotionProjectManager.BuildConfiguration";
-const char LINKMOTION_BUILDSTEP_ID[]      = "LinkMotionProjectManager.BuildMakeStep";
+const char LINKMOTION_BC_ID[]      = "LinkMotion.BuildConfiguration";
+const char LINKMOTION_BUILD_STEP_ID[]      = "LinkMotion.BuildStep";
+const char LINKMOTION_BUILD_STEP_DISPLAY_NAME[] = "LinkMotion Build Step";
+const char LINKMOTION_SIMULATOR_TYPE[] = "LinkMotion.Simulator";
+const char LINKMOTION_DEVICE_TYPE[] = "LinkMotion.Device";
 }
 }
 }

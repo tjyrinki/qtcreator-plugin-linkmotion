@@ -10,7 +10,7 @@
 ####################################################################*/
 
 #include "linkmotionwelcomepage.h"
-#include "welcomeplugin_constants.h"
+#include "linkmotionwelcomeplugin_constants.h"
 
 #include <QtQml>
 #include <utils/fileutils.h>

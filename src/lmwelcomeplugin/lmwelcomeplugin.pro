@@ -13,14 +13,14 @@ include(../linkmotion-qtc-plugin.pri)
 QT += qml
 
 HEADERS += \
-    welcomeplugin.h \
     linkmotionwelcomepage.h \
     linkmotionwelcomeglobal.h \
-    welcomeplugin_constants.h
+    linkmotionwelcomeplugin.h \
+    linkmotionwelcomeplugin_constants.h
 
 SOURCES += \
-    welcomeplugin.cpp \
-    linkmotionwelcomepage.cpp
+    linkmotionwelcomepage.cpp \
+    linkmotionwelcomeplugin.cpp
 
 DISTFILES += \
     lmwelcomeplugin_dependencies.pri \

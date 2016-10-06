@@ -8,8 +8,8 @@
 # All rights reserved.
 # (C) 2016 Link Motion Oy
 ####################################################################*/
-#ifndef LINKMOTIONBUILDCONFIGURATION_H
-#define LINKMOTIONBUILDCONFIGURATION_H
+#ifndef LINKMOTIONDEPLOYCONFIGURATION_H
+#define LINKMOTIONDEPLOYCONFIGURATION_H
 
 #include <QObject>
 #include <QDebug>
@@ -18,13 +18,13 @@
 namespace LinkMotion {
 namespace Internal {
 
-class LinkMotionBuildConfiguration : public ProjectExplorer::BuildConfiguration
+class LinkMotionDeployConfiguration : public ProjectExplorer::BuildConfiguration
 {
     Q_OBJECT
 
 public:
-    LinkMotionBuildConfiguration(ProjectExplorer::Target *target);
-    LinkMotionBuildConfiguration(ProjectExplorer::Target *target, LinkMotionBuildConfiguration *source);
+    LinkMotionDeployConfiguration(ProjectExplorer::Target *target);
+    LinkMotionDeployConfiguration(ProjectExplorer::Target *target, LinkMotionDeployConfiguration *source);
 
     virtual bool fromMap(const QVariantMap &map) override;
     virtual QVariantMap toMap() const override;
@@ -37,7 +37,7 @@ public:
     QString m_device;
 
 protected:
-    friend class LinkMotionBuildConfigurationFactory;
+    friend class LinkMotionDeployConfigurationFactory;
 
 private:
     void ctor();
@@ -47,4 +47,4 @@ private:
 }
 }
 
-#endif // LINKMOTIONBUILDCONFIGURATION_H
+#endif // LINKMOTIONDEPLOYCONFIGURATION_H

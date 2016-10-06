@@ -17,31 +17,58 @@
 
 #include <projectexplorer/abstractprocessstep.h>
 #include <projectexplorer/toolchain.h>
+#include <utils/qtcprocess.h>
+#include "linkmotionbuildsettingswidget.h"
+#include "linkmotionbuildstepconfigwidget.h"
 
 namespace LinkMotion {
 namespace Internal {
 
 class LinkMotionBuildStep : public ProjectExplorer::AbstractProcessStep
 {
-public:
-    LinkMotionBuildStep(ProjectExplorer::BuildStepList *bsl);
-    LinkMotionBuildStep(ProjectExplorer::BuildStepList *bsl, Core::Id typeId);
-    LinkMotionBuildStep(ProjectExplorer::BuildStepList *bsl, LinkMotionBuildStep *bs);
-
-    virtual bool init(QList<const BuildStep *> &earlierSteps);
-    virtual ProjectExplorer::BuildStepConfigWidget *createConfigWidget();
-    virtual void run(QFutureInterface<bool> &fi);
-
-};
-
-class LinkMotionBuildStepWidget : public ProjectExplorer::BuildStepConfigWidget
-{
     Q_OBJECT
+    friend class LinkMotionBuildStepConfigWidget;
+    friend class LinkMotionBuildStepFactory;
+
 public:
-    virtual QString summaryText() const { return QString::fromLatin1("Build inside VMSDK"); }
-    virtual QString additionalSummaryText() const { return QString::fromLatin1("Builds and installs the package into vmsdk image."); }
-    virtual QString displayName() const { return QString::fromLatin1("VMSDK build step"); }
+    LinkMotionBuildStep(ProjectExplorer::BuildStepList *parent);
+    ~LinkMotionBuildStep();
+
+    bool init() override;
+    void run(QFutureInterface<bool> &fi) override;
+
+    ProjectExplorer::BuildStepConfigWidget *createConfigWidget() override;
+    bool immutable() const override;
+    void setBaseArguments(const QStringList &args);
+    void setExtraArguments(const QStringList &extraArgs);
+    QStringList baseArguments() const;
+    QStringList allArguments() const;
+    QStringList defaultArguments() const;
+    QString buildCommand() const;
+
+    void setClean(bool clean);
+    bool isClean() const;
+
+    QVariantMap toMap() const override;
+
+protected slots:
+    void onFinished();
+
+protected:
+    LinkMotionBuildStep(ProjectExplorer::BuildStepList *parent, LinkMotionBuildStep *bs);
+    LinkMotionBuildStep(ProjectExplorer::BuildStepList *parent, Core::Id id);
+    bool fromMap(const QVariantMap &map) override;
+
+private:
+    void ctor();
+
+    QStringList m_baseBuildArguments;
+    QStringList m_extraArguments;
+    QString m_buildCommand;
+    bool m_useDefaultArguments;
+    bool m_clean;
 };
+
 
 }
 }

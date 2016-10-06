@@ -9,9 +9,10 @@
 # (C) 2016 Link Motion Oy
 ####################################################################*/
 
-#include "linkmotionbuildconfigurationfactory.h"
-#include "linkmotionbuildplugin_constants.h"
-#include "linkmotionbuildstep.h"
+#include "linkmotiondeployconfigurationfactory.h"
+#include "linkmotiondeployplugin_constants.h"
+#include "linkmotiondeploystep.h"
+#include "linkmotiondeployconfiguration.h"
 
 #include <qmlprojectmanager/qmlprojectconstants.h>
 #include <projectexplorer/buildinfo.h>
@@ -27,18 +28,18 @@
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
 
-LinkMotionBuildConfigurationFactory::LinkMotionBuildConfigurationFactory(QObject *parent)
+LinkMotionDeployConfigurationFactory::LinkMotionDeployConfigurationFactory(QObject *parent)
     : IBuildConfigurationFactory(parent)
 {
     qDebug() << Q_FUNC_INFO;
 }
 
-LinkMotionBuildConfigurationFactory::~LinkMotionBuildConfigurationFactory()
+LinkMotionDeployConfigurationFactory::~LinkMotionDeployConfigurationFactory()
 {
     qDebug() << Q_FUNC_INFO;
 }
 
-int LinkMotionBuildConfigurationFactory::priority(const ProjectExplorer::Target *parent) const
+int LinkMotionDeployConfigurationFactory::priority(const ProjectExplorer::Target *parent) const
 {
     qDebug() << Q_FUNC_INFO;
     if (canHandle(parent))
@@ -46,7 +47,7 @@ int LinkMotionBuildConfigurationFactory::priority(const ProjectExplorer::Target 
     return -1;
 }
 
-QList<ProjectExplorer::BuildInfo *> LinkMotionBuildConfigurationFactory::availableBuilds(const ProjectExplorer::Target *parent) const
+QList<ProjectExplorer::BuildInfo *> LinkMotionDeployConfigurationFactory::availableBuilds(const ProjectExplorer::Target *parent) const
 {
     qDebug() << Q_FUNC_INFO;
     if(!canHandle(parent))
@@ -54,44 +55,44 @@ QList<ProjectExplorer::BuildInfo *> LinkMotionBuildConfigurationFactory::availab
     return createBuildInfos(parent->kit(),parent->project()->projectDirectory().toString());
 }
 
-int LinkMotionBuildConfigurationFactory::priority(const ProjectExplorer::Kit *k, const QString &projectPath) const
+int LinkMotionDeployConfigurationFactory::priority(const ProjectExplorer::Kit *k, const QString &projectPath) const
 {
     qDebug() << Q_FUNC_INFO;
     return (k && Utils::MimeDatabase().mimeTypeForFile(projectPath)
             .matchesName(QLatin1String(QmlProjectManager::Constants::QMLPROJECT_MIMETYPE))) ? 100 : 100;
 }
 
-QList<ProjectExplorer::BuildInfo *> LinkMotionBuildConfigurationFactory::availableSetups(const ProjectExplorer::Kit *k, const QString &projectPath) const
+QList<ProjectExplorer::BuildInfo *> LinkMotionDeployConfigurationFactory::availableSetups(const ProjectExplorer::Kit *k, const QString &projectPath) const
 {
     qDebug() << Q_FUNC_INFO;
     return createBuildInfos(k,projectPath);
 }
 
-LinkMotionBuildConfiguration *LinkMotionBuildConfigurationFactory::create(ProjectExplorer::Target *parent, const ProjectExplorer::BuildInfo *info) const
+LinkMotionDeployConfiguration *LinkMotionDeployConfigurationFactory::create(ProjectExplorer::Target *parent, const ProjectExplorer::BuildInfo *info) const
 {
     qDebug() << Q_FUNC_INFO;
     QTC_ASSERT(info->factory() == this, return 0);
     QTC_ASSERT(info->kitId == parent->kit()->id(), return 0);
     QTC_ASSERT(!info->displayName.isEmpty(), return 0);
 
-    LinkMotionBuildConfiguration *conf = new LinkMotionBuildConfiguration(parent);
+    LinkMotionDeployConfiguration *conf = new LinkMotionDeployConfiguration(parent);
     conf->setBuildDirectory(info->buildDirectory);
     conf->setDefaultDisplayName(info->displayName);
     conf->setDisplayName(info->displayName);
 
     // TODO: Check that this is a linkmotion project
     // then only add the steps
-    qDebug() << "INSERTING build step";
-    ProjectExplorer::BuildStepList *bs = conf->stepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
+    qDebug() << "INSERTING deploy step";
+    ProjectExplorer::BuildStepList *bs = conf->stepList(ProjectExplorer::Constants::BUILDSTEPS_DEPLOY);
     for (int i=0; i<bs->count(); i++) {
         bs->at(i)->deleteLater();
 
     }
-    bs->insertStep(0, new LinkMotionBuildStep(bs));
+    bs->insertStep(0, new LinkMotionDeployStep(bs));
     return conf;
 }
 
-bool LinkMotionBuildConfigurationFactory::canRestore(const ProjectExplorer::Target *parent, const QVariantMap &map) const
+bool LinkMotionDeployConfigurationFactory::canRestore(const ProjectExplorer::Target *parent, const QVariantMap &map) const
 {
     qDebug() << Q_FUNC_INFO;
     if (!canHandle(parent))
@@ -100,16 +101,16 @@ bool LinkMotionBuildConfigurationFactory::canRestore(const ProjectExplorer::Targ
     return ProjectExplorer::idFromMap(map) == Constants::LINKMOTION_BC_ID;
 }
 
-LinkMotionBuildConfiguration *LinkMotionBuildConfigurationFactory::restore(ProjectExplorer::Target *parent, const QVariantMap &map)
+LinkMotionDeployConfiguration *LinkMotionDeployConfigurationFactory::restore(ProjectExplorer::Target *parent, const QVariantMap &map)
 {
     qDebug() << Q_FUNC_INFO;
     if (!canRestore(parent,map) )
         return 0;
 
-    LinkMotionBuildConfiguration *conf = new LinkMotionBuildConfiguration(parent);
+    LinkMotionDeployConfiguration *conf = new LinkMotionDeployConfiguration(parent);
     if (conf->fromMap(map)) {
-        ProjectExplorer::BuildStepList *bs = conf->stepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
-        bs->insertStep(0, new LinkMotionBuildStep(bs));
+        ProjectExplorer::BuildStepList *bs = conf->stepList(ProjectExplorer::Constants::BUILDSTEPS_DEPLOY);
+        bs->insertStep(0, new LinkMotionDeployStep(bs));
         qDebug() << "2";
 
         return conf;
@@ -121,7 +122,7 @@ LinkMotionBuildConfiguration *LinkMotionBuildConfigurationFactory::restore(Proje
     return 0;
 }
 
-bool LinkMotionBuildConfigurationFactory::canClone(const ProjectExplorer::Target *parent, ProjectExplorer::BuildConfiguration *product) const
+bool LinkMotionDeployConfigurationFactory::canClone(const ProjectExplorer::Target *parent, ProjectExplorer::BuildConfiguration *product) const
 {
     qDebug() << Q_FUNC_INFO;
 
@@ -133,22 +134,22 @@ bool LinkMotionBuildConfigurationFactory::canClone(const ProjectExplorer::Target
     return true;
 }
 
-LinkMotionBuildConfiguration *LinkMotionBuildConfigurationFactory::clone(ProjectExplorer::Target *parent, ProjectExplorer::BuildConfiguration *product)
+LinkMotionDeployConfiguration *LinkMotionDeployConfigurationFactory::clone(ProjectExplorer::Target *parent, ProjectExplorer::BuildConfiguration *product)
 {
     qDebug() << Q_FUNC_INFO;
     if (!canClone(parent,product))
         return 0;
-    return new LinkMotionBuildConfiguration(parent,static_cast<LinkMotionBuildConfiguration*>(product));
+    return new LinkMotionDeployConfiguration(parent,static_cast<LinkMotionDeployConfiguration*>(product));
 }
 
-bool LinkMotionBuildConfigurationFactory::canHandle(const ProjectExplorer::Target *t) const
+bool LinkMotionDeployConfigurationFactory::canHandle(const ProjectExplorer::Target *t) const
 {
     qDebug() << Q_FUNC_INFO;
 
     return true;
 }
 
-QList<ProjectExplorer::BuildInfo *> LinkMotionBuildConfigurationFactory::createBuildInfos(const ProjectExplorer::Kit *k, const QString &projectDir) const
+QList<ProjectExplorer::BuildInfo *> LinkMotionDeployConfigurationFactory::createBuildInfos(const ProjectExplorer::Kit *k, const QString &projectDir) const
 {
     qDebug() << Q_FUNC_INFO;
 

@@ -14,7 +14,7 @@
 
 #include <QtCore>
 #include <extensionsystem/iplugin.h>
-#include "buildplugin_global.h"
+#include "linkmotionbuildplugin_global.h"
 
 namespace LinkMotion {
 namespace Internal {
@@ -22,7 +22,7 @@ namespace Internal {
 class LINKMOTIONBUILDSHARED_EXPORT BuildPlugin: public ExtensionSystem::IPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QtCreatorPlugin" FILE "LMBuild.json")
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QtCreatorPlugin" FILE "lmbuildplugin.json")
 
 public:
     BuildPlugin();

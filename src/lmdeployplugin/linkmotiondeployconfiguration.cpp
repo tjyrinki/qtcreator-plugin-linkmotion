@@ -8,22 +8,22 @@
 # All rights reserved.
 # (C) 2016 Link Motion Oy
 ####################################################################*/
-#include "linkmotionbuildconfiguration.h"
-#include "linkmotionbuildsettingswidget.h"
-#include "linkmotionbuildplugin_constants.h"
+#include "linkmotiondeployconfiguration.h"
+#include "linkmotiondeploysettingswidget.h"
+#include "linkmotiondeployplugin_constants.h"
 #include <QProcessEnvironment>
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
 
-LinkMotionBuildConfiguration::LinkMotionBuildConfiguration(ProjectExplorer::Target *target)
+LinkMotionDeployConfiguration::LinkMotionDeployConfiguration(ProjectExplorer::Target *target)
     : BuildConfiguration(target,Constants::LINKMOTION_BC_ID)
 {
     qDebug() << Q_FUNC_INFO;
     ctor();
 }
 
-LinkMotionBuildConfiguration::LinkMotionBuildConfiguration(ProjectExplorer::Target *target, LinkMotionBuildConfiguration *source)
+LinkMotionDeployConfiguration::LinkMotionDeployConfiguration(ProjectExplorer::Target *target, LinkMotionDeployConfiguration *source)
     : BuildConfiguration(target,source)
 {
     qDebug() << Q_FUNC_INFO;
@@ -31,7 +31,7 @@ LinkMotionBuildConfiguration::LinkMotionBuildConfiguration(ProjectExplorer::Targ
 
 }
 
-void LinkMotionBuildConfiguration::ctor() {
+void LinkMotionDeployConfiguration::ctor() {
     qDebug() << Q_FUNC_INFO;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     m_username = env.value(QStringLiteral("LINKMOTION_USERNAME"),QStringLiteral("linkmotion"));
@@ -39,25 +39,25 @@ void LinkMotionBuildConfiguration::ctor() {
     m_device = env.value(QStringLiteral("LINKMOTION_DEVICE"),QStringLiteral("intel"));
 }
 
-bool LinkMotionBuildConfiguration::fromMap(const QVariantMap &map)
+bool LinkMotionDeployConfiguration::fromMap(const QVariantMap &map)
 {
     qDebug() << Q_FUNC_INFO;
     return BuildConfiguration::fromMap(map);
 }
 
-QVariantMap LinkMotionBuildConfiguration::toMap() const
+QVariantMap LinkMotionDeployConfiguration::toMap() const
 {
     qDebug() << Q_FUNC_INFO;
     return BuildConfiguration::toMap();
 }
 
-ProjectExplorer::NamedWidget *LinkMotionBuildConfiguration::createConfigWidget()
+ProjectExplorer::NamedWidget *LinkMotionDeployConfiguration::createConfigWidget()
 {
     qDebug() << Q_FUNC_INFO;
-    return new LinkMotionBuildSettingsWidget(this);
+    return new LinkMotionDeploySettingsWidget(this);
 }
 
-ProjectExplorer::BuildConfiguration::BuildType LinkMotionBuildConfiguration::buildType() const
+ProjectExplorer::BuildConfiguration::BuildType LinkMotionDeployConfiguration::buildType() const
 {
     qDebug() << Q_FUNC_INFO;
     return Release;

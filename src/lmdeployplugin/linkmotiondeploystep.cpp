@@ -1,6 +1,6 @@
 /*####################################################################
 #
-# This file is part of the LinkMotion Build plugin.
+# This file is part of the LinkMotion Deploy plugin.
 #
 # License: Proprietary
 # Author: Juhapekka Piiroinen <juhapekka.piiroinen@link-motion.com>
@@ -9,14 +9,14 @@
 # (C) 2016 Link Motion Oy
 ####################################################################*/
 
-#include "linkmotionbuildstep.h"
-#include "linkmotionbuildsettingswidget.h"
-#include "linkmotionbuildplugin_constants.h"
+#include "linkmotiondeploystep.h"
+#include "linkmotiondeploysettingswidget.h"
+#include "linkmotiondeployplugin_constants.h"
 
 #include <QThread>
 #include <QApplication>
 #include <qloggingcategory.h>
-#include <projectexplorer/buildconfiguration.h>
+#include <projectexplorer/deployconfiguration.h>
 #include <projectexplorer/target.h>
 #include <projectexplorer/abstractprocessstep.h>
 #include <projectexplorer/project.h>
@@ -46,38 +46,46 @@
 #include <utils/qtcassert.h>
 #include <utils/qtcprocess.h>
 
+#include "linkmotiondeploystepconfigwidget.h"
 
 Q_LOGGING_CATEGORY(LinkMotionLog, "linkmotion.linkmotion.common")
 
+/*using namespace Core;
+using namespace ProjectExplorer;
+using namespace QmakeProjectManager;
+*/
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
 
-const char LINKMOTION_BUILD_STEP_ID[] = "LinkMotion.LinkMotionBuildStep";
-const char LINKMOTION_BUILD_STEP_DISPLAY_NAME[] = QT_TRANSLATE_NOOP("LinkMotion::Internal::LinkMotionBuildStep",
-                                                             "vmsdk-build");
+const char LINKMOTION_DEPLOY_STEP_ID[] = "LinkMotion.LinkMotionDeployStep";
+const char LINKMOTION_DEPLOY_STEP_DISPLAY_NAME[] = QT_TRANSLATE_NOOP("LinkMotion::Internal::LinkMotionDeployStep",
+                                                             "vmsdk-install");
 
-const char BUILD_USE_DEFAULT_ARGS_KEY[] = "LinkMotion.LinkMotionBuildStep.ArgumentsUseDefaults";
-const char BUILD_ARGUMENTS_KEY[] = "LinkMotion.LinkMotionBuildStep.Arguments";
-const char CLEAN_KEY[] = "LinkMotion.LinkMotionBuildStep.Clean";
+const char DEPLOY_USE_DEFAULT_ARGS_KEY[] = "LinkMotion.LinkMotionDeployStep.ArgumentsUseDefaults";
+const char DEPLOY_ARGUMENTS_KEY[] = "LinkMotion.LinkMotionDeployStep.Arguments";
+const char CLEAN_KEY[] = "LinkMotion.LinkMotionDeployStep.Clean";
 
-LinkMotionBuildStep::LinkMotionBuildStep(ProjectExplorer::BuildStepList *parent) :
-    ProjectExplorer::AbstractProcessStep(parent, Core::Id(LINKMOTION_BUILD_STEP_ID)),
+
+const Core::Id LinkMotionDeployStep::Id("LinkMotion.LinkMotionDeployStep");
+
+LinkMotionDeployStep::LinkMotionDeployStep(ProjectExplorer::BuildStepList *parent) :
+    AbstractProcessStep(parent, Core::Id(LINKMOTION_DEPLOY_STEP_ID)),
     m_useDefaultArguments(true),
     m_clean(false)
 {
     ctor();
 }
 
-LinkMotionBuildStep::LinkMotionBuildStep(ProjectExplorer::BuildStepList *parent, const Core::Id id) :
-    ProjectExplorer::AbstractProcessStep(parent, id),
+LinkMotionDeployStep::LinkMotionDeployStep(ProjectExplorer::BuildStepList *parent, const Core::Id id) :
+    AbstractProcessStep(parent, id),
     m_useDefaultArguments(true),
     m_clean(false)
 {
     ctor();
 }
 
-LinkMotionBuildStep::LinkMotionBuildStep(ProjectExplorer::BuildStepList *parent, LinkMotionBuildStep *bs) :
-    ProjectExplorer::AbstractProcessStep(parent, bs),
+LinkMotionDeployStep::LinkMotionDeployStep(ProjectExplorer::BuildStepList *parent, LinkMotionDeployStep *bs) :
+    AbstractProcessStep(parent, bs),
     m_baseBuildArguments(bs->m_baseBuildArguments),
     m_useDefaultArguments(bs->m_useDefaultArguments),
     m_clean(bs->m_clean)
@@ -85,16 +93,16 @@ LinkMotionBuildStep::LinkMotionBuildStep(ProjectExplorer::BuildStepList *parent,
     ctor();
 }
 
-void LinkMotionBuildStep::ctor()
+void LinkMotionDeployStep::ctor()
 {
     qDebug() << Q_FUNC_INFO;
-    setDefaultDisplayName(QCoreApplication::translate("LinkMotion::Internal::LinkMotionBuildStep",
-                                                      LINKMOTION_BUILD_STEP_DISPLAY_NAME));
+    setDefaultDisplayName(QCoreApplication::translate("LinkMotion::Internal::LinkMotionDeployStep",
+                                                      LINKMOTION_DEPLOY_STEP_DISPLAY_NAME));
     connect(this,SIGNAL(finished()),this,SLOT(onFinished()));
 
 }
 
-void LinkMotionBuildStep::onFinished() {
+void LinkMotionDeployStep::onFinished() {
     qDebug() << Q_FUNC_INFO;
     /*BuildConfiguration *bc = buildConfiguration();
     if (bc) {
@@ -103,13 +111,144 @@ void LinkMotionBuildStep::onFinished() {
     }*/
 }
 
-LinkMotionBuildStep::~LinkMotionBuildStep()
+LinkMotionDeployStep::~LinkMotionDeployStep()
 {
     qDebug() << Q_FUNC_INFO;
     disconnect(this,SIGNAL(finished()),this,SLOT(onFinished()));
 }
 
-bool LinkMotionBuildStep::init()
+bool LinkMotionDeployStep::init()
+{
+    qDebug() << Q_FUNC_INFO;
+    ProjectExplorer::DeployConfiguration *dc = deployConfiguration();
+    ProjectExplorer::BuildConfiguration *bc = buildConfiguration();
+    if (!dc) {
+        qDebug() << "missing deploy config 1";
+        dc = target()->activeDeployConfiguration();
+    }
+    if (!bc) {
+        qDebug() << "missing build config 1";
+        bc = target()->activeBuildConfiguration();
+    }
+    if (!dc) {
+        qDebug() << "invalid deploy config";
+        return false;
+    }
+
+    /*ToolChain *tc = ToolChainKitInformation::toolChain(target()->kit());
+    if (!tc) {
+        qDebug() << "missing compiler";
+        emit addTask(Task::compilerMissingTask());
+    }*/
+
+    if (!dc /*|| !tc*/) {
+        qDebug() << "faulty configuration";
+       // emitFaultyConfigurationMessage();
+        return false;
+    }
+
+
+    if (!target()) {
+        qDebug() << Q_FUNC_INFO << "no target";
+    }
+    if (!target()->project()) {
+        qDebug() << Q_FUNC_INFO << "no project";
+    }
+    QString projectName = QDir(target()->project()->projectDirectory().toString()).dirName();
+
+    ProjectExplorer::ProcessParameters *pp = processParameters();
+    Utils::Environment env = bc->environment();
+    pp->setEnvironment(env);
+    pp->setMacroExpander(dc->macroExpander());
+    pp->setWorkingDirectory(QDir(bc->buildDirectory().toString()).dirName());
+    pp->setCommand(QStringLiteral("vmsdk-install"));
+    // TODO: find all generated rpm files.
+    //       those should be parsed from the output when buildplugin is creating the rpm packages.
+    QString arch = env.value(QStringLiteral("LINKMOTION_DEVICE"));
+    if (arch.isEmpty())
+        arch = QStringLiteral("intel");
+    pp->setArguments(QString(QStringLiteral("build-%0-%1-latest/*.rpm")).arg(projectName).arg(arch));
+    pp->resolveAll();
+
+    // If we are cleaning, then build can fail with an error code, but that doesn't mean
+    // we should stop the clean queue
+    // That is mostly so that rebuild works on an already clean project
+    setIgnoreReturnValue(m_clean);
+
+    setOutputParser(new ProjectExplorer::GnuMakeParser());
+    ProjectExplorer::IOutputParser *parser = target()->kit()->createOutputParser();
+    if (parser)
+        appendOutputParser(parser);
+    outputParser()->setWorkingDirectory(pp->effectiveWorkingDirectory());
+
+    qDebug() << "init almost done";
+    return AbstractProcessStep::init();
+}
+
+void LinkMotionDeployStep::setClean(bool clean)
+{
+    qDebug() << Q_FUNC_INFO;
+    m_clean = clean;
+}
+
+bool LinkMotionDeployStep::isClean() const
+{
+    qDebug() << Q_FUNC_INFO;
+    return m_clean;
+}
+
+QVariantMap LinkMotionDeployStep::toMap() const
+{
+    qDebug() << Q_FUNC_INFO;
+    QVariantMap map(AbstractProcessStep::toMap());
+
+    map.insert(QLatin1String(DEPLOY_ARGUMENTS_KEY), m_baseBuildArguments);
+    map.insert(QLatin1String(DEPLOY_USE_DEFAULT_ARGS_KEY), m_useDefaultArguments);
+    map.insert(QLatin1String(CLEAN_KEY), m_clean);
+    return map;
+}
+
+bool LinkMotionDeployStep::fromMap(const QVariantMap &map)
+{
+    qDebug() << Q_FUNC_INFO;
+    QVariant bArgs = map.value(QLatin1String(DEPLOY_ARGUMENTS_KEY));
+    m_baseBuildArguments = bArgs.toStringList();
+    m_useDefaultArguments = map.value(QLatin1String(DEPLOY_USE_DEFAULT_ARGS_KEY)).toBool();
+    m_clean = map.value(QLatin1String(CLEAN_KEY)).toBool();
+
+    return BuildStep::fromMap(map);
+}
+
+QStringList LinkMotionDeployStep::allArguments() const
+{
+    qDebug() << Q_FUNC_INFO;
+    return baseArguments() + m_extraArguments;
+}
+
+QStringList LinkMotionDeployStep::defaultArguments() const
+{
+    qDebug() << Q_FUNC_INFO;
+    QStringList res;
+    ProjectExplorer::Kit *kit = target()->kit();
+    ProjectExplorer::ToolChain *tc = ProjectExplorer::ToolChainKitInformation::toolChain(kit);
+    if (tc->type() == QLatin1String("gcc") || tc->type() == QLatin1String("clang")) {
+      //  GccToolChain *gtc = static_cast<GccToolChain *>(tc);
+        //res << gtc->platformCodeGenFlags();
+    }
+    //if (!SysRootKitInformation::sysRoot(kit).isEmpty())
+    //    res << QLatin1String("-sdk") << SysRootKitInformation::sysRoot(kit).toString();
+    //res << QLatin1String("SYMROOT=") + LINKMOTIONManager::resDirForTarget(target());
+    //res << QStringLiteral("ui_center-plugin");
+    return res;
+}
+
+QString LinkMotionDeployStep::buildCommand() const
+{
+    qDebug() << Q_FUNC_INFO;
+    return QLatin1String("vmsdk-install"); // add path?
+}
+
+void LinkMotionDeployStep::run(QFutureInterface<bool> &fi)
 {
     qDebug() << Q_FUNC_INFO;
     ProjectExplorer::BuildConfiguration *bc = buildConfiguration();
@@ -131,7 +270,7 @@ bool LinkMotionBuildStep::init()
     if (!bc /*|| !tc*/) {
         qDebug() << "faulty configuration";
        // emitFaultyConfigurationMessage();
-        return false;
+        return;
     }
 
 
@@ -141,154 +280,40 @@ bool LinkMotionBuildStep::init()
     if (!target()->project()) {
         qDebug() << Q_FUNC_INFO << "no project";
     }
-    QString projectName = QDir(target()->project()->projectDirectory().toString()).dirName();
-
     ProjectExplorer::ProcessParameters *pp = processParameters();
+
     Utils::Environment env = bc->environment();
-    // Force output to english for the parsers. Do this here and not in the toolchain's
-    // addToEnvironment() to not screw up the users run environment.
-    env.set(QLatin1String("LC_ALL"), QLatin1String("C"));
-    pp->setEnvironment(env);
-    pp->setMacroExpander(bc->macroExpander());
-    pp->setWorkingDirectory(QDir(bc->buildDirectory().toString()).dirName());
-    pp->setCommand(QStringLiteral("vmsdk-build"));
-    pp->setArguments(projectName);
-    pp->resolveAll();
-
-    // If we are cleaning, then build can fail with an error code, but that doesn't mean
-    // we should stop the clean queue
-    // That is mostly so that rebuild works on an already clean project
-    setIgnoreReturnValue(m_clean);
-
-    setOutputParser(new ProjectExplorer::GnuMakeParser());
-    ProjectExplorer::IOutputParser *parser = target()->kit()->createOutputParser();
-    if (parser)
-        appendOutputParser(parser);
-    outputParser()->setWorkingDirectory(pp->effectiveWorkingDirectory());
-
-    qDebug() << "init almost done";
-    return AbstractProcessStep::init();
-}
-
-void LinkMotionBuildStep::setClean(bool clean)
-{
-    qDebug() << Q_FUNC_INFO;
-    m_clean = clean;
-}
-
-bool LinkMotionBuildStep::isClean() const
-{
-    qDebug() << Q_FUNC_INFO;
-    return m_clean;
-}
-
-QVariantMap LinkMotionBuildStep::toMap() const
-{
-    qDebug() << Q_FUNC_INFO;
-    QVariantMap map(AbstractProcessStep::toMap());
-
-    map.insert(QLatin1String(BUILD_ARGUMENTS_KEY), m_baseBuildArguments);
-    map.insert(QLatin1String(BUILD_USE_DEFAULT_ARGS_KEY), m_useDefaultArguments);
-    map.insert(QLatin1String(CLEAN_KEY), m_clean);
-    return map;
-}
-
-bool LinkMotionBuildStep::fromMap(const QVariantMap &map)
-{
-    qDebug() << Q_FUNC_INFO;
-    QVariant bArgs = map.value(QLatin1String(BUILD_ARGUMENTS_KEY));
-    m_baseBuildArguments = bArgs.toStringList();
-    m_useDefaultArguments = map.value(QLatin1String(BUILD_USE_DEFAULT_ARGS_KEY)).toBool();
-    m_clean = map.value(QLatin1String(CLEAN_KEY)).toBool();
-
-    return BuildStep::fromMap(map);
-}
-
-QStringList LinkMotionBuildStep::allArguments() const
-{
-    qDebug() << Q_FUNC_INFO;
-    return baseArguments() + m_extraArguments;
-}
-
-QStringList LinkMotionBuildStep::defaultArguments() const
-{
-    qDebug() << Q_FUNC_INFO;
-    QStringList res;
-    ProjectExplorer::Kit *kit = target()->kit();
-    ProjectExplorer::ToolChain *tc = ProjectExplorer::ToolChainKitInformation::toolChain(kit);
-    switch (target()->activeBuildConfiguration()->buildType()) {
-    case ProjectExplorer::BuildConfiguration::Debug :
-      //  res << QLatin1String("-configuration") << QLatin1String("debug");
-        break;
-    case ProjectExplorer::BuildConfiguration::Release :
-       // res << QLatin1String("-configuration") << QLatin1String("release");
-        break;
-    case ProjectExplorer::BuildConfiguration::Unknown :
-        break;
-    default:
-        qCWarning(LinkMotionLog) << "LinkMotionBuildStep had an unknown buildType "
-                          << target()->activeBuildConfiguration()->buildType();
-    }
-    if (tc->type() == QLatin1String("gcc") || tc->type() == QLatin1String("clang")) {
-      //  GccToolChain *gtc = static_cast<GccToolChain *>(tc);
-        //res << gtc->platformCodeGenFlags();
-    }
-    //if (!SysRootKitInformation::sysRoot(kit).isEmpty())
-    //    res << QLatin1String("-sdk") << SysRootKitInformation::sysRoot(kit).toString();
-    //res << QLatin1String("SYMROOT=") + LINKMOTIONManager::resDirForTarget(target());
-    //res << QStringLiteral("ui_center-plugin");
-    return res;
-}
-
-QString LinkMotionBuildStep::buildCommand() const
-{
-    qDebug() << Q_FUNC_INFO;
-    return QLatin1String("vmsdk-build"); // add path?
-}
-
-void LinkMotionBuildStep::run(QFutureInterface<bool> &fi)
-{
-    qDebug() << Q_FUNC_INFO;
-    LinkMotionBuildConfiguration *bc = qobject_cast<LinkMotionBuildConfiguration*>(buildConfiguration());
-    ProjectExplorer::ProcessParameters *pp = processParameters();
-    Utils::Environment env = bc->environment();
-
-    env.set(QStringLiteral("LINKMOTION_DEVICE"),bc->m_device);
-    env.set(QStringLiteral("LINKMOTION_USERNAME"),bc->m_username);
-    env.set(QStringLiteral("LINKMOTION_PASSWORD"),bc->m_password);
-    // Force output to english for the parsers. Do this here and not in the toolchain's
-    // addToEnvironment() to not screw up the users run environment.
     env.set(QLatin1String("LC_ALL"), QLatin1String("C"));
     pp->setEnvironment(env);
     AbstractProcessStep::run(fi);
 }
 
-ProjectExplorer::BuildStepConfigWidget *LinkMotionBuildStep::createConfigWidget()
+ProjectExplorer::BuildStepConfigWidget *LinkMotionDeployStep::createConfigWidget()
 {
     qDebug() << Q_FUNC_INFO;
-    return new LinkMotionBuildStepConfigWidget(this);
+    return new LinkMotionDeployStepConfigWidget(this);
 }
 
-bool LinkMotionBuildStep::immutable() const
+bool LinkMotionDeployStep::immutable() const
 {
     qDebug() << Q_FUNC_INFO;
     return false;
 }
 
-void LinkMotionBuildStep::setBaseArguments(const QStringList &args)
+void LinkMotionDeployStep::setBaseArguments(const QStringList &args)
 {
     qDebug() << Q_FUNC_INFO;
     m_baseBuildArguments = args;
     m_useDefaultArguments = (args == defaultArguments());
 }
 
-void LinkMotionBuildStep::setExtraArguments(const QStringList &extraArgs)
+void LinkMotionDeployStep::setExtraArguments(const QStringList &extraArgs)
 {
     qDebug() << Q_FUNC_INFO;
     m_extraArguments = extraArgs;
 }
 
-QStringList LinkMotionBuildStep::baseArguments() const
+QStringList LinkMotionDeployStep::baseArguments() const
 {
     qDebug() << Q_FUNC_INFO;
     if (m_useDefaultArguments)

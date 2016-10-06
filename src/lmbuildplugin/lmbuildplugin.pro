@@ -12,23 +12,27 @@
 include(../linkmotion-qtc-plugin.pri)
 
 HEADERS += \
-    buildplugin.h \
-    buildplugin_constants.h \
     linkmotionbuildconfiguration.h \
     linkmotionbuildsettingswidget.h \
-    buildplugin_global.h \
     linkmotionbuildconfigurationfactory.h \
-    linkmotionbuildstep.h
+    linkmotionbuildstep.h \
+    linkmotionbuildstepconfigwidget.h \
+    linkmotionbuildstepfactory.h \
+    linkmotionbuildplugin.h \
+    linkmotionbuildplugin_global.h \
+    linkmotionbuildplugin_constants.h
 
 SOURCES += \
-    buildplugin.cpp \
     linkmotionbuildconfiguration.cpp \
     linkmotionbuildsettingswidget.cpp \
     linkmotionbuildconfigurationfactory.cpp \
-    linkmotionbuildstep.cpp
+    linkmotionbuildstep.cpp \
+    linkmotionbuildstepconfigwidget.cpp \
+    linkmotionbuildstepfactory.cpp \
+    linkmotionbuildplugin.cpp
 
 DISTFILES += \
     lmbuildplugin_dependencies.pri \
-    LMBuild.json.in
+    lmbuildplugin.json.in
 
 
