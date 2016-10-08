@@ -10,4 +10,4 @@
 ####################################################################
 
 TEMPLATE = subdirs
-SUBDIRS = lmwelcomeplugin lmbuildplugin lmdeployplugin lmdeviceplugin
+SUBDIRS = lmwelcomeplugin lmbuildplugin lmdeployplugin lmdeviceplugin lmprojectplugin lmwizardplugin

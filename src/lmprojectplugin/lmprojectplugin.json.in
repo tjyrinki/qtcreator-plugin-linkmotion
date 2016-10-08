@@ -1,0 +1,12 @@
+{
+    \"Name\" : \"lmprojectplugin\",
+    \"Version\" : \"$$QTCREATOR_VERSION\",
+    \"CompatVersion\" : \"$$QTCREATOR_COMPAT_VERSION\",
+    \"Vendor\" : \"LinkMotion Oy\",
+    \"Copyright\" : \"(C) Link Motion Oy\",
+    \"License\" : [\"Proprietary\"],
+    \"Category\" : \"LinkMotion\",
+    \"Description\" : \"Link Motion project plugin\",
+    \"Url\" : \"http://www.link-motion.com\",
+    $$dependencyList
+}
