@@ -33,6 +33,16 @@ You can build the plugin instance to your home folder with
  make
 ```
 
+Or you can run
+```
+make local
+```
+
+The location for the binaries is:
+```
+~/.local/share/data/QtProject/qtcreator/plugins/3.5.1
+```
+
 ## Using Cowbuilder for building a package
 You can either use a helper script which is available *package-create*, which will create deb packages for you under *pkg* folder, or continue reading.
 

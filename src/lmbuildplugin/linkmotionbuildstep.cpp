@@ -16,6 +16,7 @@
 #include <QThread>
 #include <QApplication>
 #include <qloggingcategory.h>
+#include <projectexplorer/buildmanager.h>
 #include <projectexplorer/buildconfiguration.h>
 #include <projectexplorer/target.h>
 #include <projectexplorer/abstractprocessstep.h>
@@ -23,6 +24,8 @@
 #include <projectexplorer/kitinformation.h>
 #include <projectexplorer/toolchain.h>
 #include <genericprojectmanager/genericmakestep.h>
+#include <projectexplorer/gccparser.h>
+#include <qmakeprojectmanager/qmakeparser.h>
 
 #include <extensionsystem/pluginmanager.h>
 #include <projectexplorer/target.h>
@@ -46,6 +49,7 @@
 #include <utils/qtcassert.h>
 #include <utils/qtcprocess.h>
 
+#include "linkmotionbuildoutputparser.h"
 
 Q_LOGGING_CATEGORY(LinkMotionLog, "linkmotion.linkmotion.common")
 
@@ -112,10 +116,10 @@ LinkMotionBuildStep::~LinkMotionBuildStep()
 bool LinkMotionBuildStep::init()
 {
     qDebug() << Q_FUNC_INFO;
-    ProjectExplorer::BuildConfiguration *bc = buildConfiguration();
+    LinkMotionBuildConfiguration *bc = qobject_cast<LinkMotionBuildConfiguration*>(buildConfiguration());
     if (!bc) {
         qDebug() << "missing build config 1";
-        bc = target()->activeBuildConfiguration();
+        bc = qobject_cast<LinkMotionBuildConfiguration*>(target()->activeBuildConfiguration());
     }
     if (!bc) {
         qDebug() << "missing build config 2";
@@ -142,6 +146,7 @@ bool LinkMotionBuildStep::init()
         qDebug() << Q_FUNC_INFO << "no project";
     }
     QString projectName = QDir(target()->project()->projectDirectory().toString()).dirName();
+    QString arch = bc->m_device;
 
     ProjectExplorer::ProcessParameters *pp = processParameters();
     Utils::Environment env = bc->environment();
@@ -160,7 +165,9 @@ bool LinkMotionBuildStep::init()
     // That is mostly so that rebuild works on an already clean project
     setIgnoreReturnValue(m_clean);
 
-    setOutputParser(new ProjectExplorer::GnuMakeParser());
+    setOutputParser(new LinkMotionBuildOutputParser(projectName,arch));
+    appendOutputParser(new ProjectExplorer::GccParser());
+    appendOutputParser(new QmakeProjectManager::QMakeParser());
     ProjectExplorer::IOutputParser *parser = target()->kit()->createOutputParser();
     if (parser)
         appendOutputParser(parser);
@@ -249,6 +256,7 @@ QString LinkMotionBuildStep::buildCommand() const
 void LinkMotionBuildStep::run(QFutureInterface<bool> &fi)
 {
     qDebug() << Q_FUNC_INFO;
+    ProjectExplorer::BuildManager::instance()->toggleOutputWindow();
     LinkMotionBuildConfiguration *bc = qobject_cast<LinkMotionBuildConfiguration*>(buildConfiguration());
     ProjectExplorer::ProcessParameters *pp = processParameters();
     Utils::Environment env = bc->environment();
@@ -256,6 +264,7 @@ void LinkMotionBuildStep::run(QFutureInterface<bool> &fi)
     env.set(QStringLiteral("LINKMOTION_DEVICE"),bc->m_device);
     env.set(QStringLiteral("LINKMOTION_USERNAME"),bc->m_username);
     env.set(QStringLiteral("LINKMOTION_PASSWORD"),bc->m_password);
+
     // Force output to english for the parsers. Do this here and not in the toolchain's
     // addToEnvironment() to not screw up the users run environment.
     env.set(QLatin1String("LC_ALL"), QLatin1String("C"));

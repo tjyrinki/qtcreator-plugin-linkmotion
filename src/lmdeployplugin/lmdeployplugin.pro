@@ -20,7 +20,9 @@ HEADERS += \
     linkmotiondeployconfiguration.h \
     linkmotiondeployconfigurationfactory.h \
     linkmotiondeploysettingswidget.h \
-    linkmotiondeploystepconfigwidget.h
+    linkmotiondeploystepconfigwidget.h \
+    ../lmbuildplugin/linkmotionbuildconfiguration.h \
+    ../lmbuildplugin/linkmotionbuildsettingswidget.h
 
 SOURCES += \
     linkmotiondeployplugin.cpp \
@@ -29,7 +31,9 @@ SOURCES += \
     linkmotiondeployconfiguration.cpp \
     linkmotiondeployconfigurationfactory.cpp \
     linkmotiondeploysettingswidget.cpp \
-    linkmotiondeploystepconfigwidget.cpp
+    linkmotiondeploystepconfigwidget.cpp \
+    ../lmbuildplugin/linkmotionbuildconfiguration.cpp \
+    ../lmbuildplugin/linkmotionbuildsettingswidget.cpp
 
 DISTFILES += \
     lmdeployplugin_dependencies.pri \

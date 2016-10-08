@@ -20,7 +20,8 @@ HEADERS += \
     linkmotionbuildstepfactory.h \
     linkmotionbuildplugin.h \
     linkmotionbuildplugin_global.h \
-    linkmotionbuildplugin_constants.h
+    linkmotionbuildplugin_constants.h \
+    linkmotionbuildoutputparser.h
 
 SOURCES += \
     linkmotionbuildconfiguration.cpp \
@@ -29,7 +30,8 @@ SOURCES += \
     linkmotionbuildstep.cpp \
     linkmotionbuildstepconfigwidget.cpp \
     linkmotionbuildstepfactory.cpp \
-    linkmotionbuildplugin.cpp
+    linkmotionbuildplugin.cpp \
+    linkmotionbuildoutputparser.cpp
 
 DISTFILES += \
     lmbuildplugin_dependencies.pri \

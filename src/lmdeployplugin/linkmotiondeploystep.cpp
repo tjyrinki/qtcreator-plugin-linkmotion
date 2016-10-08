@@ -12,6 +12,7 @@
 #include "linkmotiondeploystep.h"
 #include "linkmotiondeploysettingswidget.h"
 #include "linkmotiondeployplugin_constants.h"
+#include "../lmbuildplugin/linkmotionbuildconfiguration.h"
 
 #include <QThread>
 #include <QApplication>
@@ -119,16 +120,17 @@ LinkMotionDeployStep::~LinkMotionDeployStep()
 
 bool LinkMotionDeployStep::init()
 {
-    qDebug() << Q_FUNC_INFO;
+    qDebug() << Q_FUNC_INFO << buildConfiguration() << target()->activeBuildConfiguration();
     ProjectExplorer::DeployConfiguration *dc = deployConfiguration();
-    ProjectExplorer::BuildConfiguration *bc = buildConfiguration();
+    LinkMotionBuildConfiguration *bc = qobject_cast<LinkMotionBuildConfiguration*>(buildConfiguration());
     if (!dc) {
         qDebug() << "missing deploy config 1";
         dc = target()->activeDeployConfiguration();
     }
     if (!bc) {
         qDebug() << "missing build config 1";
-        bc = target()->activeBuildConfiguration();
+        bc = (LinkMotionBuildConfiguration*)target()->activeBuildConfiguration();
+        qDebug() << bc;
     }
     if (!dc) {
         qDebug() << "invalid deploy config";
@@ -158,6 +160,11 @@ bool LinkMotionDeployStep::init()
 
     ProjectExplorer::ProcessParameters *pp = processParameters();
     Utils::Environment env = bc->environment();
+
+    env.set(QStringLiteral("LINKMOTION_DEVICE"),bc->m_device);
+    env.set(QStringLiteral("LINKMOTION_USERNAME"),bc->m_username);
+    env.set(QStringLiteral("LINKMOTION_PASSWORD"),bc->m_password);
+
     pp->setEnvironment(env);
     pp->setMacroExpander(dc->macroExpander());
     pp->setWorkingDirectory(QDir(bc->buildDirectory().toString()).dirName());
@@ -251,10 +258,12 @@ QString LinkMotionDeployStep::buildCommand() const
 void LinkMotionDeployStep::run(QFutureInterface<bool> &fi)
 {
     qDebug() << Q_FUNC_INFO;
-    ProjectExplorer::BuildConfiguration *bc = buildConfiguration();
+    LinkMotionBuildConfiguration *bc = qobject_cast<LinkMotionBuildConfiguration*>(buildConfiguration());
+
     if (!bc) {
         qDebug() << "missing build config 1";
-        bc = target()->activeBuildConfiguration();
+        bc = (LinkMotionBuildConfiguration*)target()->activeBuildConfiguration();
+        qDebug() << bc;
     }
     if (!bc) {
         qDebug() << "missing build config 2";
@@ -273,18 +282,32 @@ void LinkMotionDeployStep::run(QFutureInterface<bool> &fi)
         return;
     }
 
+    ProjectExplorer::ProcessParameters *pp = processParameters();
+    Utils::Environment env = bc->environment();
 
+    env.set(QStringLiteral("LINKMOTION_DEVICE"),bc->m_device);
+    env.set(QStringLiteral("LINKMOTION_USERNAME"),bc->m_username);
+    env.set(QStringLiteral("LINKMOTION_PASSWORD"),bc->m_password);
+
+    pp->setEnvironment(env);
+    pp->setWorkingDirectory(QDir(bc->buildDirectory().toString()).dirName());
+    // TODO: find all generated rpm files.
+    //       those should be parsed from the output when buildplugin is creating the rpm packages.
+    QString arch = env.value(QStringLiteral("LINKMOTION_DEVICE"));
+    if (arch.isEmpty())
+        arch = QStringLiteral("intel");
     if (!target()) {
         qDebug() << Q_FUNC_INFO << "no target";
     }
     if (!target()->project()) {
         qDebug() << Q_FUNC_INFO << "no project";
     }
-    ProjectExplorer::ProcessParameters *pp = processParameters();
+    QString projectName = QDir(target()->project()->projectDirectory().toString()).dirName();
 
-    Utils::Environment env = bc->environment();
-    env.set(QLatin1String("LC_ALL"), QLatin1String("C"));
-    pp->setEnvironment(env);
+    pp->setArguments(QString(QStringLiteral("build-%0-%1-latest/*.rpm")).arg(projectName).arg(arch));
+    pp->resolveAll();
+
+
     AbstractProcessStep::run(fi);
 }
 
