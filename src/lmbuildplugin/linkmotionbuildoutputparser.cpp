@@ -8,7 +8,7 @@
 LinkMotionBuildOutputParser::LinkMotionBuildOutputParser(const QString &projectName, const QString &arch) : ProjectExplorer::IOutputParser(),
     m_projectName(projectName),
     m_arch(arch),
-    m_regexpPackage(QLatin1String("^Wrote: /root/rpmbuild/RPMS/i586/(.*?)$")),
+    m_regexpPackage(QLatin1String("^Wrote: /root/rpmbuild/RPMS/(arm|intel)/(.*?)$")),
     m_regexpQrcWarning(QLatin1String("^(.*?qrc): Warning: (.*?)$")),
     m_regexpQMakeWarning(QLatin1String("^Project WARNING: (.*?)$")),
     m_regexpQMakeError(QLatin1String("^Project ERROR: (.*?)$")),
