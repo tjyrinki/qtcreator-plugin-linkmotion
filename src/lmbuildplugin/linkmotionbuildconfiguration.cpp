@@ -12,6 +12,8 @@
 #include "linkmotionbuildsettingswidget.h"
 #include "linkmotionbuildplugin_constants.h"
 #include <QProcessEnvironment>
+#include <projectexplorer/projectexplorerconstants.h>
+#include <projectexplorer/buildsteplist.h>
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
@@ -37,6 +39,10 @@ void LinkMotionBuildConfiguration::ctor() {
     m_username = env.value(QStringLiteral("LINKMOTION_USERNAME"),QStringLiteral("linkmotion"));
     m_password = env.value(QStringLiteral("LINKMOTION_PASSWORD"),QStringLiteral("[not set]"));
     m_device = env.value(QStringLiteral("LINKMOTION_DEVICE"),QStringLiteral("intel"));
+    if (!this->stepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD)) {
+        qDebug() << "WARNING" << "BUILD STEPS ARE NULL";
+        //m_stepLists.append(new ProjectExplorer::BuildStepList(this,ProjectExplorer::Constants::BUILDSTEPS_BUILD));
+    }
 }
 
 bool LinkMotionBuildConfiguration::fromMap(const QVariantMap &map)

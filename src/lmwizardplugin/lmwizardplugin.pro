@@ -18,7 +18,15 @@ DISTFILES += \
 
 HEADERS += \
     linkmotionwizardplugin.h \
-    linkmotionwizardplugin_global.h
+    linkmotionwizardplugin_global.h \
+    ../lmprojectplugin/linkmotionkitmatcher.h \
+    linkmotionprojectwizardfactory.h \
+    linkmotionprojectwizard.h \
+    linkmotionprojectwizarddialog.h
 
 SOURCES += \
-    linkmotionwizardplugin.cpp
+    linkmotionwizardplugin.cpp \
+    ../lmprojectplugin/linkmotionkitmatcher.cpp \
+    linkmotionprojectwizardfactory.cpp \
+    linkmotionprojectwizard.cpp \
+    linkmotionprojectwizarddialog.cpp

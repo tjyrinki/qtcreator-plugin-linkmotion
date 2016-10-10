@@ -15,29 +15,30 @@
 #include <QDebug>
 
 #include <QObject>
-#include <projectexplorer/buildconfiguration.h>
+#include <projectexplorer/deployconfiguration.h>
 
 namespace LinkMotion {
 namespace Internal {
 
-class LinkMotionDeployConfigurationFactory : public ProjectExplorer::IBuildConfigurationFactory
+class LinkMotionDeployConfigurationFactory : public ProjectExplorer::DeployConfigurationFactory
 {
 public:
     LinkMotionDeployConfigurationFactory(QObject *parent = 0);
     ~LinkMotionDeployConfigurationFactory();
 
-    virtual int priority(const ProjectExplorer::Target *parent) const override;
-    virtual QList<ProjectExplorer::BuildInfo *> availableBuilds(const ProjectExplorer::Target *parent) const override;
-    virtual int priority(const ProjectExplorer::Kit *k, const QString &projectPath) const override;
-    virtual QList<ProjectExplorer::BuildInfo *> availableSetups(const ProjectExplorer::Kit *k, const QString &projectPath) const override;
-    virtual LinkMotionDeployConfiguration *create(ProjectExplorer::Target *parent, const ProjectExplorer::BuildInfo *info) const override;
-    virtual bool canRestore(const ProjectExplorer::Target *parent, const QVariantMap &map) const override;
-    virtual LinkMotionDeployConfiguration *restore(ProjectExplorer::Target *parent, const QVariantMap &map) override;
-    virtual bool canClone(const ProjectExplorer::Target *parent, ProjectExplorer::BuildConfiguration *product) const override;
-    virtual LinkMotionDeployConfiguration* clone(ProjectExplorer::Target *parent, ProjectExplorer::BuildConfiguration *product) override;
-private:
-    bool canHandle(const ProjectExplorer::Target *t) const;
-    QList<ProjectExplorer::BuildInfo *> createBuildInfos (const ProjectExplorer::Kit *k, const QString &projectDir) const;
+    // used to show the list of possible additons to a target, returns a list of types
+    virtual QList<Core::Id> availableCreationIds(ProjectExplorer::Target *parent) const;
+    // used to translate the types to names to display to the user
+    virtual QString displayNameForId(Core::Id id) const;
+
+    virtual bool canCreate(ProjectExplorer::Target *parent, Core::Id id) const;
+    virtual ProjectExplorer::DeployConfiguration *create(ProjectExplorer::Target *parent, Core::Id id);
+    // used to recreate the runConfigurations when restoring settings
+    virtual bool canRestore(ProjectExplorer::Target *parent, const QVariantMap &map) const;
+    virtual ProjectExplorer::DeployConfiguration *restore(ProjectExplorer::Target *parent, const QVariantMap &map);
+    virtual bool canClone(ProjectExplorer::Target *parent, ProjectExplorer::DeployConfiguration *product) const;
+    virtual ProjectExplorer::DeployConfiguration *clone(ProjectExplorer::Target *parent, ProjectExplorer::DeployConfiguration *product);
+
 };
 
 }

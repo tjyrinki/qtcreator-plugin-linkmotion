@@ -34,3 +34,6 @@ SOURCES += \
     linkmotionprojectfile.cpp \
     linkmotionprojectnode.cpp \
     linkmotionkitmatcher.cpp
+
+RESOURCES += \
+    resources.qrc

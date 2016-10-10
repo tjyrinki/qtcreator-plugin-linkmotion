@@ -13,12 +13,12 @@
 
 #include <QObject>
 #include <QDebug>
-#include <projectexplorer/buildconfiguration.h>
+#include <projectexplorer/deployconfiguration.h>
 
 namespace LinkMotion {
 namespace Internal {
 
-class LinkMotionDeployConfiguration : public ProjectExplorer::BuildConfiguration
+class LinkMotionDeployConfiguration : public ProjectExplorer::DeployConfiguration
 {
     Q_OBJECT
 
@@ -30,7 +30,6 @@ public:
     virtual QVariantMap toMap() const override;
 
     virtual ProjectExplorer::NamedWidget *createConfigWidget() override;
-    virtual BuildType buildType() const override;
 
     QString m_username;
     QString m_password;

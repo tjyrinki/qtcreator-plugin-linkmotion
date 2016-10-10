@@ -83,10 +83,6 @@ LinkMotionBuildConfiguration *LinkMotionBuildConfigurationFactory::create(Projec
     // then only add the steps
     qDebug() << "INSERTING build step";
     ProjectExplorer::BuildStepList *bs = conf->stepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
-    for (int i=0; i<bs->count(); i++) {
-        bs->at(i)->deleteLater();
-
-    }
     bs->insertStep(0, new LinkMotionBuildStep(bs));
     return conf;
 }

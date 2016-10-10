@@ -11,20 +11,23 @@
 #include "linkmotiondeployconfiguration.h"
 #include "linkmotiondeploysettingswidget.h"
 #include "linkmotiondeployplugin_constants.h"
+
 #include <QProcessEnvironment>
+#include <projectexplorer/projectexplorerconstants.h>
+#include <projectexplorer/buildsteplist.h>
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
 
 LinkMotionDeployConfiguration::LinkMotionDeployConfiguration(ProjectExplorer::Target *target)
-    : BuildConfiguration(target,Constants::LINKMOTION_BC_ID)
+    : DeployConfiguration(target,Constants::LINKMOTION_DC_ID)
 {
     qDebug() << Q_FUNC_INFO;
     ctor();
 }
 
 LinkMotionDeployConfiguration::LinkMotionDeployConfiguration(ProjectExplorer::Target *target, LinkMotionDeployConfiguration *source)
-    : BuildConfiguration(target,source)
+    : DeployConfiguration(target,source)
 {
     qDebug() << Q_FUNC_INFO;
     ctor();
@@ -42,13 +45,13 @@ void LinkMotionDeployConfiguration::ctor() {
 bool LinkMotionDeployConfiguration::fromMap(const QVariantMap &map)
 {
     qDebug() << Q_FUNC_INFO;
-    return BuildConfiguration::fromMap(map);
+    return DeployConfiguration::fromMap(map);
 }
 
 QVariantMap LinkMotionDeployConfiguration::toMap() const
 {
     qDebug() << Q_FUNC_INFO;
-    return BuildConfiguration::toMap();
+    return DeployConfiguration::toMap();
 }
 
 ProjectExplorer::NamedWidget *LinkMotionDeployConfiguration::createConfigWidget()
@@ -57,8 +60,3 @@ ProjectExplorer::NamedWidget *LinkMotionDeployConfiguration::createConfigWidget(
     return new LinkMotionDeploySettingsWidget(this);
 }
 
-ProjectExplorer::BuildConfiguration::BuildType LinkMotionDeployConfiguration::buildType() const
-{
-    qDebug() << Q_FUNC_INFO;
-    return Release;
-}

@@ -1,0 +1,2 @@
+#!/bin/bash
+rm /usr/lib/x86_64-linux-gnu/qtcreator/plugins/liblm*

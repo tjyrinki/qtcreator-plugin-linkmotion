@@ -18,7 +18,7 @@ namespace LinkMotion {
 namespace Internal {
 namespace Constants {
 
-const char LINKMOTION_BC_ID[]      = "LinkMotion.DeployConfiguration";
+const char LINKMOTION_DC_ID[]      = "LinkMotion.DeployConfiguration";
 const char LINKMOTION_DEPLOY_STEP_ID[]      = "LinkMotion.DeployStep";
 const char LINKMOTION_DEPLOY_STEP_DISPLAY_NAME[] = "LinkMotion Deploy Step";
 const char LINKMOTION_SIMULATOR_TYPE[] = "LinkMotion.Simulator";

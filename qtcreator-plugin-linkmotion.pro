@@ -29,4 +29,5 @@ local.commands += $$[QT_INSTALL_BINS]/qmake -r CONFIG+=BUILDTOHOME;
 local.commands += make
 
 
-OTHER_FILES=$$system(find debian)
+OTHER_FILES=$$system(find debian) \
+    $$system(find share)

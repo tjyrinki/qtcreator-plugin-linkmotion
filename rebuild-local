@@ -1,2 +1,9 @@
 #!/bin/bash
-make local && gdb qtcreator
+./clean-runtime
+set -e
+make local
+set +e
+sudo rm -r /usr/share/qtcreator/templates/wizards/linkmotion
+set -e
+sudo cp -r share/* /usr/share
+gdb qtcreator
