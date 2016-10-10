@@ -1,5 +1,6 @@
 #include "linkmotionprojectplugin.h"
 
+#include "linkmotionprojectmanager.h"
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
@@ -21,6 +22,7 @@ bool LinkMotionProjectPlugin::initialize(const QStringList &arguments, QString *
     qDebug() << Q_FUNC_INFO;
     Q_UNUSED(arguments)
     Q_UNUSED(errorString)
+    addAutoReleasedObject(new LinkMotionProjectManager);
 
 /*
     addAutoReleasedObject(new LinkMotionDeployConfigurationFactory);

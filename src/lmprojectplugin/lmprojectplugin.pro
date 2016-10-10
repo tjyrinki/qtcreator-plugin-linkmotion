@@ -14,11 +14,23 @@ include(../linkmotion-qtc-plugin.pri)
 
 DISTFILES += \
     lmprojectplugin_dependencies.pri \
-    lmprojectplugin.json.in
+    lmprojectplugin.json.in \
+    lmprojectplugin.mimetypes.xml
 
 HEADERS += \
     linkmotionprojectplugin.h \
-    linkmotionprojectplugin_global.h
+    linkmotionprojectplugin_global.h \
+    linkmotionprojectmanager.h \
+    linkmotionprojectplugin_constants.h \
+    linkmotionproject.h \
+    linkmotionprojectfile.h \
+    linkmotionprojectnode.h \
+    linkmotionkitmatcher.h
 
 SOURCES += \
-    linkmotionprojectplugin.cpp
+    linkmotionprojectplugin.cpp \
+    linkmotionprojectmanager.cpp \
+    linkmotionproject.cpp \
+    linkmotionprojectfile.cpp \
+    linkmotionprojectnode.cpp \
+    linkmotionkitmatcher.cpp
