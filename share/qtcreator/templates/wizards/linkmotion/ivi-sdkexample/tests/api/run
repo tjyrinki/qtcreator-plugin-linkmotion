@@ -1,0 +1,28 @@
+#!/bin/bash
+TESTS=`find . |grep tst[a-z\_]*$|sed "s/\\.\///g"`
+
+echo "Found tests:"
+echo "--8<--"
+echo ${TESTS}
+echo "--8<--"
+echo
+
+export QML2_IMPORT_PATH=`pwd`/../../build/
+
+FAILURES=0
+for TEST in ${TESTS}; do
+  echo "Executing ${TEST}.."
+  QML_IMPORT_PATH=../../build time ./${TEST}
+  if [[ $? != 0 ]]; then
+    FAILURES+=1
+  fi
+  echo "..executed!"
+done
+echo
+echo "done."
+
+if [[ ${FAILURES} -gt 0 ]]; then
+  echo "ERROR: test failure."
+  exit 1
+fi
+

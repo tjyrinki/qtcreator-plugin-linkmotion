@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>pages/PageEnjoy.qml</file>
+        <file>pages/PageComfort.qml</file>
+        <file>pages/PageSettings.qml</file>
+    </qresource>
+</RCC>
