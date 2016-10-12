@@ -1,0 +1,2 @@
+#!/bin/bash
+git subtree pull --prefix share/qtcreator/templates/wizards/linkmotion/ivi-sdkexample https://git.nomovok.info/git/lm/lmmw-ivi-sdkexample master --squash
