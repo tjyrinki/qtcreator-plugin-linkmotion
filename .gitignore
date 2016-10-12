@@ -1,0 +1,13 @@
+Makefile
+*.o
+*.user
+moc_*
+*.so
+qrc_*
+results/
+.qmake.stash
+src/app/app
+*.xml
+*.autosave
+tst_components
+tst_clock
