@@ -41,7 +41,7 @@
         <file source="src/app/main.qml" openeditor="true"/>
         <file source="src/app/main.cpp" openeditor="false"/>
         <file source=".gitignore" openeditor="false"/>
-        <file source="lmmw-ivi-sdkexample.spec" openeditor="false"/>
+        <file source="lmmw-ivi-sdkexample.spec" target="%ProjectName%.spec" openeditor="false"/>
         <file source="tests/tests.pro" openeditor="false"/>
         <file source="tests/ui/objectname/test-objectNames.rb" openeditor="false"/>
         <file source="tests/ui/objectname/run-tests" openeditor="false"/>
