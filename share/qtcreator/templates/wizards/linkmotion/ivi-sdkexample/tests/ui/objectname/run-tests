@@ -4,7 +4,7 @@ killall qttasserver
 qttasserver &
 QTTAS_PID=$!
 
-APPS="../../../src/app/app"
+APPS="../../../src/app/%ProjectName%"
 
 echo ${QML2_IMPORT_PATH}
 for APP in ${APPS}; do

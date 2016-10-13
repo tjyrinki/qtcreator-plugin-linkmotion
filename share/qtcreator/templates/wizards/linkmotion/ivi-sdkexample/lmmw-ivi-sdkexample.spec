@@ -1,4 +1,4 @@
-Name:       lmmw-ivi-sdkexample
+Name:       %ProjectName%
 
 # >> macros
 # << macros
@@ -24,12 +24,12 @@ BuildRequires:  qt5-qtdeclarative-import-qtquick2plugin
 %description
 LinkMotion IVI example application
 
-%package lmmw-ivi-sdkexample-app
+%package %ProjectName%-app
 Group:      User Interface/Desktops
 Requires:   %{name}
 Summary:    LinkMotion IVI example application
 
-%description lmmw-ivi-sdkexample-app
+%description %ProjectName%-app
 LinkMotion IVI example application
 
 %prep
@@ -61,5 +61,5 @@ make install INSTALL_ROOT=%{buildroot}
 # << files
 
 %changelog
-* Thu Jul 14 2016 Juhapekka Piiroinen <juhapekka.piiroinen@link-motion.com> - 1.0
+* Thu Jul 14 2016 FirstName Surname <firstname.surname@example.com> - 1.0
 - Initial release
