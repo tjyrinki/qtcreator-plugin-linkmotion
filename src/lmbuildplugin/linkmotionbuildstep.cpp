@@ -157,7 +157,7 @@ bool LinkMotionBuildStep::init()
     pp->setMacroExpander(bc->macroExpander());
     pp->setWorkingDirectory(QDir(bc->buildDirectory().toString()).dirName());
     pp->setCommand(QStringLiteral("vmsdk-build"));
-    pp->setArguments(projectName);
+    pp->setArguments(QStringLiteral("%0 %1/..").arg(projectName).arg(bc->buildDirectory().toString()));
     pp->resolveAll();
 
     // If we are cleaning, then build can fail with an error code, but that doesn't mean
