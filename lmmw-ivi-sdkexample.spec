@@ -33,8 +33,7 @@ Summary:    LinkMotion IVI example application
 LinkMotion IVI example application
 
 %prep
-#%setup -q -n %{name}-%{version}
-%setup -q -n %{name}
+%setup -q -n %{name}-%{version}
 
 # >> setup
 # << setup
