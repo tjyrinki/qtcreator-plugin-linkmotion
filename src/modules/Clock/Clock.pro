@@ -1,6 +1,6 @@
 uri = Clock
 TARGET = clock
-APPNAME = app
+APPNAME = %ProjectName%
 
 CONFIG += lm_lib
 

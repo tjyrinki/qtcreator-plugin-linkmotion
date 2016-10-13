@@ -11,7 +11,6 @@
         <file source="src/src.pro" openeditor="false"/>
         <file source="src/modules/Clock/qmldir" openeditor="false"/>
         <file source="src/modules/Clock/clock_plugin.h" openeditor="false"/>
-        <file source="src/modules/Clock/deployment.pri" openeditor="false"/>
         <file source="src/modules/Clock/Clock.pro" openeditor="false"/>
         <file source="src/modules/Clock/plugins.qmltypes" openeditor="false"/>
         <file source="src/modules/Clock/clocklabel.cpp" openeditor="false"/>
@@ -30,7 +29,6 @@
         <file source="src/app/pages/PageEnjoy.qml" openeditor="false"/>
         <file source="src/app/pages/PageComfort.qml" openeditor="false"/>
         <file source="src/app/pages/PageSettings.qml" openeditor="false"/>
-        <file source="src/app/deployment.pri" openeditor="false"/>
         <file source="src/app/assets/images/icons/icon_comfort_active.svg" openeditor="false"/>
         <file source="src/app/assets/images/icons/icon_enjoy_active.svg" openeditor="false"/>
         <file source="src/app/assets/images/icons/icon_comfort_inactive.svg" openeditor="false"/>

@@ -1,6 +1,6 @@
 TARGET = components
 uri = Components
-APPNAME = app
+APPNAME = %ProjectName%
 
 CONFIG += lm_lib
 

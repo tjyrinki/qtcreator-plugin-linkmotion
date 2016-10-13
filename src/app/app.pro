@@ -1,4 +1,5 @@
 CONFIG += lm_app
+TARGET = %ProjectName%
 
 SOURCES += main.cpp
 
