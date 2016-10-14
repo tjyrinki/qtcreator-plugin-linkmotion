@@ -174,7 +174,7 @@ bool LinkMotionDeployStep::init()
     QString arch = env.value(QStringLiteral("LINKMOTION_DEVICE"));
     if (arch.isEmpty())
         arch = QStringLiteral("intel");
-    pp->setArguments(QString(QStringLiteral("build-%0-%1-latest/*.rpm")).arg(projectName).arg(arch));
+    pp->setArguments(QString(QStringLiteral("../build-%0-%1-latest/*.rpm")).arg(projectName).arg(arch));
     pp->resolveAll();
 
     // If we are cleaning, then build can fail with an error code, but that doesn't mean
