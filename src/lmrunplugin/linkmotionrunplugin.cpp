@@ -11,6 +11,9 @@
 
 #include "linkmotionrunplugin.h"
 
+#include "linkmotionruncontrolfactory.h"
+#include "linkmotionrunconfigurationfactory.h"
+
 #include <QtGui>
 
 using namespace LinkMotion;
@@ -33,6 +36,8 @@ bool RunPlugin::initialize(const QStringList &arguments, QString *errorString)
     qDebug() << Q_FUNC_INFO;
     Q_UNUSED(arguments)
     Q_UNUSED(errorString)
+    addAutoReleasedObject(new LinkMotionRunControlFactory);
+    addAutoReleasedObject(new LinkMotionRunConfigurationFactory);
 
     return true;
 }
