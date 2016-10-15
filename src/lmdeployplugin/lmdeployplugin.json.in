@@ -1,5 +1,5 @@
 {
-    \"Name\" : \"LMDeploy\",
+    \"Name\" : \"lmdeployplugin\",
     \"Version\" : \"$$QTCREATOR_VERSION\",
     \"CompatVersion\" : \"$$QTCREATOR_COMPAT_VERSION\",
     \"Vendor\" : \"LinkMotion Oy\",

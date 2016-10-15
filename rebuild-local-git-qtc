@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+
+QTC_SOURCE=${HOME}/git/qtcreator ~/Qt5.5.1/5.5/gcc_64/bin/qmake -r
+make

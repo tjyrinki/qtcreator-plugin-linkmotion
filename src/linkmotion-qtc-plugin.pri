@@ -27,5 +27,11 @@ isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=../builddir
 include($$QTCREATOR_SOURCES/src/qtcreatorplugin.pri)
 
 INCLUDEPATH += $$QTCREATOR_SOURCES/src/
+INCLUDEPATH += $$QTCREATOR_SOURCES/src/plugins
+INCLUDEPATH += $$QTCREATOR_SOURCES/src/libs
+INCLUDEPATH += $$QTCREATOR_SOURCES/src/shared
+
 LIBS += -L$$[QT_INSTALL_LIBS]/qtcreator
 LIBS += -L$$[QT_INSTALL_LIBS]/qtcreator/plugins
+LIBS += -L$$QTCREATOR_SOURCES/lib/qtcreator
+LIBS += -L$$QTCREATOR_SOURCES/lib/qtcreator/plugins

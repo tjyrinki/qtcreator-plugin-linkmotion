@@ -174,8 +174,9 @@ bool LinkMotionDeployStep::init()
     QString arch = env.value(QStringLiteral("LINKMOTION_DEVICE"));
     if (arch.isEmpty())
         arch = QStringLiteral("intel");
-    pp->setArguments(QString(QStringLiteral("../build-%0-%1-latest/*.rpm")).arg(projectName).arg(arch));
+    pp->setArguments(QString(QStringLiteral("%0/../build-%1-%2-latest/*.rpm")).arg(bc->buildDirectory().toString()).arg(projectName).arg(arch));
     pp->resolveAll();
+    qDebug() << "INIT PATH" << pp->arguments();
 
     // If we are cleaning, then build can fail with an error code, but that doesn't mean
     // we should stop the clean queue
@@ -304,7 +305,7 @@ void LinkMotionDeployStep::run(QFutureInterface<bool> &fi)
     }
     QString projectName = QDir(target()->project()->projectDirectory().toString()).dirName();
 
-    pp->setArguments(QString(QStringLiteral("build-%0-%1-latest/*.rpm")).arg(projectName).arg(arch));
+    pp->setArguments(QString(QStringLiteral("%0/../build-%1-%2-latest/*.rpm")).arg(bc->buildDirectory().toString()).arg(projectName).arg(arch));
     pp->resolveAll();
 
 
