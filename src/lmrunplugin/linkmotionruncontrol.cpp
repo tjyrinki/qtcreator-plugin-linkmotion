@@ -27,23 +27,22 @@ void LinkMotionRunControl::start()
 {
     qDebug() << Q_FUNC_INFO;
     m_running = true;
-    //vmsdk-shell /altdata/apps/untitled117/bin/untitled117 -plugin vboxtouch -platform eglfs
     QStringList args;
     QString projectName = this->runConfiguration()->target()->project()->displayName();
-    args << QStringLiteral("/altdata/apps/%0/bin/%0").arg(projectName);
-    args << QStringLiteral("-plugin vboxtouch");
-    args << QStringLiteral("-platform eglfs");
+    args << projectName;
     m_process.setArguments(args);
     emit started();
     appendMessage(tr("Starting remote process."), Utils::NormalMessageFormat);
-    m_process.start(QStringLiteral("vmsdk-shell"),args);
+    m_process.start(QStringLiteral("vmsdk-app-start"),args);
+    //TODO: add stdout, stderr handling to m_process
 }
 
 ProjectExplorer::RunControl::StopResult LinkMotionRunControl::stop()
 {
     qDebug() << Q_FUNC_INFO;
-    m_process.kill();
-    // FIXME: does not kill the process on remote machine.
+    m_process.terminate();
+    QString projectName = this->runConfiguration()->target()->project()->displayName();
+    QProcess::startDetached(QStringLiteral("vmsdk-app-stop %0").arg(projectName));
     m_running = false;
     emit finished();
     appendMessage(tr("Stopped remote process."), Utils::NormalMessageFormat);
