@@ -54,6 +54,8 @@
         <file source="tests/api/components/tst_notificationbar.qml" openeditor="false"/>
         <file source="tests/api/components/tst_components.cpp" openeditor="false"/>
         <file source="tests/api/components/components.pro" openeditor="false"/>
-        <file source="lmmw-ivi-sdkexample.pro" target="%ProjectName%.pro" openproject="true" />
+        <file source="lmmw-ivi-sdkexample.lmproject" target="%ProjectName%.lmproject" openproject="true" />
+        <file source="lmmw-ivi-sdkexample.pro" target="%ProjectName%.pro" openproject="false" />
+
     </files>
 </wizard>

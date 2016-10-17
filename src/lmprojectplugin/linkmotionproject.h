@@ -1,6 +1,7 @@
 #ifndef LINKMOTIONPROJECT_H
 #define LINKMOTIONPROJECT_H
 
+#include <qmakeprojectmanager/qmakeproject.h>
 #include <projectexplorer/project.h>
 
 #include "linkmotionprojectmanager.h"
@@ -14,27 +15,15 @@ namespace Internal {
 class LinkMotionProjectFile;
 class LinkMotionProjectNode;
 
-class LinkMotionProject : public ProjectExplorer::Project
+class LinkMotionProject : public QmakeProjectManager::QmakeProject
 {
 public:
     LinkMotionProject(LinkMotionProjectManager *manager, const QString &fileName);
 
-    QString displayName() const override;
-    Core::IDocument *document() const override;
-    ProjectExplorer::IProjectManager *projectManager() const override;
-
-    ProjectExplorer::ProjectNode *rootProjectNode() const override;
-    QStringList files(FilesMode fileMode) const override;
-
 protected:
     LinkMotionProjectManager *m_projectManager;
+    QString m_lmprojectFile;
 
-    QString m_projectName;
-    QString m_fileName;
-    QString m_mainFile;
-
-    QSharedPointer<LinkMotionProjectFile> m_file;
-    QSharedPointer<LinkMotionProjectNode> m_rootNode;
 };
 
 }

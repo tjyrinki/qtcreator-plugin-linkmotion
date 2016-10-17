@@ -30,6 +30,7 @@ public:
 private:
     LinkMotionProject *m_project;
     QString m_filename;
+    LinkMotionProjectFile* m_fileInfo;
 };
 
 }

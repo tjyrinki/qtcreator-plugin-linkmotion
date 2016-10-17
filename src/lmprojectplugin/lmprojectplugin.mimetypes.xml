@@ -4,6 +4,6 @@
   <mime-type type="application/x-linkmotionproject">
     <sub-class-of type="application/x-qml"/>
     <comment>LinkMotion Project file</comment>
-    <glob pattern="*.linkmotionproject"/>
+    <glob pattern="*.lmproject"/>
   </mime-type>
 </mime-info>
