@@ -13,4 +13,4 @@ HEADERS += \
     clock_plugin.h \
     clocklabel.h
 
-DISTFILES = qmldir
+DISTFILES = qmldir plugins.qmltypes

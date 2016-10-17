@@ -1,5 +1,5 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.0
 import Components 1.0
 import Clock 1.0
@@ -7,12 +7,7 @@ import Clock 1.0
 import "pages"
 
 ApplicationWindow {
-    objectName: "MainWindow"
     visible: true
-    width: 640
-    height: 480
-    title: qsTr("%ProjectName%")
-
     header: NotificationBar {
         objectName: "NotificationBar"
         areaMiddle: Row {

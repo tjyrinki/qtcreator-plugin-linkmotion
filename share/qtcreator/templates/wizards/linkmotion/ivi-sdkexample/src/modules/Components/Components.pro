@@ -4,7 +4,7 @@ APPNAME = %ProjectName%
 
 CONFIG += lm_lib
 
-DISTFILES = qmldir
+DISTFILES = qmldir plugins.qmltypes
 
 OTHER_FILES += $$system(find . |grep qml$) \
 	qmldir

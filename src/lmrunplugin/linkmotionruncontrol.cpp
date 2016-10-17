@@ -15,12 +15,30 @@ LinkMotionRunControl::LinkMotionRunControl(LinkMotionRunConfiguration *rc)
 {
     qDebug() << Q_FUNC_INFO;
     setIcon(QLatin1String(ProjectExplorer::Constants::ICON_RUN_SMALL));
+    connect(&m_process,SIGNAL(readyReadStandardError()),this,SLOT(onStdErr()));
+    connect(&m_process,SIGNAL(readyReadStandardOutput()),this,SLOT(onStdOut()));
+    connect(&m_process,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(onFinished(int, QProcess::ExitStatus)));
 }
 
 LinkMotionRunControl::~LinkMotionRunControl()
 {
     qDebug() << Q_FUNC_INFO;
     stop();
+}
+
+void LinkMotionRunControl::onFinished(int code, QProcess::ExitStatus status) {
+    qDebug() << Q_FUNC_INFO << code << status;
+    stop();
+}
+
+void LinkMotionRunControl::onStdErr() {
+    qDebug() << Q_FUNC_INFO;
+    appendMessage(QString::fromLatin1(m_process.readAllStandardError()), Utils::ErrorMessageFormat);
+}
+
+void LinkMotionRunControl::onStdOut() {
+    qDebug() << Q_FUNC_INFO;
+    appendMessage(QString::fromLatin1(m_process.readAllStandardOutput()), Utils::NormalMessageFormat);
 }
 
 void LinkMotionRunControl::start()

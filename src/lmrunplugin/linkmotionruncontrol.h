@@ -25,6 +25,10 @@ public:
 protected slots:
     void emulateStop() { stop(); }
 
+    void onStdOut();
+    void onStdErr();
+    void onFinished(int, QProcess::ExitStatus);
+
 private:
     QProcess m_process;
     bool m_running;
