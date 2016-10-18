@@ -121,11 +121,11 @@ LinkMotionDeployStep::~LinkMotionDeployStep()
 bool LinkMotionDeployStep::init()
 {
     qDebug() << Q_FUNC_INFO << buildConfiguration() << target()->activeBuildConfiguration();
-    ProjectExplorer::DeployConfiguration *dc = deployConfiguration();
+    LinkMotionDeployConfiguration *dc = qobject_cast<LinkMotionDeployConfiguration*>(deployConfiguration());
     LinkMotionBuildConfiguration *bc = qobject_cast<LinkMotionBuildConfiguration*>(buildConfiguration());
     if (!dc) {
         qDebug() << "missing deploy config 1";
-        dc = target()->activeDeployConfiguration();
+        dc = (LinkMotionDeployConfiguration*)target()->activeDeployConfiguration();
     }
     if (!bc) {
         qDebug() << "missing build config 1";
@@ -161,9 +161,9 @@ bool LinkMotionDeployStep::init()
     ProjectExplorer::ProcessParameters *pp = processParameters();
     Utils::Environment env = bc->environment();
 
-    env.set(QStringLiteral("LINKMOTION_DEVICE"),bc->m_device);
-    env.set(QStringLiteral("LINKMOTION_USERNAME"),bc->m_username);
-    env.set(QStringLiteral("LINKMOTION_PASSWORD"),bc->m_password);
+    env.set(QStringLiteral("LINKMOTION_DEVICE"),dc->m_device);
+    env.set(QStringLiteral("LINKMOTION_USERNAME"),dc->m_username);
+    env.set(QStringLiteral("LINKMOTION_PASSWORD"),dc->m_password);
 
     pp->setEnvironment(env);
     pp->setMacroExpander(dc->macroExpander());

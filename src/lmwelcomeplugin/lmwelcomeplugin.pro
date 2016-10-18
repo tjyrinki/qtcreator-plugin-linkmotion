@@ -10,17 +10,19 @@
 ####################################################################
 
 include(../linkmotion-qtc-plugin.pri)
-QT += qml quickwidgets
+QT += qml quickwidgets quick
 
 HEADERS += \
     linkmotionwelcomeglobal.h \
     linkmotionwelcomeplugin.h \
     linkmotionwelcomeplugin_constants.h \
-    linkmotionwelcomemode.h
+    linkmotionwelcomemode.h \
+    linkmotionwelcomemodels.h
 
 SOURCES += \
     linkmotionwelcomeplugin.cpp \
-    linkmotionwelcomemode.cpp
+    linkmotionwelcomemode.cpp \
+    linkmotionwelcomemodels.cpp
 
 DISTFILES += \
     lmwelcomeplugin_dependencies.pri \

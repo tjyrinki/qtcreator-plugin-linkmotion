@@ -11,12 +11,15 @@
 
 #include "linkmotionwelcomemode.h"
 #include "linkmotionwelcomeplugin_constants.h"
+#include "linkmotionwelcomemodels.h"
 
 #include <QtQml>
 #include <QVBoxLayout>
 #include <QtQuickWidgets/QQuickWidget>
+#include <projectexplorer/projectwelcomepage.h>
 #include <utils/fileutils.h>
 #include <utils/styledbar.h>
+#include <coreplugin/icore.h>
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
@@ -30,24 +33,33 @@ LinkMotionWelcomeMode::LinkMotionWelcomeMode() {
     setId(Constants::MODE_LINKMOTION);
     setContext(Core::Context(Constants::C_LINKMOTION_MODE));
 
+    m_sessionModel = new LinkMotion::Internal::SessionModel(this);
+    m_projectModel = new LinkMotion::Internal::ProjectModel(this);
+
     m_rootWidget = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(m_rootWidget);
     layout->setMargin(0);
     layout->setSpacing(0);
 
     m_quickWidget = new QQuickWidget(m_rootWidget);
+    QStringList importPaths = m_quickWidget->engine()->importPathList();
+    const QString resourcePath = Utils::FileUtils::normalizePathName(Core::ICore::resourcePath());
+    importPaths << resourcePath + QLatin1String("/welcomescreen/");
+    qDebug() << importPaths;
+    m_quickWidget->engine()->setImportPathList(importPaths);
+    QQmlContext *ctx = m_quickWidget->engine()->rootContext();
+    ctx->setContextProperty(QLatin1String("sessionList"), m_sessionModel);
+    ctx->setContextProperty(QLatin1String("projectList"), m_projectModel);
+    ctx->setContextProperty(QLatin1String("linkMotionWelcome"),this);
+
     connect(m_quickWidget, SIGNAL(sceneGraphError(QQuickWindow::SceneGraphError,QString)),
             this, SLOT(onSceneGraphError(QQuickWindow::SceneGraphError,QString)));
     layout->addWidget(m_quickWidget);
     m_quickWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
     m_quickWidget->setSource(QUrl(Constants::LINKMOTION_WELCOMESCREEN_QML));
 
-
-
     m_rootWidget->setLayout(layout);
     setWidget(m_rootWidget);
-    m_rootWidget->adjustSize();
-    qDebug() << "SIZEEE" << m_rootWidget->size();
 }
 
 LinkMotionWelcomeMode::~LinkMotionWelcomeMode() {
