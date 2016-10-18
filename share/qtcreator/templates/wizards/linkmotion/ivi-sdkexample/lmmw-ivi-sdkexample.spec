@@ -24,12 +24,12 @@ BuildRequires:  qt5-qtdeclarative-import-qtquick2plugin
 %description
 LinkMotion IVI example application
 
-%package %ProjectName%-app
+%package %ProjectName%-ivi-app
 Group:      User Interface/Desktops
 Requires:   %{name}
 Summary:    LinkMotion IVI example application
 
-%description %ProjectName%-app
+%description %ProjectName%-ivi-app
 LinkMotion IVI example application
 
 %prep

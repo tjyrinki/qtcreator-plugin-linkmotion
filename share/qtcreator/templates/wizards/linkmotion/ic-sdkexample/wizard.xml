@@ -52,6 +52,7 @@
         <file source="tests/api/components/tst_notificationbar.qml" openeditor="false"/>
         <file source="tests/api/components/tst_components.cpp" openeditor="false"/>
         <file source="tests/api/components/components.pro" openeditor="false"/>
-        <file source="lmmw-ic-sdkexample.pro" target="%ProjectName%.pro" openproject="true" />
+        <file source="lmmw-ic-sdkexample.pro" target="%ProjectName%.pro" openproject="false" />
+        <file source="lmmw-ic-sdkexample.lmproject" target="%ProjectName%.lmproject" openproject="true" />
     </files>
 </wizard>

@@ -105,13 +105,12 @@ LinkMotionBuildConfiguration *LinkMotionBuildConfigurationFactory::restore(Proje
     LinkMotionBuildConfiguration *conf = new LinkMotionBuildConfiguration(parent);
     if (conf->fromMap(map)) {
         ProjectExplorer::BuildStepList *bs = conf->stepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
-        bs->insertStep(0, new LinkMotionBuildStep(bs));
-        qDebug() << "2";
-
+        LinkMotionBuildStep* buildStep = new LinkMotionBuildStep(bs);
+        if (!bs->contains(buildStep->id())) {
+            bs->insertStep(0, buildStep);
+        }
         return conf;
     }
-
-    qDebug() << "1";
 
     delete conf;
     return 0;

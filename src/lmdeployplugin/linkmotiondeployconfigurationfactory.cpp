@@ -70,18 +70,9 @@ ProjectExplorer::DeployConfiguration* LinkMotionDeployConfigurationFactory::crea
     conf->setDefaultDisplayName(parent->activeBuildConfiguration()->displayName());
     conf->setDisplayName(parent->activeBuildConfiguration()->displayName());
 
-
-    qDebug() << "INSERTING deploy step";
     ProjectExplorer::BuildStepList *bs = conf->stepList();
 
-    qDebug() << "adding new step" << bs;
-    if (!bs) {
-
-        qDebug() << "count is" << bs->count();
-    }
-
     bs->insertStep(0, new LinkMotionDeployStep(bs));
-    qDebug() << "added";
     return conf;
 
 }
@@ -89,7 +80,7 @@ ProjectExplorer::DeployConfiguration* LinkMotionDeployConfigurationFactory::crea
 // used to recreate the runConfigurations when restoring settings
 bool LinkMotionDeployConfigurationFactory::canRestore(ProjectExplorer::Target *parent, const QVariantMap &map) const {
     qDebug() << Q_FUNC_INFO;
-    return ProjectExplorer::idFromMap(map) == Constants::LINKMOTION_DC_ID;;
+    return ProjectExplorer::idFromMap(map) == Constants::LINKMOTION_DC_ID;
 }
 
 ProjectExplorer::DeployConfiguration* LinkMotionDeployConfigurationFactory::restore(ProjectExplorer::Target *parent, const QVariantMap &map) {
@@ -101,13 +92,13 @@ ProjectExplorer::DeployConfiguration* LinkMotionDeployConfigurationFactory::rest
     LinkMotionDeployConfiguration *conf = new LinkMotionDeployConfiguration(parent);
     if (conf->fromMap(map)) {
         ProjectExplorer::BuildStepList *bs = conf->stepList();
-        bs->insertStep(0, new LinkMotionDeployStep(bs));
-        qDebug() << "2";
 
+        LinkMotionDeployStep* deployStep = new LinkMotionDeployStep(bs);
+        if (!bs->contains(deployStep->id())) {
+            bs->insertStep(0, deployStep);
+        }
         return conf;
     }
-
-    qDebug() << "1";
 
     delete conf;
     return 0;

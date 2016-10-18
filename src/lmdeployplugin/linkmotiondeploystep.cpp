@@ -260,6 +260,11 @@ void LinkMotionDeployStep::run(QFutureInterface<bool> &fi)
 {
     qDebug() << Q_FUNC_INFO;
     LinkMotionBuildConfiguration *bc = qobject_cast<LinkMotionBuildConfiguration*>(buildConfiguration());
+    LinkMotionDeployConfiguration *dc = qobject_cast<LinkMotionDeployConfiguration*>(deployConfiguration());
+    if (!dc) {
+        qDebug() << "missing deploy config 1";
+        dc = (LinkMotionDeployConfiguration*)target()->activeDeployConfiguration();
+    }
 
     if (!bc) {
         qDebug() << "missing build config 1";
@@ -286,14 +291,12 @@ void LinkMotionDeployStep::run(QFutureInterface<bool> &fi)
     ProjectExplorer::ProcessParameters *pp = processParameters();
     Utils::Environment env = bc->environment();
 
-    env.set(QStringLiteral("LINKMOTION_DEVICE"),bc->m_device);
-    env.set(QStringLiteral("LINKMOTION_USERNAME"),bc->m_username);
-    env.set(QStringLiteral("LINKMOTION_PASSWORD"),bc->m_password);
+    env.set(QStringLiteral("LINKMOTION_DEVICE"),dc->m_device);
+    env.set(QStringLiteral("LINKMOTION_USERNAME"),dc->m_username);
+    env.set(QStringLiteral("LINKMOTION_PASSWORD"),dc->m_password);
 
     pp->setEnvironment(env);
     pp->setWorkingDirectory(QDir(bc->buildDirectory().toString()).dirName());
-    // TODO: find all generated rpm files.
-    //       those should be parsed from the output when buildplugin is creating the rpm packages.
     QString arch = env.value(QStringLiteral("LINKMOTION_DEVICE"));
     if (arch.isEmpty())
         arch = QStringLiteral("intel");

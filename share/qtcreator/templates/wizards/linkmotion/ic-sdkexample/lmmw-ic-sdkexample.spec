@@ -3,12 +3,12 @@ Name:       %ProjectName%
 # >> macros
 # << macros
 
-Summary:    LinkMotion IVI example
+Summary:    LinkMotion Cluster example
 Version:    1.0.0
 Release:    1%{?dist}
 Group:      User Interface/Desktops
 License:    Proprietary
-URL:        https://lm-cgit.nomovok.info/cgit.cgi/lmmw-ivi-sdkexample
+URL:        https://lm-cgit.nomovok.info/cgit.cgi/lmmw-ic-sdkexample
 Source0:    %{name}-%{version}.tar.bz2
 
 BuildRequires:  pkgconfig(Qt5Core)
@@ -22,15 +22,15 @@ BuildRequires:  pkgconfig(Qt5Concurrent)
 BuildRequires:  qt5-qtdeclarative-import-qtquick2plugin
 
 %description
-LinkMotion IVI example application
+LinkMotion Cluster example application
 
-%package %ProjectName%-app
+%package %ProjectName%-ic-app
 Group:      User Interface/Desktops
 Requires:   %{name}
-Summary:    LinkMotion IVI example application
+Summary:    LinkMotion cluster example application
 
-%description %ProjectName%-app
-LinkMotion IVI example application
+%description %ProjectName%-ic-app
+LinkMotion Cluster example application
 
 %prep
 %setup -q -n %{name}-%{version}

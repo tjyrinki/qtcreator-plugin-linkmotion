@@ -36,31 +36,14 @@ LinkMotionBuildSettingsWidget::LinkMotionBuildSettingsWidget(LinkMotionBuildConf
     connect(m_password,SIGNAL(textChanged(QString)),SLOT(onPasswordChanged(QString)));
     connect(m_device,SIGNAL(textChanged(QString)),SLOT(onDeviceChanged(QString)));
 
-    //TODO: Add
-    // Linkmotion username
-    // linkmotion password
-    // linkmotion device
-    // and then those will be set to environment on build step.
-
-   // m_pathChooser = new Utils::PathChooser(this);
-   /* if (m_buildConfiguration) {
-    m_pathChooser->setPath(m_buildConfiguration->rawBuildDirectory().toString());
-    }*/
-    //fl->addRow(tr("LM Build directory:"), m_pathChooser);
     fl->addRow(tr("LINKMOTION_USERNAME"), m_username);
     fl->addRow(tr("LINKMOTION_PASSWORD"), m_password);
     fl->addRow(tr("LINKMOTION_DEVICE"), m_device);
-
-    //connect(m_pathChooser->lineEdit(),SIGNAL(editingFinished()),this,SLOT(onBuilddirChanged()));
-    //connect(m_buildConfiguration,SIGNAL(buildDirectoryChanged()),this,SLOT(updateBuildDirectory()));
 }
 
 void LinkMotionBuildSettingsWidget::updateBuildDirectory() const
 {
     qDebug() << Q_FUNC_INFO;
-   /* m_pathChooser->blockSignals(true);
-    m_pathChooser->setPath(m_buildConfiguration->rawBuildDirectory().toString());
-    m_pathChooser->blockSignals(false);*/
 }
 
 void LinkMotionBuildSettingsWidget::onUsernameChanged(QString username) {
