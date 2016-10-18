@@ -10,23 +10,23 @@
 ####################################################################
 
 include(../linkmotion-qtc-plugin.pri)
-QT += qml
+QT += qml quickwidgets
 
 HEADERS += \
-    linkmotionwelcomepage.h \
     linkmotionwelcomeglobal.h \
     linkmotionwelcomeplugin.h \
-    linkmotionwelcomeplugin_constants.h
+    linkmotionwelcomeplugin_constants.h \
+    linkmotionwelcomemode.h
 
 SOURCES += \
-    linkmotionwelcomepage.cpp \
-    linkmotionwelcomeplugin.cpp
+    linkmotionwelcomeplugin.cpp \
+    linkmotionwelcomemode.cpp
 
 DISTFILES += \
     lmwelcomeplugin_dependencies.pri \
-    LMWelcome.json.in \
     qml/welcome.qml \
-    qml/LM_logo_boxed_2.png
+    qml/LM_logo_boxed_2.png \
+    lmwelcomeplugin.json.in
 
 RESOURCES += \
     resources.qrc

@@ -14,6 +14,6 @@ SUBDIRS += lmbuildplugin \
            lmdeployplugin \
            lmdeviceplugin \
            lmprojectplugin \
-           #lmwelcomeplugin \
+           lmwelcomeplugin \
            lmwizardplugin \
            lmrunplugin

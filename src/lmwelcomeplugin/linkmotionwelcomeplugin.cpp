@@ -12,32 +12,41 @@
 #include "linkmotionwelcomeplugin.h"
 
 #include <QtGui>
-#include "linkmotionwelcomepage.h"
+#include <QDebug>
+#include "linkmotionwelcomemode.h"
+
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
 
 WelcomePlugin::WelcomePlugin()
 {
+    qDebug() << Q_FUNC_INFO;
 
 }
 
 WelcomePlugin::~WelcomePlugin()
 {
-
+    qDebug() << Q_FUNC_INFO;
+    if (m_linkMotionWelcomeMode) m_linkMotionWelcomeMode->deleteLater();
 }
 
 bool WelcomePlugin::initialize(const QStringList &arguments, QString *errorString)
 {
+    qDebug() << Q_FUNC_INFO;
+
     Q_UNUSED(arguments)
     Q_UNUSED(errorString)
 
-    QFont  defaultFont = QGuiApplication::font();
-    defaultFont.setFamily(QStringLiteral("Arial"));
-    defaultFont.setWeight(QFont::Light);
-    QGuiApplication::setFont(defaultFont);
+    m_linkMotionWelcomeMode = new LinkMotionWelcomeMode();
 
-    addAutoReleasedObject(new LinkMotionWelcomePage);
+    addAutoReleasedObject(m_linkMotionWelcomeMode);
 
     return true;
+}
+
+
+void WelcomePlugin::extensionsInitialized() {
+    qDebug() << Q_FUNC_INFO;
+    Core::ModeManager::activateMode(m_linkMotionWelcomeMode->id());
 }

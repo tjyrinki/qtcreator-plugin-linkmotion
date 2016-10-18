@@ -12,10 +12,8 @@
 import QtQuick 2.4
 
 Rectangle {
-    anchors.fill: parent
+    visible: true
     color: "#414c59"
-
-    property int maximumWidth : 900
 
     Image {
         anchors.centerIn: parent

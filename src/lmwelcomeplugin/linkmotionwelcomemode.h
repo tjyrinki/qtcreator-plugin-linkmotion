@@ -9,32 +9,32 @@
 # (C) 2016 Link Motion Oy
 ####################################################################*/
 
-#ifndef LINKMOTIONWELCOMEPAGE_H
-#define LINKMOTIONWELCOMEPAGE_H
+#ifndef LINKMOTIONWELCOMEMODE_H
+#define LINKMOTIONWELCOMEMODE_H
 
-#include <coreplugin/iwelcomepage.h>
+#include <coreplugin/imode.h>
 #include <QObject>
+#include <QtQuickWidgets/QQuickWidget>
 
 namespace LinkMotion {
 namespace Internal {
 
-class LinkMotionWelcomePage : public Core::IWelcomePage
+class LinkMotionWelcomeMode : public Core::IMode
 {
     Q_OBJECT
-
 public:
-    // IWelcomePage interface
-    virtual QUrl pageLocation() const;
-    virtual QString title() const;
-    virtual int priority() const;
-    virtual void facilitateQml(QQmlEngine *engine);
-    virtual Core::Id id() const;
+    LinkMotionWelcomeMode();
+    ~LinkMotionWelcomeMode();
 
-public slots:
+protected slots:
+    void onSceneGraphError(QQuickWindow::SceneGraphError,QString);
 
+protected:
+    QWidget* m_rootWidget;
+    QQuickWidget* m_quickWidget;
 };
 
 }
 }
 
-#endif // LINKMOTIONWELCOMEPAGE_H
+#endif // LINKMOTIONWELCOMEMODE_H

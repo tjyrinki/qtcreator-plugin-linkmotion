@@ -14,6 +14,8 @@
 
 #include <QtCore>
 #include <extensionsystem/iplugin.h>
+#include "linkmotionwelcomemode.h"
+#include <coreplugin/modemanager.h>
 #include "linkmotionwelcomeglobal.h"
 
 namespace LinkMotion {
@@ -22,14 +24,17 @@ namespace Internal {
 class LINKMOTIONWELCOMESHARED_EXPORT WelcomePlugin: public ExtensionSystem::IPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QtCreatorPlugin" FILE "LMWelcome.json")
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QtCreatorPlugin" FILE "lmwelcomeplugin.json")
 
 public:
     WelcomePlugin();
     ~WelcomePlugin();
 
     virtual bool initialize(const QStringList &arguments, QString *errorString) override;
-    virtual void extensionsInitialized() override {}
+    virtual void extensionsInitialized() override;
+
+protected:
+    LinkMotionWelcomeMode* m_linkMotionWelcomeMode;
 };
 }
 }

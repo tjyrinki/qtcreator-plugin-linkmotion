@@ -1,5 +1,5 @@
 {
-    \"Name\" : \"LMWelcome\",
+    \"Name\" : \"lmwelcomeplugin\",
     \"Version\" : \"$$QTCREATOR_VERSION\",
     \"CompatVersion\" : \"$$QTCREATOR_COMPAT_VERSION\",
     \"Vendor\" : \"LinkMotion Oy\",
