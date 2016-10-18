@@ -105,36 +105,38 @@ Rectangle {
                 }
             }
 
-            ScrollView {
-                width: 400
-                height: 500
-                ListView {
-                    model: projectList
-                    delegate: Item {
-                        height: 50
-                        width: 400
-
-                        Column {
-                            id: col2
+            Column {
+                ScrollView {
+                    width: 400
+                    height: 500
+                    ListView {
+                        model: projectList
+                        delegate: Item {
+                            height: 50
                             width: 400
-                            Text {
-                                text: displayName
-                                color: "white"
-                                font.pixelSize: 18
-                                font.family: "Nexa Light"
-                            }
-                            Text {
-                                text: prettyFilePath
-                                color: "white"
-                                font.pixelSize: 10
-                                font.family: "Nexa Light"
-                            }
-                        }
 
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                welcomeArea.loadProject(filePath);
+                            Column {
+                                id: col2
+                                width: 400
+                                Text {
+                                    text: displayName
+                                    color: "white"
+                                    font.pixelSize: 18
+                                    font.family: "Nexa Light"
+                                }
+                                Text {
+                                    text: prettyFilePath
+                                    color: "white"
+                                    font.pixelSize: 10
+                                    font.family: "Nexa Light"
+                                }
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    welcomeArea.loadProject(filePath);
+                                }
                             }
                         }
                     }

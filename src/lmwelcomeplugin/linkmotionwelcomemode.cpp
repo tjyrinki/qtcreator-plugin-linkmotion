@@ -45,7 +45,7 @@ LinkMotionWelcomeMode::LinkMotionWelcomeMode() {
     QStringList importPaths = m_quickWidget->engine()->importPathList();
     const QString resourcePath = Utils::FileUtils::normalizePathName(Core::ICore::resourcePath());
     importPaths << resourcePath + QLatin1String("/welcomescreen/");
-    qDebug() << importPaths;
+
     m_quickWidget->engine()->setImportPathList(importPaths);
     QQmlContext *ctx = m_quickWidget->engine()->rootContext();
     ctx->setContextProperty(QLatin1String("sessionList"), m_sessionModel);
