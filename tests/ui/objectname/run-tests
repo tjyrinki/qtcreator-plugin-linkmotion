@@ -1,0 +1,17 @@
+#!/bin/bash
+killall qttasserver
+
+qttasserver &
+QTTAS_PID=$!
+
+APPS="../../../src/app/%ProjectName%"
+
+echo ${QML2_IMPORT_PATH}
+for APP in ${APPS}; do
+  echo "Running tests.."
+    ./test-objectNames.rb ${APP}
+  echo "done"
+done
+
+kill -s 9 ${QTTAS_PID}
+

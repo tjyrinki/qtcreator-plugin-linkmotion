@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wizard version="1" kind="project" firstpage="10" id="A_LinkMotionICApplication" category="A.LinkMotionProject"
+        platformIndependent="true"
+        class="linkmotion-project"
+        featuresRequired="">
+    <icon>../share/linkmotion.png</icon>
+    <description>This wizard will create an IC application based on the LinkMotion UI Toolkit.</description>
+    <displayname>LinkMotion Cluster Application</displayname>
+    <displaycategory>LinkMotion</displaycategory>
+    <files>
+        <file source="src/src.pro" openeditor="false"/>
+        <file source="src/modules/Clock/qmldir" openeditor="false"/>
+        <file source="src/modules/Clock/clock_plugin.h" openeditor="false"/>
+        <file source="src/modules/Clock/Clock.pro" openeditor="false"/>
+        <file source="src/modules/Clock/plugins.qmltypes" openeditor="false"/>
+        <file source="src/modules/Clock/clocklabel.cpp" openeditor="false"/>
+        <file source="src/modules/Clock/clocklabel.h" openeditor="false"/>
+        <file source="src/modules/Clock/clock_plugin.cpp" openeditor="false"/>
+        <file source="src/modules/Components/qmldir" openeditor="false"/>
+        <file source="src/modules/Components/qml.qrc" openeditor="false"/>
+        <file source="src/modules/Components/components_plugin.cpp" openeditor="false"/>
+        <file source="src/modules/Components/NotificationBar.qml" openeditor="false"/>
+        <file source="src/modules/Components/plugins.qmltypes" openeditor="false"/>
+        <file source="src/modules/Components/components_plugin.h" openeditor="false"/>
+        <file source="src/modules/Components/Components.pro" openeditor="false"/>
+        <file source="src/modules/modules.pro" openeditor="false"/>
+        <file source="src/app/qml.qrc" openeditor="false"/>
+        <file source="src/app/app.pro" openeditor="false"/>
+        <file source="src/app/pages/PageCluster.qml" openeditor="false"/>
+        <file source="src/app/assets/images/icons/icon_comfort_active.svg" openeditor="false"/>
+        <file source="src/app/assets/images/icons/icon_enjoy_active.svg" openeditor="false"/>
+        <file source="src/app/assets/images/icons/icon_comfort_inactive.svg" openeditor="false"/>
+        <file source="src/app/assets/images/icons/icon_notification_inactive.svg" openeditor="false"/>
+        <file source="src/app/assets/images/icons/icon_notification_active.svg" openeditor="false"/>
+        <file source="src/app/assets/images/icons/icon_enjoy_inactive.svg" openeditor="false"/>
+        <file source="src/app/assets/images/images.qrc" openeditor="false"/>
+        <file source="src/app/main.qml" openeditor="true"/>
+        <file source="src/app/main.cpp" openeditor="false"/>
+        <file source=".gitignore" openeditor="false"/>
+        <file source="lmmw-ic-sdkexample.spec" target="%ProjectName%.spec" openeditor="false"/>
+        <file source="tests/tests.pro" openeditor="false"/>
+        <file source="tests/ui/objectname/test-objectNames.rb" openeditor="false"/>
+        <file source="tests/ui/objectname/run-tests" openeditor="false"/>
+        <file source="tests/ui/objectname/test-objectNames.lst" openeditor="false"/>
+        <file source="tests/ui/objectname/objectname.pro" openeditor="false"/>
+        <file source="tests/ui/ui.pro" openeditor="false"/>
+        <file source="tests/api/run" openeditor="false"/>
+        <file source="tests/api/api.pro" openeditor="false"/>
+        <file source="tests/api/clock/clock.pro" openeditor="false"/>
+        <file source="tests/api/clock/tst_clocklabel.qml" openeditor="false"/>
+        <file source="tests/api/clock/tst_clock.cpp" openeditor="false"/>
+        <file source="tests/api/components/tst_notificationbar.qml" openeditor="false"/>
+        <file source="tests/api/components/tst_components.cpp" openeditor="false"/>
+        <file source="tests/api/components/components.pro" openeditor="false"/>
+        <file source="lmmw-ic-sdkexample.pro" target="%ProjectName%.pro" openproject="true" />
+    </files>
+</wizard>

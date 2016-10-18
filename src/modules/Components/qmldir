@@ -1,0 +1,3 @@
+module Components
+plugin components
+NotificationBar 1.0 qrc:/NotificationBar.qml
