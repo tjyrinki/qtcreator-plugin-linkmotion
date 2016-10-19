@@ -1,6 +1,6 @@
 ####################################################################
 #
-# This file is part of the LinkMotion VM plugin.
+# This file is part of the LinkMotion API plugin.
 #
 # License: Proprietary
 # Author: Juhapekka Piiroinen <juhapekka.piiroinen@link-motion.com>
@@ -12,4 +12,4 @@
 include(../linkmotion-qtc-plugin.pri)
 
 DISTFILES += \
-    lmvmplugin_dependencies.pri
+    lmapiplugin_dependencies.pri

@@ -14,6 +14,7 @@
 
 #include "linkmotionruncontrol.h"
 #include "linkmotionrunconfiguration.h"
+#include "linkmotiondebugruncontrol.h"
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
@@ -28,7 +29,7 @@ LinkMotionRunControlFactory::LinkMotionRunControlFactory(QObject *parent)
 bool LinkMotionRunControlFactory::canRun(ProjectExplorer::RunConfiguration *runConfiguration, Core::Id mode) const
 {
     qDebug() << Q_FUNC_INFO;
-    if (mode != ProjectExplorer::Constants::NORMAL_RUN_MODE) {
+    if (mode != ProjectExplorer::Constants::DEBUG_RUN_MODE && mode != ProjectExplorer::Constants::DEBUG_RUN_MODE_WITH_BREAK_ON_MAIN && mode != ProjectExplorer::Constants::NORMAL_RUN_MODE) {
         return false;
     }
     return qobject_cast<LinkMotionRunConfiguration *>(runConfiguration);
@@ -41,8 +42,19 @@ ProjectExplorer::RunControl *LinkMotionRunControlFactory::create(ProjectExplorer
     Q_ASSERT(canRun(runConfig, mode));
     LinkMotionRunConfiguration *rc = qobject_cast<LinkMotionRunConfiguration *>(runConfig);
     Q_ASSERT(rc);
-    if (mode == ProjectExplorer::Constants::NORMAL_RUN_MODE)
+    if (mode == ProjectExplorer::Constants::NORMAL_RUN_MODE) {
         return new LinkMotionRunControl(rc);
+    } else if (mode == ProjectExplorer::Constants::DEBUG_RUN_MODE || mode == ProjectExplorer::Constants::DEBUG_RUN_MODE_WITH_BREAK_ON_MAIN) {
+        QString errorMessage;
+        ProjectExplorer::RunControl* retval = LinkMotionDebugRunControl::create(rc, &errorMessage);
+        if (!errorMessage.isEmpty()) {
+            qWarning() << Q_FUNC_INFO << errorMessage;
+        }
+        return retval;
+
+    } else {
+        qWarning() << Q_FUNC_INFO << "UNHANDLED mode detected";
+    }
 
     QTC_CHECK(false);
     return 0;
