@@ -1,3 +1,13 @@
+/*####################################################################
+#
+# This file is part of the LinkMotion Device plugin.
+#
+# License: Proprietary
+# Author: Juhapekka Piiroinen <juhapekka.piiroinen@link-motion.com>
+#
+# All rights reserved.
+# (C) 2016 Link Motion Oy
+####################################################################*/
 #include "linkmotiondevicefactory.h"
 
 #include "linkmotiondeviceplugin_constants.h"

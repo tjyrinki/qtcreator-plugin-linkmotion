@@ -1,6 +1,6 @@
 /*####################################################################
 #
-# This file is part of the LinkMotion Build plugin.
+# This file is part of the LinkMotion Device plugin.
 #
 # License: Proprietary
 # Author: Juhapekka Piiroinen <juhapekka.piiroinen@link-motion.com>
@@ -37,11 +37,5 @@ bool LinkMotionDevicePlugin::initialize(const QStringList &arguments, QString *e
 
     addAutoReleasedObject(new LinkMotionDeviceFactory);
     Internal::LinkMotionConfiguration::initialize();
-
-
-/*
-    addAutoReleasedObject(new LinkMotionDeployConfigurationFactory);
-    addAutoReleasedObject(new LinkMotionDeployStepFactory);
-*/
     return true;
 }

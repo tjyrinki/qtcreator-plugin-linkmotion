@@ -1,3 +1,13 @@
+/*####################################################################
+#
+# This file is part of the LinkMotion Wizard plugin.
+#
+# License: Proprietary
+# Author: Juhapekka Piiroinen <juhapekka.piiroinen@link-motion.com>
+#
+# All rights reserved.
+# (C) 2016 Link Motion Oy
+####################################################################*/
 #include "linkmotionwizardplugin.h"
 
 #include "linkmotionprojectwizardfactory.h"
@@ -25,8 +35,6 @@ bool LinkMotionWizardPlugin::initialize(const QStringList &arguments, QString *e
     Q_UNUSED(errorString)
 
     addAutoReleasedObject(new LinkMotionProjectWizardFactory(QStringLiteral("linkmotion-project"), Core::IWizardFactory::ProjectWizard));
-    /*
-    addAutoReleasedObject(new LinkMotionDeployStepFactory);
-*/
+
     return true;
 }

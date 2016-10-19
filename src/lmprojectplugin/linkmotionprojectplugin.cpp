@@ -1,3 +1,13 @@
+/*####################################################################
+#
+# This file is part of the LinkMotion Project plugin.
+#
+# License: Proprietary
+# Author: Juhapekka Piiroinen <juhapekka.piiroinen@link-motion.com>
+#
+# All rights reserved.
+# (C) 2016 Link Motion Oy
+####################################################################*/
 #include "linkmotionprojectplugin.h"
 
 #include "linkmotionprojectplugin_constants.h"
@@ -28,9 +38,5 @@ bool LinkMotionProjectPlugin::initialize(const QStringList &arguments, QString *
 
     addAutoReleasedObject(new LinkMotionProjectManager);
 
-/*
-    addAutoReleasedObject(new LinkMotionDeployConfigurationFactory);
-    addAutoReleasedObject(new LinkMotionDeployStepFactory);
-*/
     return true;
 }

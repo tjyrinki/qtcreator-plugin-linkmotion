@@ -1,3 +1,13 @@
+/*####################################################################
+#
+# This file is part of the LinkMotion Welcome plugin.
+#
+# License: Proprietary
+# Author: Juhapekka Piiroinen <juhapekka.piiroinen@link-motion.com>
+#
+# All rights reserved.
+# (C) 2016 Link Motion Oy
+####################################################################*/
 #ifndef LINKMOTIONWELCOMEMODELS_H
 #define LINKMOTIONWELCOMEMODELS_H
 

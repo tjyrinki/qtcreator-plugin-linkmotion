@@ -41,7 +41,6 @@ void LinkMotionBuildConfiguration::ctor() {
     m_device = env.value(QStringLiteral("LINKMOTION_DEVICE"),QStringLiteral("intel"));
     if (!this->stepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD)) {
         qDebug() << "WARNING" << "BUILD STEPS ARE NULL";
-        //m_stepLists.append(new ProjectExplorer::BuildStepList(this,ProjectExplorer::Constants::BUILDSTEPS_BUILD));
     }
 }
 

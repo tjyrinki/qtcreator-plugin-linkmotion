@@ -1,3 +1,13 @@
+/*####################################################################
+#
+# This file is part of the LinkMotion Deploy plugin.
+#
+# License: Proprietary
+# Author: Juhapekka Piiroinen <juhapekka.piiroinen@link-motion.com>
+#
+# All rights reserved.
+# (C) 2016 Link Motion Oy
+####################################################################*/
 #include "linkmotiondeploystepfactory.h"
 
 #include <utils/qtcassert.h>
@@ -23,8 +33,6 @@ QList<Core::Id> LinkMotionDeployStepFactory::availableCreationIds(ProjectExplore
 {
     if (parent->id() != ProjectExplorer::Constants::BUILDSTEPS_DEPLOY)
         return QList<Core::Id>();
-   /*if (!IosManager::supportsIos(parent->target()))
-        return QList<Core::Id>();*/
     if (parent->contains(LinkMotionDeployStep::Id))
         return QList<Core::Id>();
     return QList<Core::Id>() << LinkMotionDeployStep::Id;

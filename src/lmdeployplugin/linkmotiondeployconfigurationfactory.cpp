@@ -1,6 +1,6 @@
 /*####################################################################
 #
-# This file is part of the LinkMotion Build plugin.
+# This file is part of the LinkMotion Deploy plugin.
 #
 # License: Proprietary
 # Author: Juhapekka Piiroinen <juhapekka.piiroinen@link-motion.com>

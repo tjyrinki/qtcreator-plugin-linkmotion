@@ -1,3 +1,13 @@
+/*####################################################################
+#
+# This file is part of the LinkMotion Welcome plugin.
+#
+# License: Proprietary
+# Author: Juhapekka Piiroinen <juhapekka.piiroinen@link-motion.com>
+#
+# All rights reserved.
+# (C) 2016 Link Motion Oy
+####################################################################*/
 #include "linkmotionwelcomemodels.h"
 
 #include <QQmlContext>
@@ -109,6 +119,7 @@ int ProjectModel::rowCount(const QModelIndex &) const
 {
     return ProjectExplorerPlugin::recentProjects().count();
 }
+
 
 QVariant ProjectModel::data(const QModelIndex &index, int role) const
 {
