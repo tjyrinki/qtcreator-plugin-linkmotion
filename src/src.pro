@@ -18,7 +18,7 @@ SUBDIRS += lmbuildplugin \
            lmwizardplugin \
            lmrunplugin \
            #lmdebugplugin \
-           lmanalyzeplugin \
+           #lmanalyzeplugin \
            lmvmplugin \
            lmkitplugin \
            lmapiplugin

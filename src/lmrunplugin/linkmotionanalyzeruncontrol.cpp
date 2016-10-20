@@ -40,7 +40,7 @@ ProjectExplorer::RunControl* LinkMotionAnalyzeRunControl::create(LinkMotionRunCo
     ProjectExplorer::Target *target = runConfig->target();
     Analyzer::AnalyzerStartParameters params;
     params.runMode = runMode;
-    params.displayName = runConfig->target()->project()->displayName();
+    params.displayName = QStringLiteral("LinkMotion QML Analyzer (%0)").arg(runConfig->target()->project()->displayName());
     params.workingDirectory = target->project()->projectDirectory().toString();
     if (runMode == ProjectExplorer::Constants::QML_PROFILER_RUN_MODE) {
          params.analyzerHost = QStringLiteral("127.0.0.1");

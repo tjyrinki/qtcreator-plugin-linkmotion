@@ -36,9 +36,9 @@ LinkMotionDeploySettingsWidget::LinkMotionDeploySettingsWidget(LinkMotionDeployC
     connect(m_password,SIGNAL(textChanged(QString)),SLOT(onPasswordChanged(QString)));
     connect(m_device,SIGNAL(textChanged(QString)),SLOT(onDeviceChanged(QString)));
 
-    fl->addRow(tr("LINKMOTION_USERNAME"), m_username);
-    fl->addRow(tr("LINKMOTION_PASSWORD"), m_password);
-    fl->addRow(tr("LINKMOTION_DEVICE"), m_device);
+    fl->addRow(tr("Username"), m_username);
+    fl->addRow(tr("Password"), m_password);
+    fl->addRow(tr("Device"), m_device);
 
 }
 

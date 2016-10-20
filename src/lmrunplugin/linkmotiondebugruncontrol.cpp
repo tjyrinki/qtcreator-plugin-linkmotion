@@ -44,7 +44,7 @@ ProjectExplorer::RunControl* LinkMotionDebugRunControl::create(ProjectExplorer::
     qDebug() << Q_FUNC_INFO;
     Debugger::DebuggerStartParameters params;
     params.startMode = Debugger::AttachToRemoteServer;
-    params.displayName = tr("LinkMotion Remote Debugger");
+    params.displayName = QStringLiteral("LinkMotion Debugger (%0)").arg(runConfig->target()->project()->displayName());
     params.remoteSetupNeeded = true;
 
     Debugger::DebuggerRunConfigurationAspect* aspect = runConfig->extraAspect<Debugger::DebuggerRunConfigurationAspect>();

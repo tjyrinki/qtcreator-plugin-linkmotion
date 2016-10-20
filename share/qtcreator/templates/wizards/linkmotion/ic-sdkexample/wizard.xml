@@ -5,7 +5,7 @@
         featuresRequired="">
     <icon>../share/linkmotion.png</icon>
     <description>This wizard will create an IC application based on the LinkMotion UI Toolkit.</description>
-    <displayname>LinkMotion Cluster Application</displayname>
+    <displayname>Cluster Application</displayname>
     <displaycategory>LinkMotion</displaycategory>
     <files>
         <file source="src/src.pro" openeditor="false"/>

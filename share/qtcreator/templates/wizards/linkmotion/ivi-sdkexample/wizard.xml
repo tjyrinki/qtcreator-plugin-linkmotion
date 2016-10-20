@@ -5,7 +5,7 @@
         featuresRequired="">
     <icon>../share/linkmotion.png</icon>
     <description>This wizard will create an IVI application based on the LinkMotion UI Toolkit.</description>
-    <displayname>LinkMotion IVI Application</displayname>
+    <displayname>IVI Application</displayname>
     <displaycategory>LinkMotion</displaycategory>
     <files>
         <file source="src/src.pro" openeditor="false"/>

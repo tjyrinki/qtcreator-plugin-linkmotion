@@ -41,7 +41,7 @@ LinkMotion IVI example application
 %build
 # >> build pre
 # << build pre
-qmake -r
+qmake -r CONFIG+=declarative_debug CONFIG+=qml_debug CONFIG+=force_debug_info
 make
 
 %install
