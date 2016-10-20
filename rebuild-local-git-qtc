@@ -1,7 +1,12 @@
 #!/bin/bash
-set -e
+#set -e
 
 rm ${HOME}/.local/share/data/QtProject/qtcreator/plugins/3.5.1/*
+set -e
+
+pushd ${HOME}/git/qtcreator
+ make
+popd
 QTC_SOURCE=${HOME}/git/qtcreator ~/Qt5.5.1/5.5/gcc_64/bin/qmake -r CONFIG+=BUILDTOHOME
 make
 set +e

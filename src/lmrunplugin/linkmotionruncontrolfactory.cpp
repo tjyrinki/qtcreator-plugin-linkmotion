@@ -15,6 +15,7 @@
 #include "linkmotionruncontrol.h"
 #include "linkmotionrunconfiguration.h"
 #include "linkmotiondebugruncontrol.h"
+#include "linkmotionanalyzeruncontrol.h"
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
@@ -29,7 +30,10 @@ LinkMotionRunControlFactory::LinkMotionRunControlFactory(QObject *parent)
 bool LinkMotionRunControlFactory::canRun(ProjectExplorer::RunConfiguration *runConfiguration, Core::Id mode) const
 {
     qDebug() << Q_FUNC_INFO;
-    if (mode != ProjectExplorer::Constants::DEBUG_RUN_MODE && mode != ProjectExplorer::Constants::DEBUG_RUN_MODE_WITH_BREAK_ON_MAIN && mode != ProjectExplorer::Constants::NORMAL_RUN_MODE) {
+    if (mode != ProjectExplorer::Constants::DEBUG_RUN_MODE &&
+            mode != ProjectExplorer::Constants::DEBUG_RUN_MODE_WITH_BREAK_ON_MAIN &&
+            mode != ProjectExplorer::Constants::NORMAL_RUN_MODE &&
+            mode != ProjectExplorer::Constants::QML_PROFILER_RUN_MODE) {
         return false;
     }
     return qobject_cast<LinkMotionRunConfiguration *>(runConfiguration);
@@ -51,7 +55,8 @@ ProjectExplorer::RunControl *LinkMotionRunControlFactory::create(ProjectExplorer
             qWarning() << Q_FUNC_INFO << errorMessage;
         }
         return retval;
-
+    } else if (mode == ProjectExplorer::Constants::QML_PROFILER_RUN_MODE) {
+        return LinkMotionAnalyzeRunControl::create(rc, mode);
     } else {
         qWarning() << Q_FUNC_INFO << "UNHANDLED mode detected";
     }

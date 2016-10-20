@@ -24,6 +24,7 @@ protected slots:
 
     int getProcessPid();
     int getPort();
+    int getQmlPort();
     void detectGdbServer();
 
     void start();
@@ -38,6 +39,7 @@ private:
     QString m_appName;
     int m_pid;
     int m_gdbPort;
+    int m_qmlPort;
 };
 
 }

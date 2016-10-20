@@ -1,27 +1,28 @@
-#include "linkmotiondebugruncontrol.h"
-
-#include <debugger/debuggerstartparameters.h>
-#include <debugger/debuggerruncontrol.h>
-#include <debugger/debuggerrunconfigurationaspect.h>
-#include <projectexplorer/project.h>
+#include "linkmotionanalyzeruncontrol.h"
 #include <projectexplorer/target.h>
 
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 
+#include <projectexplorer/project.h>
+#include <projectexplorer/target.h>
+
+#include <analyzerbase/ianalyzertool.h>
+#include <analyzerbase/analyzermanager.h>
+#include <analyzerbase/analyzerruncontrol.h>
+#include <analyzerbase/analyzerstartparameters.h>
+
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
 
-LinkMotionDebugRunControl::LinkMotionDebugRunControl(ProjectExplorer::RunConfiguration *runConfig,
-                                                     Debugger::DebuggerRunControl *runControl)
-                                                     : QObject(runControl),
-                                                       m_runControl(runControl)
+
+LinkMotionAnalyzeRunControl::LinkMotionAnalyzeRunControl(LinkMotionRunConfiguration *runConfig, Analyzer::AnalyzerRunControl *runControl)
+    : QObject(runControl)
 {
     qDebug() << Q_FUNC_INFO;
     m_projectName = runConfig->target()->project()->displayName();
     m_appName = m_projectName;
-    m_pid = -1;
-    m_gdbPort = -1;
+    m_runControl = runControl;
     m_qmlPort = -1;
     qDebug() << Q_FUNC_INFO << m_projectName << m_appName;
 
@@ -29,82 +30,70 @@ LinkMotionDebugRunControl::LinkMotionDebugRunControl(ProjectExplorer::RunConfigu
     connect(&m_process,SIGNAL(readyReadStandardOutput()),this,SLOT(onStdOut()));
     connect(&m_process,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(onFinished(int, QProcess::ExitStatus)));
 
-    Debugger::DebuggerRunConfigurationAspect *aspect = runConfig->extraAspect<Debugger::DebuggerRunConfigurationAspect>();
-
-    if (!aspect->useCppDebugger() && !aspect->useQmlDebugger()) {
-        qWarning() << Q_FUNC_INFO << "Debugger not enabled for C++ or for QML";
-        return;
-    }
-
     connect(m_runControl,SIGNAL(finished()),&m_process,SLOT(terminate()));
-    connect(m_runControl,SIGNAL(requestRemoteSetup()),this,SLOT(start()));
+    connect(m_runControl,SIGNAL(starting(const Analyzer::AnalyzerRunControl *)),this,SLOT(start()));
+
 }
 
-ProjectExplorer::RunControl* LinkMotionDebugRunControl::create(ProjectExplorer::RunConfiguration *runConfig, QString *errorMessage) {
+ProjectExplorer::RunControl* LinkMotionAnalyzeRunControl::create(LinkMotionRunConfiguration *runConfig, Core::Id runMode) {
     qDebug() << Q_FUNC_INFO;
-    Debugger::DebuggerStartParameters params;
-    params.startMode = Debugger::AttachToRemoteServer;
-    params.displayName = tr("LinkMotion Remote Debugger");
-    params.remoteSetupNeeded = true;
-
-    Debugger::DebuggerRunConfigurationAspect* aspect = runConfig->extraAspect<Debugger::DebuggerRunConfigurationAspect>();
-    if (aspect->useQmlDebugger()) {
-
-    } else if (aspect->useCppDebugger()) {
-
+    ProjectExplorer::Target *target = runConfig->target();
+    Analyzer::AnalyzerStartParameters params;
+    params.runMode = runMode;
+    params.displayName = runConfig->target()->project()->displayName();
+    params.workingDirectory = target->project()->projectDirectory().toString();
+    if (runMode == ProjectExplorer::Constants::QML_PROFILER_RUN_MODE) {
+         params.analyzerHost = QStringLiteral("127.0.0.1");
     }
 
-    Debugger::DebuggerRunControl* const debuggerRunControl = Debugger::createDebuggerRunControl(params, runConfig, errorMessage);
-    new LinkMotionDebugRunControl(runConfig, debuggerRunControl);
-    return debuggerRunControl;
+    Analyzer::AnalyzerRunControl* runControl = Analyzer::AnalyzerManager::createRunControl(params, runConfig);
+    (void) new LinkMotionAnalyzeRunControl(runConfig, runControl);
+    return runControl;
 }
 
-void LinkMotionDebugRunControl::start() {
+
+void LinkMotionAnalyzeRunControl::start() {
     qDebug() << Q_FUNC_INFO;
     m_stdout.clear();
-    QString gdbServer = QStringLiteral("vmsdk-shell /root/tila/gdb-7.12/gdb/gdbserver/gdbserver --multi :25555 /altdata/apps/%0/bin/%1 -platform eglfs -qmljsdebugger=port:3768,block").arg(m_projectName).arg(m_appName);
+    QString gdbServer = QStringLiteral("vmsdk-shell /altdata/apps/%0/bin/%1 -platform eglfs -qmljsdebugger=port:3768,block").arg(m_projectName).arg(m_appName);
     m_process.start(gdbServer);
     m_process.waitForStarted();
 }
 
-void LinkMotionDebugRunControl::onFinished(int code, QProcess::ExitStatus status) {
+void LinkMotionAnalyzeRunControl::onFinished(int code, QProcess::ExitStatus status) {
     qDebug() << Q_FUNC_INFO << code << status;
-    QMetaObject::invokeMethod(m_runControl, "notifyInferiorExited", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(m_runControl, "notifyRemoteFinished", Qt::QueuedConnection);
 
 }
 
-void LinkMotionDebugRunControl::detectGdbServer() {
+void LinkMotionAnalyzeRunControl::detectGdbServer() {
     qDebug() << Q_FUNC_INFO;
-    m_pid = getProcessPid();
-    m_gdbPort = getPort();
-    m_qmlPort = 3768;//getQmlPort();
+//    m_pid = getProcessPid();
+//    m_gdbPort = getPort();
+    m_qmlPort = getQmlPort();
 
-    if (m_pid == -1 || m_gdbPort == -1 || m_qmlPort == -1)  {
+    if ( m_qmlPort == -1)  {
         return;
     }
 
-    Debugger::RemoteSetupResult result;
-    result.success = true;
-    result.gdbServerPort = m_gdbPort;
-    result.qmlServerPort = m_qmlPort;
-    m_runControl->notifyEngineRemoteSetupFinished(result);
-   // m_runControl->notifyEngineRemoteServerRunning(QStringLiteral(":%0").arg(m_gdbPort).toLatin1(), m_pid);
-    qDebug() << Q_FUNC_INFO << "Notified that server is running";
+    m_runControl->notifyRemoteSetupDone(m_qmlPort);
+    qDebug() << Q_FUNC_INFO << "Notified that analyzer server is running";
 
 }
 
-void LinkMotionDebugRunControl::onStdErr() {
+
+void LinkMotionAnalyzeRunControl::onStdErr() {
     qDebug() << Q_FUNC_INFO;
     QByteArray lineData = m_process.readAllStandardError();
     m_stdout.append(lineData);
     qDebug() << lineData;
-    if (m_pid == -1 || m_gdbPort == -1 || m_qmlPort == -1) {
+    if ( m_qmlPort == -1) {
         detectGdbServer();
     }
  //   ProjectExplorer::RunControl::appendMessage(QString::fromLatin1(m_process.readAllStandardError()), Utils::ErrorMessageFormat);
 }
 
-void LinkMotionDebugRunControl::onStdOut() {
+void LinkMotionAnalyzeRunControl::onStdOut() {
     qDebug() << Q_FUNC_INFO;
     QByteArray lineData = m_process.readAllStandardOutput();
     m_stdout.append(lineData);
@@ -117,7 +106,8 @@ void LinkMotionDebugRunControl::onStdOut() {
  * Process /altdata/apps/untitled186/bin/untitled186 created; pid = 7597
 Listening on port 25555
 */
-int LinkMotionDebugRunControl::getProcessPid() {
+int LinkMotionAnalyzeRunControl::getProcessPid() {
+    qDebug() << Q_FUNC_INFO;
     QRegularExpression pidExp(QLatin1String("^Process /altdata/apps/([a-zA-Z_0-9.]*?)/bin/([a-zA-Z_0-9.]*?) created; pid = ([0-9]*?)$"));
 
     int pidNumber = -1;
@@ -139,7 +129,8 @@ int LinkMotionDebugRunControl::getProcessPid() {
     return pidNumber;
 }
 
-int LinkMotionDebugRunControl::getPort() {
+int LinkMotionAnalyzeRunControl::getPort() {
+    qDebug() << Q_FUNC_INFO;
     QRegularExpression portExp(QStringLiteral("^Listening on port ([0-9]*?)$"));
 
     int portNumber = -1;
@@ -159,7 +150,8 @@ int LinkMotionDebugRunControl::getPort() {
     return portNumber;
 }
 
-int LinkMotionDebugRunControl::getQmlPort() {
+int LinkMotionAnalyzeRunControl::getQmlPort() {
+    qDebug() << Q_FUNC_INFO;
     // QML Debugger: Waiting for connection on port 3768...
     QRegularExpression portExp(QStringLiteral("^QML Debugger: Waiting for connection on port ([0-9]*?)...$"));
 

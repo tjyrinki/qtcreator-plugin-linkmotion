@@ -4,4 +4,5 @@ QTC_PLUGIN_DEPENDS += \
     coreplugin \
     qtsupport \
     qmakeprojectmanager \
-    debugger
+    debugger \
+    analyzerbase
