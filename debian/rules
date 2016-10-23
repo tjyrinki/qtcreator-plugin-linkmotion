@@ -7,6 +7,10 @@ export CFLAGS := $(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags -
 export CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
 export LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS) -Wl,--as-needed
 export QT_SELECT := qt5
+export QTC_BUILD := $(CURDIR)/debian/tmp/opt/linkmotion/qtcreator
+export QTC_SOURCE := /opt/linkmotion/src/qtcreator
+export QTC_INSTALL := /opt/linkmotion/qtcreator
+export QTC_PREFIX := /opt/linkmotion/qtcreator
 
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
@@ -18,19 +22,19 @@ DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 override_dh_auto_configure:
 	mkdir -p builddir/linkmotion
 	cp -af [c-z]* [A-Z]* builddir/linkmotion/
-	cd builddir/linkmotion && dh_auto_configure -- IDE_LIBRARY_BASENAME=lib/$(DEB_HOST_MULTIARCH) -r
+	cd builddir/linkmotion && dh_auto_configure -- IDE_LIBRARY_BASENAME=lib -r 
  
 override_dh_auto_build:
-	cd builddir/linkmotion && make
+	cd builddir/linkmotion && make -j3
 
-override_dh_auto_test:
-	cd builddir/linkmotion && LD_LIBRARY_PATH=/usr/lib/$(DEB_HOST_MULTIARCH)/qtcreator:/usr/lib/$(DEB_HOST_MULTIARCH)/qtcreator/plugins/QtProject make check
+#override_dh_auto_test:
+#	cd builddir/linkmotion && LD_LIBRARY_PATH=/opt/linkmotion/qtcreator/lib/qtcreator:/opt/linkmotion/qtcreator/lib/qtcreator/plugins/QtProject make check
 
 override_dh_auto_install:
-	mkdir -p $(CURDIR)/debian/tmp/usr/bin
+	mkdir -p $(CURDIR)/debian/tmp/usr/bin $(CURDIR)/debian/tmp/opt/linkmotion/qtcreator/share
 	ln -sf /usr/bin/qtcreator debian/tmp/usr/bin/linkmotion-sdk
-	cp -ra $(CURDIR)/builddir/linkmotion/share/ $(CURDIR)/debian/tmp/usr
-	cd builddir/linkmotion/ && dh_auto_install --destdir=../../debian/tmp/usr
+	cp -ra $(CURDIR)/builddir/linkmotion/share/ $(CURDIR)/debian/tmp/opt/linkmotion/qtcreator/share
+	cd builddir/linkmotion/ && dh_auto_install --destdir=../../debian/tmp/
 
 override_dh_shlibdeps:
-	dh_shlibdeps -l/usr/lib/$(DEB_HOST_MULTIARCH)/qtcreator:/usr/lib/$(DEB_HOST_MULTIARCH)/qtcreator/plugins/QtProject
+	dh_shlibdeps -l/opt/linkmotion/qtcreator/lib/qtcreator:/opt/linkmotion/qtcreator/lib/qtcreator/plugins/QtProject

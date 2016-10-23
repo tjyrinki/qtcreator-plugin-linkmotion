@@ -4,13 +4,13 @@
 rm ${HOME}/.local/share/data/QtProject/qtcreator/plugins/3.5.1/*
 set -e
 
-pushd ${HOME}/git/qtcreator
- make
-popd
-QTC_SOURCE=${HOME}/git/qtcreator ~/Qt5.5.1/5.5/gcc_64/bin/qmake -r CONFIG+=BUILDTOHOME
+#pushd ${HOME}/git/qtcreator
+# make
+#popd
+QTC_SOURCE=/opt/linkmotion/src/qtcreator/ ~/Qt5.5.1/5.5/gcc_64/bin/qmake -r CONFIG+=BUILDTOHOME
 make
 set +e
 sudo rm -r ${HOME}/git/qtcreator/share/qtcreator/templates/wizards/linkmotion
 set -e
-sudo cp -r share/* ${HOME}/git/qtcreator/share
-gdb ../qtcreator/bin/qtcreator
+sudo cp -r share/* /opt/linkmotion/qtcreator/share
+gdb /opt/linkmotion/qtcreator/bin/qtcreator
