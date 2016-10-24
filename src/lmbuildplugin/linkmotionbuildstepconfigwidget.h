@@ -25,7 +25,8 @@ class LinkMotionBuildStepConfigWidget : public ProjectExplorer::BuildStepConfigW
 
 public:
     LinkMotionBuildStepConfigWidget(ProjectExplorer::BuildStep* step);
-    virtual QString summaryText() const { return QStringLiteral("Build inside VM image."); }
+    virtual QString summaryText() const { return QStringLiteral("Build inside VM image"); }
+    virtual QString additionalSummaryText() const { return QStringLiteral("Build current project for target"); }
     virtual QString displayName() const { return QStringLiteral("Build"); }
 
 protected:

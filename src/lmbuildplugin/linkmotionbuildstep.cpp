@@ -281,7 +281,7 @@ ProjectExplorer::BuildStepConfigWidget *LinkMotionBuildStep::createConfigWidget(
 bool LinkMotionBuildStep::immutable() const
 {
     qDebug() << Q_FUNC_INFO;
-    return false;
+    return true;
 }
 
 void LinkMotionBuildStep::setBaseArguments(const QStringList &args)

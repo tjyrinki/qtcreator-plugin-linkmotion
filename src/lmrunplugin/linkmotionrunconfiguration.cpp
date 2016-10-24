@@ -32,7 +32,7 @@ LinkMotionRunConfiguration::LinkMotionRunConfiguration(ProjectExplorer::Target *
 QWidget *LinkMotionRunConfiguration::createConfigurationWidget()
 {
     qDebug() << Q_FUNC_INFO;
-    return 0;// no special running configurations
+    return new QWidget();// no special running configurations
 }
 
 Utils::OutputFormatter *LinkMotionRunConfiguration::createOutputFormatter() const

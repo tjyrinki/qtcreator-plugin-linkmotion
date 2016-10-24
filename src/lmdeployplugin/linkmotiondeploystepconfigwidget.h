@@ -25,7 +25,8 @@ class LinkMotionDeployStepConfigWidget : public ProjectExplorer::BuildStepConfig
 
 public:
     LinkMotionDeployStepConfigWidget(ProjectExplorer::BuildStep* step);
-    virtual QString summaryText() const { return QStringLiteral("Deploy to VM image."); }
+    virtual QString summaryText() const { return QStringLiteral("Deploy to VM image"); }
+    virtual QString additionalSummaryText() const { return QStringLiteral("Deploy previously built package into target"); }
     virtual QString displayName() const { return QStringLiteral("Deploy"); }
 
 protected:

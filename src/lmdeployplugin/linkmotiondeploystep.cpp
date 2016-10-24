@@ -317,14 +317,16 @@ void LinkMotionDeployStep::run(QFutureInterface<bool> &fi)
 
 ProjectExplorer::BuildStepConfigWidget *LinkMotionDeployStep::createConfigWidget()
 {
-    qDebug() << Q_FUNC_INFO;
-    return new LinkMotionDeployStepConfigWidget(this);
+    qDebug() << Q_FUNC_INFO << this;
+    ProjectExplorer::BuildStepConfigWidget* retval = new LinkMotionDeployStepConfigWidget(this);
+    qDebug() << Q_FUNC_INFO << retval->displayName();
+    return retval;
 }
 
 bool LinkMotionDeployStep::immutable() const
 {
     qDebug() << Q_FUNC_INFO;
-    return false;
+    return true;
 }
 
 void LinkMotionDeployStep::setBaseArguments(const QStringList &args)
