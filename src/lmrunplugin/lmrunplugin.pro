@@ -21,7 +21,8 @@ HEADERS += \
     linkmotionrunconfigurationfactory.h \
     linkmotiondebugruncontrol.h \
     linkmotionanalyzeruncontrol.h \
-    linkmotiondebugrunrunner.h
+    linkmotiondebugrunrunner.h \
+    linkmotionanalyzerunrunner.h
 
 SOURCES += \
     linkmotionrunplugin.cpp \
@@ -31,7 +32,8 @@ SOURCES += \
     linkmotionrunconfigurationfactory.cpp \
     linkmotiondebugruncontrol.cpp \
     linkmotionanalyzeruncontrol.cpp \
-    linkmotiondebugrunrunner.cpp
+    linkmotiondebugrunrunner.cpp \
+    linkmotionanalyzerunrunner.cpp
 
 DISTFILES += \
     lmrunplugin_dependencies.pri \

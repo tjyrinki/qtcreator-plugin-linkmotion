@@ -43,6 +43,7 @@ void LinkMotionDebugRunRunner::slotRunControl_RequestRemoteSetup() {
 
 void LinkMotionDebugRunRunner::slotRunControl_Finished() {
     qDebug() << Q_FUNC_INFO;
+    m_process.terminate();
 
 }
 
@@ -75,24 +76,26 @@ void LinkMotionDebugRunRunner::slotProcess_ReadyRead() {
 void LinkMotionDebugRunRunner::slotProcess_ReadyReadStandardError() {
     QByteArray data = m_process.readAllStandardError();
     qDebug() << Q_FUNC_INFO << data;
+    qDebug() << Q_FUNC_INFO << data;
 
-    if (data.contains(QByteArray("Can't bind address"))) {
-        m_runControl->appendMessage(QString::fromLatin1(data),Utils::ErrorMessageFormat);
-        Debugger::RemoteSetupResult result;
-        result.success = false;
-        result.reason = QString::fromLatin1(data);
-        m_runControl->notifyEngineRemoteSetupFinished(result);
-    }
-    if (data.contains(QByteArray("Listening on port "))) {
-        Debugger::RemoteSetupResult result;
-        result.gdbServerPort = Utils::Port(25555);
-       // result.inferiorPid = 123;
+    QStringList lines = QString::fromLatin1(data).split("\n");
 
-        result.qmlServerPort = Utils::Port(3768);
-        result.success = true;
-        m_runControl->notifyEngineRemoteSetupFinished(result);
+    foreach (QString line, lines) {
+        if (line.startsWith(QStringLiteral("Can't bind address"))) {
+            Debugger::RemoteSetupResult result;
+            result.success = false;
+            result.reason = line;
+            m_runControl->notifyEngineRemoteSetupFinished(result);
+        } else if (line.startsWith(QStringLiteral("Listening on port "))) {
+            Debugger::RemoteSetupResult result;
+            result.gdbServerPort = Utils::Port(25555);
+            result.qmlServerPort = Utils::Port(3768);
+            result.success = true;
+            m_runControl->notifyEngineRemoteSetupFinished(result);
+        }
+        m_runControl->appendMessage(line,Utils::ErrorMessageFormat);
+        m_runControl->appendMessage(QString::fromLatin1("\n"),Utils::ErrorMessageFormat);
     }
-    m_runControl->appendMessage(QString::fromLatin1(data),Utils::ErrorMessageFormat);
 
 }
 

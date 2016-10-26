@@ -32,8 +32,8 @@ ProjectExplorer::RunControl* LinkMotionDebugRunControl::create(ProjectExplorer::
     QString sourcePath = runConfig->target()->project()->projectDirectory().toString();
 
     // add source path to map in order to resolve the disassembler data into source code
+    // FIXME: there is fixed package version to 1.0.0.
     params.sourcePathMap.insert(QStringLiteral("/usr/src/debug/%0-1.0.0").arg(appName),sourcePath);
-    qDebug() << "FAA" << params.sourcePathMap;
 
     ProjectExplorer::IDevice::ConstPtr dev = ProjectExplorer::DeviceKitInformation::device(runConfig->target()->kit());
     if (!dev) {
@@ -45,7 +45,7 @@ ProjectExplorer::RunControl* LinkMotionDebugRunControl::create(ProjectExplorer::
 
     if (aspect->useQmlDebugger()) {
         params.qmlServer.host = dev->sshParameters().host;
-        params.qmlServer.port = Utils::Port(); // port is selected later on
+        params.qmlServer.port = Utils::Port();
     }
     if (aspect->useCppDebugger()) {
         aspect->setUseMultiProcess(true);
