@@ -38,6 +38,7 @@ protected slots:
     void onStdOut();
     void onStdErr();
     void onFinished(int, QProcess::ExitStatus);
+    void onError(QProcess::ProcessError err);
 
 private:
     QProcess m_process;

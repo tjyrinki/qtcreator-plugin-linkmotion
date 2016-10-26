@@ -41,13 +41,12 @@ LinkMotionDeployConfigurationFactory::~LinkMotionDeployConfigurationFactory()
     qDebug() << Q_FUNC_INFO;
 }
 
-// used to show the list of possible additons to a target, returns a list of types
+
 QList<Core::Id> LinkMotionDeployConfigurationFactory::availableCreationIds(ProjectExplorer::Target *parent) const {
     qDebug() << Q_FUNC_INFO;
     return QList<Core::Id>() << Constants::LINKMOTION_DC_ID;
 }
 
-// used to translate the types to names to display to the user
 QString LinkMotionDeployConfigurationFactory::displayNameForId(Core::Id id) const {
     qDebug() << Q_FUNC_INFO;
     if (id == Constants::LINKMOTION_DC_ID) {
@@ -77,7 +76,6 @@ ProjectExplorer::DeployConfiguration* LinkMotionDeployConfigurationFactory::crea
 
 }
 
-// used to recreate the runConfigurations when restoring settings
 bool LinkMotionDeployConfigurationFactory::canRestore(ProjectExplorer::Target *parent, const QVariantMap &map) const {
     qDebug() << Q_FUNC_INFO;
     return ProjectExplorer::idFromMap(map) == Constants::LINKMOTION_DC_ID;

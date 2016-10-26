@@ -118,7 +118,7 @@ LinkMotionDeployStep::~LinkMotionDeployStep()
     disconnect(this,SIGNAL(finished()),this,SLOT(onFinished()));
 }
 
-bool LinkMotionDeployStep::init()
+bool LinkMotionDeployStep::init(QList<const BuildStep *> &earlierSteps)
 {
     qDebug() << Q_FUNC_INFO << buildConfiguration() << target()->activeBuildConfiguration();
     LinkMotionDeployConfiguration *dc = qobject_cast<LinkMotionDeployConfiguration*>(deployConfiguration());
@@ -164,6 +164,8 @@ bool LinkMotionDeployStep::init()
     env.set(QStringLiteral("LINKMOTION_DEVICE"),dc->m_device);
     env.set(QStringLiteral("LINKMOTION_USERNAME"),dc->m_username);
     env.set(QStringLiteral("LINKMOTION_PASSWORD"),dc->m_password);
+    env.prependOrSetPath("/opt/linkmotion/sdk/vm");
+    env.prependOrSetPath("/opt/linkmotion/sdk/hw");
 
     pp->setEnvironment(env);
     pp->setMacroExpander(dc->macroExpander());
@@ -190,7 +192,7 @@ bool LinkMotionDeployStep::init()
     outputParser()->setWorkingDirectory(pp->effectiveWorkingDirectory());
 
     qDebug() << "init almost done";
-    return AbstractProcessStep::init();
+    return AbstractProcessStep::init(earlierSteps);
 }
 
 void LinkMotionDeployStep::setClean(bool clean)
@@ -237,12 +239,12 @@ QStringList LinkMotionDeployStep::defaultArguments() const
 {
     qDebug() << Q_FUNC_INFO;
     QStringList res;
-    ProjectExplorer::Kit *kit = target()->kit();
+   /* ProjectExplorer::Kit *kit = target()->kit();
     ProjectExplorer::ToolChain *tc = ProjectExplorer::ToolChainKitInformation::toolChain(kit);
     if (tc->type() == QLatin1String("gcc") || tc->type() == QLatin1String("clang")) {
       //  GccToolChain *gtc = static_cast<GccToolChain *>(tc);
         //res << gtc->platformCodeGenFlags();
-    }
+    }*/
     //if (!SysRootKitInformation::sysRoot(kit).isEmpty())
     //    res << QLatin1String("-sdk") << SysRootKitInformation::sysRoot(kit).toString();
     //res << QLatin1String("SYMROOT=") + LINKMOTIONManager::resDirForTarget(target());
@@ -294,6 +296,8 @@ void LinkMotionDeployStep::run(QFutureInterface<bool> &fi)
     env.set(QStringLiteral("LINKMOTION_DEVICE"),dc->m_device);
     env.set(QStringLiteral("LINKMOTION_USERNAME"),dc->m_username);
     env.set(QStringLiteral("LINKMOTION_PASSWORD"),dc->m_password);
+    env.prependOrSetPath("/opt/linkmotion/sdk/vm");
+    env.prependOrSetPath("/opt/linkmotion/sdk/hw");
 
     pp->setEnvironment(env);
     pp->setWorkingDirectory(QDir(bc->buildDirectory().toString()).dirName());

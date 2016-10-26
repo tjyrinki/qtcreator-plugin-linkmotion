@@ -29,20 +29,21 @@ LinkMotionRunControlFactory::LinkMotionRunControlFactory(QObject *parent)
 
 bool LinkMotionRunControlFactory::canRun(ProjectExplorer::RunConfiguration *runConfiguration, Core::Id mode) const
 {
-    qDebug() << Q_FUNC_INFO;
+    qDebug() << Q_FUNC_INFO << mode;
     if (mode != ProjectExplorer::Constants::DEBUG_RUN_MODE &&
             mode != ProjectExplorer::Constants::DEBUG_RUN_MODE_WITH_BREAK_ON_MAIN &&
             mode != ProjectExplorer::Constants::NORMAL_RUN_MODE &&
             mode != ProjectExplorer::Constants::QML_PROFILER_RUN_MODE) {
         return false;
     }
+    qDebug() << Q_FUNC_INFO << "yes";
     return qobject_cast<LinkMotionRunConfiguration *>(runConfiguration);
 }
 
 ProjectExplorer::RunControl *LinkMotionRunControlFactory::create(ProjectExplorer::RunConfiguration *runConfig,
                                         Core::Id mode, QString *errorMessage)
 {
-    qDebug() << Q_FUNC_INFO;
+    qDebug() << Q_FUNC_INFO << mode;
     Q_ASSERT(canRun(runConfig, mode));
     LinkMotionRunConfiguration *rc = qobject_cast<LinkMotionRunConfiguration *>(runConfig);
     Q_ASSERT(rc);

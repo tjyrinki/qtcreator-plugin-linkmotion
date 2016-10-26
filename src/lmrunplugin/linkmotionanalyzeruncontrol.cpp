@@ -7,23 +7,28 @@
 #include <projectexplorer/project.h>
 #include <projectexplorer/target.h>
 
-#include <analyzerbase/ianalyzertool.h>
-#include <analyzerbase/analyzermanager.h>
-#include <analyzerbase/analyzerruncontrol.h>
-#include <analyzerbase/analyzerstartparameters.h>
+#include <utils/environment.h>
+
+#include <debugger/analyzer/analyzerstartparameters.h>
+#include <debugger/analyzer/analyzerruncontrol.h>
+#include <debugger/analyzer/analyzermanager.h>
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
 
-
-LinkMotionAnalyzeRunControl::LinkMotionAnalyzeRunControl(LinkMotionRunConfiguration *runConfig, Analyzer::AnalyzerRunControl *runControl)
+LinkMotionAnalyzeRunControl::LinkMotionAnalyzeRunControl(LinkMotionRunConfiguration *runConfig, Debugger::AnalyzerRunControl *runControl)
     : QObject(runControl)
 {
     qDebug() << Q_FUNC_INFO;
-    m_projectName = runConfig->target()->project()->displayName();
+    ProjectExplorer::Target *target = runConfig->target();
+    m_projectName = target->project()->displayName();
+
+    m_workingDirectory = target->project()->projectDirectory().toString();
+
     m_appName = m_projectName;
     m_runControl = runControl;
     m_qmlPort = -1;
+    m_process.setWorkingDirectory(m_workingDirectory);
     qDebug() << Q_FUNC_INFO << m_projectName << m_appName;
 
     connect(&m_process,SIGNAL(readyReadStandardError()),this,SLOT(onStdErr()));
@@ -37,17 +42,18 @@ LinkMotionAnalyzeRunControl::LinkMotionAnalyzeRunControl(LinkMotionRunConfigurat
 
 ProjectExplorer::RunControl* LinkMotionAnalyzeRunControl::create(LinkMotionRunConfiguration *runConfig, Core::Id runMode) {
     qDebug() << Q_FUNC_INFO;
-    ProjectExplorer::Target *target = runConfig->target();
-    Analyzer::AnalyzerStartParameters params;
-    params.runMode = runMode;
-    params.displayName = QStringLiteral("LinkMotion QML Analyzer (%0)").arg(runConfig->target()->project()->displayName());
-    params.workingDirectory = target->project()->projectDirectory().toString();
+
+    Debugger::AnalyzerConnection params;
+//    params.analyzerPort
+
     if (runMode == ProjectExplorer::Constants::QML_PROFILER_RUN_MODE) {
          params.analyzerHost = QStringLiteral("127.0.0.1");
     }
 
-    Analyzer::AnalyzerRunControl* runControl = Analyzer::AnalyzerManager::createRunControl(params, runConfig);
-    (void) new LinkMotionAnalyzeRunControl(runConfig, runControl);
+    Debugger::AnalyzerRunControl* runControl = Debugger::createAnalyzerRunControl(runConfig, runMode);
+
+    LinkMotionAnalyzeRunControl* lmAnalyzeRunControl = new LinkMotionAnalyzeRunControl(runConfig, runControl);
+    runControl->setDisplayName(QStringLiteral("LinkMotion QML Analyzer (%0)").arg(lmAnalyzeRunControl->m_projectName));
     return runControl;
 }
 
@@ -56,6 +62,10 @@ void LinkMotionAnalyzeRunControl::start() {
     qDebug() << Q_FUNC_INFO;
     m_stdout.clear();
     QString gdbServer = QStringLiteral("vmsdk-shell /altdata/apps/%0/bin/%1 -platform eglfs -qmljsdebugger=port:3768,block").arg(m_projectName).arg(m_appName);
+    Utils::Environment env = Utils::Environment::systemEnvironment();
+    env.prependOrSetPath("/opt/linkmotion/sdk/vm");
+    env.prependOrSetPath("/opt/linkmotion/sdk/hw");
+    m_process.setEnvironment(env.toStringList());
     m_process.start(gdbServer);
     m_process.waitForStarted();
 }
@@ -76,7 +86,7 @@ void LinkMotionAnalyzeRunControl::detectGdbServer() {
         return;
     }
 
-    m_runControl->notifyRemoteSetupDone(m_qmlPort);
+    m_runControl->notifyRemoteSetupDone(Utils::Port(m_qmlPort));
     qDebug() << Q_FUNC_INFO << "Notified that analyzer server is running";
 
 }

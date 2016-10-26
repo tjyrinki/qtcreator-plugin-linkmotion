@@ -24,18 +24,17 @@ class LinkMotionDeployStepFactory : public ProjectExplorer::IBuildStepFactory
 public:
     explicit LinkMotionDeployStepFactory(QObject *parent = 0);
 
-    QList<Core::Id> availableCreationIds(ProjectExplorer::BuildStepList *parent) const override;
-    QString displayNameForId(Core::Id id) const override;
+    QList<ProjectExplorer::BuildStepInfo> availableSteps(ProjectExplorer::BuildStepList *parent) const override;
+    QString displayNameForId(Core::Id id) const;
 
     bool canCreate(ProjectExplorer::BuildStepList *parent,
-                   Core::Id id) const override;
+                   Core::Id id) const;
     ProjectExplorer::BuildStep *create(ProjectExplorer::BuildStepList *parent, Core::Id id) override;
 
-    bool canRestore(ProjectExplorer::BuildStepList *parent, const QVariantMap &map) const override;
+    bool canRestore(ProjectExplorer::BuildStepList *parent, const QVariantMap &map) const;
     ProjectExplorer::BuildStep *restore(ProjectExplorer::BuildStepList *parent, const QVariantMap &map) override;
 
-    bool canClone(ProjectExplorer::BuildStepList *parent,
-                  ProjectExplorer::BuildStep *step) const override;
+    bool canClone(ProjectExplorer::BuildStepList *parent, ProjectExplorer::BuildStep *step) const;
     ProjectExplorer::BuildStep *clone(ProjectExplorer::BuildStepList *parent,
                                       ProjectExplorer::BuildStep *step) override;
 };

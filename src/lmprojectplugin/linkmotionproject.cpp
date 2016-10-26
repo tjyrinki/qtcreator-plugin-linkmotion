@@ -15,6 +15,7 @@
 #include <coreplugin/icontext.h>
 #include <qtsupport/qtsupportconstants.h>
 #include <coreplugin/documentmanager.h>
+#include <coreplugin/featureprovider.h>
 #include <qtsupport/qtkitinformation.h>
 
 #include <QSettings>
@@ -26,7 +27,10 @@ LinkMotionProject::LinkMotionProject(LinkMotionProjectManager *manager, const QS
     qDebug() << Q_FUNC_INFO;
     setId(Constants::LINKMOTIONPROJECT_ID);
     setRequiredKitMatcher(LinkMotionKitMatcher());
-    setPreferredKitMatcher(QtSupport::QtKitInformation::qtVersionMatcher(Core::FeatureSet(QtSupport::Constants::FEATURE_DESKTOP)));
+
+    QSet<Core::Id> features;
+    features << QtSupport::Constants::FEATURE_DESKTOP;
+    setPreferredKitMatcher(QtSupport::QtKitInformation::qtVersionMatcher(features));
     setProjectContext(Core::Context(Constants::LINKMOTIONPROJECT_PROJECTCONTEXT));
 }
 

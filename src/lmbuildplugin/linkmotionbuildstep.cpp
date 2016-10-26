@@ -113,7 +113,7 @@ LinkMotionBuildStep::~LinkMotionBuildStep()
     disconnect(this,SIGNAL(finished()),this,SLOT(onFinished()));
 }
 
-bool LinkMotionBuildStep::init()
+bool LinkMotionBuildStep::init(QList<const BuildStep *> &earlierSteps)
 {
     qDebug() << Q_FUNC_INFO;
     LinkMotionBuildConfiguration *bc = qobject_cast<LinkMotionBuildConfiguration*>(buildConfiguration());
@@ -153,6 +153,8 @@ bool LinkMotionBuildStep::init()
     // Force output to english for the parsers. Do this here and not in the toolchain's
     // addToEnvironment() to not screw up the users run environment.
     env.set(QLatin1String("LC_ALL"), QLatin1String("C"));
+    env.prependOrSetPath("/opt/linkmotion/sdk/vm");
+    env.prependOrSetPath("/opt/linkmotion/sdk/hw");
     pp->setEnvironment(env);
     pp->setMacroExpander(bc->macroExpander());
     pp->setWorkingDirectory(QDir(bc->buildDirectory().toString()).dirName());
@@ -174,7 +176,7 @@ bool LinkMotionBuildStep::init()
     outputParser()->setWorkingDirectory(pp->effectiveWorkingDirectory());
 
     qDebug() << "init almost done";
-    return AbstractProcessStep::init();
+    return AbstractProcessStep::init(earlierSteps);
 }
 
 void LinkMotionBuildStep::setClean(bool clean)
@@ -222,7 +224,8 @@ QStringList LinkMotionBuildStep::defaultArguments() const
     qDebug() << Q_FUNC_INFO;
     QStringList res;
     ProjectExplorer::Kit *kit = target()->kit();
-    ProjectExplorer::ToolChain *tc = ProjectExplorer::ToolChainKitInformation::toolChain(kit);
+
+    ProjectExplorer::ToolChain *tc = ProjectExplorer::ToolChainKitInformation::toolChain(kit,ProjectExplorer::ToolChain::Language::Cxx);
     switch (target()->activeBuildConfiguration()->buildType()) {
     case ProjectExplorer::BuildConfiguration::Debug :
       //  res << QLatin1String("-configuration") << QLatin1String("debug");
@@ -236,14 +239,7 @@ QStringList LinkMotionBuildStep::defaultArguments() const
         qCWarning(LinkMotionLog) << "LinkMotionBuildStep had an unknown buildType "
                           << target()->activeBuildConfiguration()->buildType();
     }
-    if (tc->type() == QLatin1String("gcc") || tc->type() == QLatin1String("clang")) {
-      //  GccToolChain *gtc = static_cast<GccToolChain *>(tc);
-        //res << gtc->platformCodeGenFlags();
-    }
-    //if (!SysRootKitInformation::sysRoot(kit).isEmpty())
-    //    res << QLatin1String("-sdk") << SysRootKitInformation::sysRoot(kit).toString();
-    //res << QLatin1String("SYMROOT=") + LINKMOTIONManager::resDirForTarget(target());
-    //res << QStringLiteral("ui_center-plugin");
+
     return res;
 }
 
@@ -269,6 +265,7 @@ void LinkMotionBuildStep::run(QFutureInterface<bool> &fi)
     // addToEnvironment() to not screw up the users run environment.
     env.set(QLatin1String("LC_ALL"), QLatin1String("C"));
     pp->setEnvironment(env);
+    qDebug() << "Running tasks!";
     AbstractProcessStep::run(fi);
 }
 

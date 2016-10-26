@@ -29,13 +29,12 @@ LinkMotionDeployStepFactory::LinkMotionDeployStepFactory(QObject *parent)
 
 }
 
-QList<Core::Id> LinkMotionDeployStepFactory::availableCreationIds(ProjectExplorer::BuildStepList *parent) const
+QList<ProjectExplorer::BuildStepInfo> LinkMotionDeployStepFactory::availableSteps(ProjectExplorer::BuildStepList *parent) const
 {
-    if (parent->id() != ProjectExplorer::Constants::BUILDSTEPS_DEPLOY)
-        return QList<Core::Id>();
-    if (parent->contains(LinkMotionDeployStep::Id))
-        return QList<Core::Id>();
-    return QList<Core::Id>() << LinkMotionDeployStep::Id;
+    QList<ProjectExplorer::BuildStepInfo> retval;
+    if (parent->id() == ProjectExplorer::Constants::BUILDSTEPS_DEPLOY && !parent->contains(LinkMotionDeployStep::Id))
+        retval << ProjectExplorer::BuildStepInfo(LinkMotionDeployStep::Id,this->displayNameForId(LinkMotionDeployStep::Id));
+    return retval;
 }
 
 QString LinkMotionDeployStepFactory::displayNameForId(Core::Id id) const
@@ -47,7 +46,7 @@ QString LinkMotionDeployStepFactory::displayNameForId(Core::Id id) const
 
 bool LinkMotionDeployStepFactory::canCreate(ProjectExplorer::BuildStepList *parent, Core::Id id) const
 {
-    return availableCreationIds(parent).contains(id);
+    return true;
 }
 
 ProjectExplorer::BuildStep *LinkMotionDeployStepFactory::create(ProjectExplorer::BuildStepList *parent, Core::Id id)

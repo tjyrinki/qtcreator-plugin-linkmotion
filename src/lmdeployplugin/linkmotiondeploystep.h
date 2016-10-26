@@ -27,7 +27,7 @@ public:
     LinkMotionDeployStep(ProjectExplorer::BuildStepList *parent);
     ~LinkMotionDeployStep();
 
-    bool init() override;
+    bool init(QList<const BuildStep *> &earlierSteps) override;
     void run(QFutureInterface<bool> &fi) override;
 
     ProjectExplorer::BuildStepConfigWidget *createConfigWidget() override;

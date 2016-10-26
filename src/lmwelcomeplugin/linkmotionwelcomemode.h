@@ -40,16 +40,14 @@ public slots:
 
     void loadProject(QString projectUrl) {
         qDebug() << Q_FUNC_INFO;
-        QString error;
-        qDebug() << ProjectExplorer::ProjectExplorerPlugin::openProject(projectUrl, &error);
-        qDebug() << error;
+        ProjectExplorer::ProjectExplorerPlugin::openProject(projectUrl);
     }
 
     void newProject()
     {
         qDebug() << Q_FUNC_INFO;
-        Core::ICore::showNewItemDialog(tr("New Project"),
-                                       Core::IWizardFactory::wizardFactoriesOfKind(Core::IWizardFactory::ProjectWizard));
+      /*  Core::ICore::showNewItemDialog(tr("New Project"),
+                                       Core::IWizardFactory::wizardFactoriesOfKind(Core::IWizardFactory::ProjectWizard));*/
     }
 
     void openProject()

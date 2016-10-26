@@ -18,10 +18,12 @@ contains(CONFIG, BUILDTOHOME) {
 }
 
 QTCREATOR_INSTALL = $$(QTC_INSTALL)
-isEmpty(QTCREATOR_INSTALL):QTCREATOR_INSTALL=/opt/linkmotion/qtcreator
+#isEmpty(QTCREATOR_INSTALL):QTCREATOR_INSTALL=/opt/linkmotion/qtcreator
+isEmpty(QTCREATOR_INSTALL):QTCREATOR_INSTALL=$$(HOME)/git/qtopen
 
 QTCREATOR_SOURCES = $$(QTC_SOURCE)
-isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=/opt/linkmotion/src/qtcreator
+#isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=/opt/linkmotion/src/qtcreator
+isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=$$(HOME)/git/qtopen
 
 ## Where our plugin will be compiled to
 IDE_BUILD_TREE = $$(QTC_BUILD)

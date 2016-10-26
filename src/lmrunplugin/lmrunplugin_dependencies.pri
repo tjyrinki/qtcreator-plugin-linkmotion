@@ -5,4 +5,5 @@ QTC_PLUGIN_DEPENDS += \
     qtsupport \
     qmakeprojectmanager \
     debugger \
-    analyzerbase
+    qmlprofiler \
+    remotelinux

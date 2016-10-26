@@ -87,14 +87,16 @@ ProjectExplorer::BuildStep *LinkMotionBuildStepFactory::restore(ProjectExplorer:
     return 0;
 }
 
-QList<Core::Id> LinkMotionBuildStepFactory::availableCreationIds(ProjectExplorer::BuildStepList *parent) const
+QList<ProjectExplorer::BuildStepInfo> LinkMotionBuildStepFactory::availableSteps(ProjectExplorer::BuildStepList *parent) const
 {
+    QList<ProjectExplorer::BuildStepInfo> retval;
     ProjectExplorer::Kit *kit = parent->target()->kit();
     Core::Id deviceType = ProjectExplorer::DeviceTypeKitInformation::deviceTypeId(kit);
     if (deviceType == Constants::LINKMOTION_DEVICE_TYPE
             || deviceType == Constants::LINKMOTION_SIMULATOR_TYPE)
-        return QList<Core::Id>() << Core::Id(LINKMOTION_BUILD_STEP_ID);
-    return QList<Core::Id>();
+        retval << ProjectExplorer::BuildStepInfo(Core::Id(LINKMOTION_BUILD_STEP_ID),this->displayNameForId(Core::Id(LINKMOTION_BUILD_STEP_ID)));
+
+    return retval;
 }
 
 QString LinkMotionBuildStepFactory::displayNameForId(const Core::Id id) const

@@ -28,8 +28,8 @@ public:
 
     virtual bool save(QString *errorString, const QString &fileName = QString(), bool autoSave = false) override;
 
-    virtual QString defaultPath() const override;
-    virtual QString suggestedFileName() const override;
+    virtual QString defaultPath() const;
+    virtual QString suggestedFileName() const ;
 
     virtual bool isModified() const override;
     virtual bool isSaveAsAllowed() const override;

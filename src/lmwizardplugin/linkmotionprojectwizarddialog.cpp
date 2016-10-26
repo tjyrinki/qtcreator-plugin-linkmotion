@@ -32,9 +32,11 @@ LinkMotionProjectWizardDialog::LinkMotionProjectWizardDialog(const Core::BaseFil
 
 
     m_targetSetupPage = new ProjectExplorer::TargetSetupPage;
-    const QString platform = selectedPlatform();
-    Core::FeatureSet features = Core::FeatureSet(QtSupport::Constants::FEATURE_DESKTOP);
-    if (platform.isEmpty())
+    const Core::Id platform = selectedPlatform();
+    QSet<Core::Id> features;
+    features << QtSupport::Constants::FEATURE_DESKTOP;
+
+    if (platform.isValid())
         m_targetSetupPage->setPreferredKitMatcher(QtSupport::QtKitInformation::qtVersionMatcher(features));
     else
         m_targetSetupPage->setPreferredKitMatcher(QtSupport::QtKitInformation::platformMatcher(platform));

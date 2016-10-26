@@ -4,7 +4,7 @@
 #include <QObject>
 #include "linkmotionruncontrol.h"
 
-namespace Analyzer { class AnalyzerRunControl; }
+namespace Debugger { class AnalyzerRunControl; }
 
 namespace LinkMotion {
 namespace Internal {
@@ -14,7 +14,7 @@ class LinkMotionAnalyzeRunControl : public QObject
     Q_OBJECT
 
 public:
-    LinkMotionAnalyzeRunControl(LinkMotionRunConfiguration *runConfig, Analyzer::AnalyzerRunControl *runControl);
+    LinkMotionAnalyzeRunControl(LinkMotionRunConfiguration *runConfig, Debugger::AnalyzerRunControl *runControl);
     static ProjectExplorer::RunControl *create(LinkMotionRunConfiguration *runConfig, Core::Id runMode);
 
 protected slots:
@@ -32,11 +32,12 @@ protected slots:
 
 private:
 
-    Analyzer::AnalyzerRunControl *m_runControl;
+    Debugger::AnalyzerRunControl *m_runControl;
     QProcess m_process;
     QByteArray m_stdout;
     QString m_projectName;
     QString m_appName;
+    QString m_workingDirectory;
     int m_pid;
     int m_gdbPort;
     int m_qmlPort;
