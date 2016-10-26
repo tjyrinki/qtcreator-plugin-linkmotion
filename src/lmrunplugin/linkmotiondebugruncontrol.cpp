@@ -29,6 +29,12 @@ ProjectExplorer::RunControl* LinkMotionDebugRunControl::create(ProjectExplorer::
     params.remoteSetupNeeded = true;
     params.useContinueInsteadOfRun = true;
 
+    QString sourcePath = runConfig->target()->project()->projectDirectory().toString();
+
+    // add source path to map in order to resolve the disassembler data into source code
+    params.sourcePathMap.insert(QStringLiteral("/usr/src/debug/%0-1.0.0").arg(appName),sourcePath);
+    qDebug() << "FAA" << params.sourcePathMap;
+
     ProjectExplorer::IDevice::ConstPtr dev = ProjectExplorer::DeviceKitInformation::device(runConfig->target()->kit());
     if (!dev) {
         *errorMessage = tr("Cannot debug: Kit has no device.");
@@ -50,7 +56,7 @@ ProjectExplorer::RunControl* LinkMotionDebugRunControl::create(ProjectExplorer::
 
         qDebug() << params.inferior.commandLineArguments;
         params.remoteChannel = dev->sshParameters().host + QLatin1String(":-1");
-       // params.symbolFile = symbolFile;
+        params.symbolFile = params.inferior.executable;
     }
 
     Debugger::DebuggerRunControl* const debuggerRunControl = Debugger::createDebuggerRunControl(params, runConfig, errorMessage);

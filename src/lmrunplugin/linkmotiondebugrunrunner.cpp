@@ -2,6 +2,8 @@
 #include <debugger/debuggerstartparameters.h>
 #include <projectexplorer/target.h>
 #include <projectexplorer/project.h>
+#include <debugger/debuggercore.h>
+#include <debugger/debuggeractions.h>
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
@@ -32,6 +34,8 @@ void LinkMotionDebugRunRunner::slotRunControl_RequestRemoteSetup() {
     QString appName = m_runConfig->target()->project()->displayName();
 
     QString executable = QStringLiteral("/altdata/apps/%0/bin/%0").arg(appName);
+
+    // launch the debugger and our application
     m_process.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-shell"),QStringLiteral("gdbserver --once --multi :25555 %0 -platform eglfs -qmljsdebugger=port:3768,block,services:DebugMessages,QmlDebugger,V8Debugger,QmlInspector").arg(executable));
     m_process.start();
 
