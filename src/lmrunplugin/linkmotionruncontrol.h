@@ -12,7 +12,7 @@
 #define LINKMOTIONRUNCONTROL_H
 
 #include <QObject>
-#include <QProcess>
+#include <utils/qtcprocess.h>
 #include "linkmotionrunconfiguration.h"
 #include <projectexplorer/runconfiguration.h>
 
@@ -35,13 +35,19 @@ public:
 protected slots:
     void emulateStop() { stop(); }
 
-    void onStdOut();
-    void onStdErr();
-    void onFinished(int, QProcess::ExitStatus);
-    void onError(QProcess::ProcessError err);
+    void slotStart_StdOut();
+    void slotStart_StdErr();
+    void slotStart_Finished(int, QProcess::ExitStatus);
+    void slotStart_Error(QProcess::ProcessError err);
+
+    void slotStop_StdOut();
+    void slotStop_StdErr();
+    void slotStop_Finished(int, QProcess::ExitStatus);
+    void slotStop_Error(QProcess::ProcessError err);
 
 private:
-    QProcess m_process;
+    Utils::QtcProcess m_processStart;
+    Utils::QtcProcess m_processStop;
     bool m_running;
 };
 

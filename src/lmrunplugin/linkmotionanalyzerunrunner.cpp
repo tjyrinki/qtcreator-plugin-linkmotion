@@ -24,19 +24,22 @@ LinkMotionAnalyzeRunRunner::LinkMotionAnalyzeRunRunner(ProjectExplorer::RunConfi
     connect(m_runControl,SIGNAL(started()),this,SLOT(slotRunControl_Started()));
     connect(m_runControl,SIGNAL(starting()),this,SLOT(slotRunControl_Started()));
 
-    connect(&m_process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(slotProcess_Finished(int, QProcess::ExitStatus)));
-    connect(&m_process, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(slotProcess_StateChanged(QProcess::ProcessState)));
-    connect(&m_process, SIGNAL(readyRead()), this, SLOT(slotProcess_ReadyRead()));
-    connect(&m_process, SIGNAL(readyReadStandardError()), this, SLOT(slotProcess_ReadyReadStandardError()));
-    connect(&m_process, SIGNAL(readyReadStandardOutput()), this, SLOT(slotProcess_ReadyReadStandardOutput()));
+    connect(&m_processStart, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(slotStart_Finished(int, QProcess::ExitStatus)));
+    connect(&m_processStart, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(slotStart_StateChanged(QProcess::ProcessState)));
+    connect(&m_processStart, SIGNAL(readyRead()), this, SLOT(slotStart_ReadyRead()));
+    connect(&m_processStart, SIGNAL(readyReadStandardError()), this, SLOT(slotStart_ReadyReadStandardError()));
+    connect(&m_processStart, SIGNAL(readyReadStandardOutput()), this, SLOT(slotStart_ReadyReadStandardOutput()));
+
+    connect(&m_processStop, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(slotStop_Finished(int, QProcess::ExitStatus)));
+    connect(&m_processStop, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(slotStop_StateChanged(QProcess::ProcessState)));
+    connect(&m_processStop, SIGNAL(readyRead()), this, SLOT(slotStop_ReadyRead()));
+    connect(&m_processStop, SIGNAL(readyReadStandardError()), this, SLOT(slotStop_ReadyReadStandardError()));
+    connect(&m_processStop, SIGNAL(readyReadStandardOutput()), this, SLOT(slotStop_ReadyReadStandardOutput()));
 }
 
 void LinkMotionAnalyzeRunRunner::slotRunControl_Finished() {
     qDebug() << Q_FUNC_INFO;
-    m_process.terminate();
-    QString projectName =  m_runConfig->target()->project()->displayName();
-    m_process.startDetached(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-debug-stop %0").arg(projectName));
-    m_runControl->notifyRemoteFinished();
+    m_processStart.terminate();
 }
 
 void LinkMotionAnalyzeRunRunner::slotRunControl_Started() {
@@ -52,36 +55,47 @@ void LinkMotionAnalyzeRunRunner::slotRunControl_Started() {
     env.set(QStringLiteral("LINKMOTION_USERNAME"),QStringLiteral("linkmotion"));
     env.set(QStringLiteral("LINKMOTION_PASSWORD"),QStringLiteral("notset"));
 
-    m_process.setEnvironment(env);
+    m_processStart.setEnvironment(env);
 
     ProjectExplorer::TaskHub::clearTasks(LinkMotion::Constants::TASK_CATEGORY_ANALYZE);
 
     // launch the application for profiling
-    m_process.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-profile-start"),QStringLiteral("%0 %1").arg(appName).arg(3768));
-    m_process.start();
+    m_processStart.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-profile-start"),QStringLiteral("%0 %1").arg(appName).arg(3768));
+    m_processStart.start();
 }
 
 
-void LinkMotionAnalyzeRunRunner::slotProcess_Finished(int retval, QProcess::ExitStatus status) {
+void LinkMotionAnalyzeRunRunner::slotStart_Finished(int retval, QProcess::ExitStatus status) {
     qDebug() << Q_FUNC_INFO << retval << status;
-    m_process.terminate();
+    m_processStart.terminate();
     QString projectName =  m_runConfig->target()->project()->displayName();
-    m_process.startDetached(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-debug-stop %0").arg(projectName));
-    m_runControl->notifyRemoteFinished();
+    Utils::Environment env = Utils::Environment::systemEnvironment();
+    env.prependOrSetPath("/opt/linkmotion/sdk/vm");
+    env.prependOrSetPath("/opt/linkmotion/sdk/hw");
+
+    //FIXME
+    env.set(QStringLiteral("LINKMOTION_DEVICE"),QStringLiteral("intel"));
+    env.set(QStringLiteral("LINKMOTION_USERNAME"),QStringLiteral("linkmotion"));
+    env.set(QStringLiteral("LINKMOTION_PASSWORD"),QStringLiteral("notset"));
+
+    m_processStop.setEnvironment(env);
+
+    m_processStop.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-profile-stop"),projectName);
+    m_processStop.start();
 }
 
-void LinkMotionAnalyzeRunRunner::slotProcess_StateChanged(QProcess::ProcessState state) {
+void LinkMotionAnalyzeRunRunner::slotStart_StateChanged(QProcess::ProcessState state) {
     qDebug() << Q_FUNC_INFO << state;
 
 }
 
-void LinkMotionAnalyzeRunRunner::slotProcess_ReadyRead() {
+void LinkMotionAnalyzeRunRunner::slotStart_ReadyRead() {
     qDebug() << Q_FUNC_INFO;
 
 }
 
-void LinkMotionAnalyzeRunRunner::slotProcess_ReadyReadStandardError() {
-    QByteArray data = m_process.readAllStandardError();
+void LinkMotionAnalyzeRunRunner::slotStart_ReadyReadStandardError() {
+    QByteArray data = m_processStart.readAllStandardError();
     qDebug() << Q_FUNC_INFO << data;
 
     QStringList lines = QString::fromLatin1(data).split("\n");
@@ -111,8 +125,8 @@ void LinkMotionAnalyzeRunRunner::slotProcess_ReadyReadStandardError() {
     }
 }
 
-void LinkMotionAnalyzeRunRunner::slotProcess_ReadyReadStandardOutput() {
-    QByteArray data = m_process.readAllStandardOutput();
+void LinkMotionAnalyzeRunRunner::slotStart_ReadyReadStandardOutput() {
+    QByteArray data = m_processStart.readAllStandardOutput();
     qDebug() << Q_FUNC_INFO << data;
 
     QStringList lines = QString::fromLatin1(data).split("\n");
@@ -122,5 +136,31 @@ void LinkMotionAnalyzeRunRunner::slotProcess_ReadyReadStandardOutput() {
         m_runControl->appendMessage(line,outputFormat);
         m_runControl->appendMessage(QString::fromLatin1("\n"),outputFormat);
     }
+
+}
+
+void LinkMotionAnalyzeRunRunner::slotStop_Finished(int retval, QProcess::ExitStatus status) {
+    qDebug() << Q_FUNC_INFO << retval << status;
+    m_runControl->notifyRemoteFinished();
+}
+
+void LinkMotionAnalyzeRunRunner::slotStop_StateChanged(QProcess::ProcessState state) {
+    qDebug() << Q_FUNC_INFO << state;
+
+}
+
+void LinkMotionAnalyzeRunRunner::slotStop_ReadyRead() {
+    qDebug() << Q_FUNC_INFO;
+
+}
+
+void LinkMotionAnalyzeRunRunner::slotStop_ReadyReadStandardError() {
+    QByteArray data = m_processStop.readAllStandardError();
+    qDebug() << Q_FUNC_INFO << data;
+}
+
+void LinkMotionAnalyzeRunRunner::slotStop_ReadyReadStandardOutput() {
+    QByteArray data = m_processStop.readAllStandardOutput();
+    qDebug() << Q_FUNC_INFO << data;
 
 }

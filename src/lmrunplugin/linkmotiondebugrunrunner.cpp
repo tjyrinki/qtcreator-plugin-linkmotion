@@ -22,12 +22,17 @@ LinkMotionDebugRunRunner::LinkMotionDebugRunRunner(ProjectExplorer::RunConfigura
     connect(m_runControl,SIGNAL(started()),this,SLOT(slotRunControl_Started()));
     connect(m_runControl,SIGNAL(stateChanged(Debugger::DebuggerState)),this,SLOT(slotRunControl_StateChanged(Debugger::DebuggerState)));
 
+    connect(&m_processStart, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(slotStart_Finished(int, QProcess::ExitStatus)));
+    connect(&m_processStart, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(slotStart_StateChanged(QProcess::ProcessState)));
+    connect(&m_processStart, SIGNAL(readyRead()), this, SLOT(slotStart_ReadyRead()));
+    connect(&m_processStart, SIGNAL(readyReadStandardError()), this, SLOT(slotStart_ReadyReadStandardError()));
+    connect(&m_processStart, SIGNAL(readyReadStandardOutput()), this, SLOT(slotStart_ReadyReadStandardOutput()));
 
-    connect(&m_process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(slotProcess_Finished(int, QProcess::ExitStatus)));
-    connect(&m_process, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(slotProcess_StateChanged(QProcess::ProcessState)));
-    connect(&m_process, SIGNAL(readyRead()), this, SLOT(slotProcess_ReadyRead()));
-    connect(&m_process, SIGNAL(readyReadStandardError()), this, SLOT(slotProcess_ReadyReadStandardError()));
-    connect(&m_process, SIGNAL(readyReadStandardOutput()), this, SLOT(slotProcess_ReadyReadStandardOutput()));
+    connect(&m_processStop, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(slotStop_Finished(int, QProcess::ExitStatus)));
+    connect(&m_processStop, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(slotStop_StateChanged(QProcess::ProcessState)));
+    connect(&m_processStop, SIGNAL(readyRead()), this, SLOT(slotStop_ReadyRead()));
+    connect(&m_processStop, SIGNAL(readyReadStandardError()), this, SLOT(slotStop_ReadyReadStandardError()));
+    connect(&m_processStop, SIGNAL(readyReadStandardOutput()), this, SLOT(slotStop_ReadyReadStandardOutput()));
 }
 
 
@@ -43,21 +48,32 @@ void LinkMotionDebugRunRunner::slotRunControl_RequestRemoteSetup() {
     env.set(QStringLiteral("LINKMOTION_USERNAME"),QStringLiteral("linkmotion"));
     env.set(QStringLiteral("LINKMOTION_PASSWORD"),QStringLiteral("notset"));
 
-    m_process.setEnvironment(env);
+    m_processStart.setEnvironment(env);
     ProjectExplorer::TaskHub::clearTasks(LinkMotion::Constants::TASK_CATEGORY_DEBUG);
 
     // launch the debugger and our application
-    m_process.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-debug-start"),QStringLiteral("%0 %1 %2").arg(appName).arg(3768).arg(25555));
-    m_process.start();
+    m_processStart.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-debug-start"),QStringLiteral("%0 %1 %2").arg(appName).arg(3768).arg(25555));
+    m_processStart.start();
 
 }
 
 void LinkMotionDebugRunRunner::slotRunControl_Finished() {
     qDebug() << Q_FUNC_INFO;
-    m_process.terminate();
+    m_processStart.terminate();
     QString projectName = m_runConfig->target()->project()->displayName();
-    m_process.startDetached(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-debug-stop %0").arg(projectName));
-    m_runControl->notifyInferiorExited();
+    QString appName = m_runConfig->target()->project()->displayName();
+
+    Utils::Environment env = Utils::Environment::systemEnvironment();
+    env.prependOrSetPath("/opt/linkmotion/sdk/vm");
+    env.prependOrSetPath("/opt/linkmotion/sdk/hw");
+
+    env.set(QStringLiteral("LINKMOTION_DEVICE"),QStringLiteral("intel"));
+    env.set(QStringLiteral("LINKMOTION_USERNAME"),QStringLiteral("linkmotion"));
+    env.set(QStringLiteral("LINKMOTION_PASSWORD"),QStringLiteral("notset"));
+
+    m_processStop.setEnvironment(env);
+    m_processStop.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-debug-stop"),projectName);
+    m_processStop.start();
 }
 
 void LinkMotionDebugRunRunner::slotRunControl_Started() {
@@ -70,24 +86,24 @@ void LinkMotionDebugRunRunner::slotRunControl_StateChanged(Debugger::DebuggerSta
 
 }
 
-void LinkMotionDebugRunRunner::slotProcess_Finished(int retval, QProcess::ExitStatus status) {
+void LinkMotionDebugRunRunner::slotStart_Finished(int retval, QProcess::ExitStatus status) {
     qDebug() << Q_FUNC_INFO << retval << status;
-    m_runControl->notifyInferiorExited();
+ //   m_runControl->notifyInferiorExited();
 
 }
 
-void LinkMotionDebugRunRunner::slotProcess_StateChanged(QProcess::ProcessState state) {
+void LinkMotionDebugRunRunner::slotStart_StateChanged(QProcess::ProcessState state) {
     qDebug() << Q_FUNC_INFO << state;
 
 }
 
-void LinkMotionDebugRunRunner::slotProcess_ReadyRead() {
+void LinkMotionDebugRunRunner::slotStart_ReadyRead() {
     qDebug() << Q_FUNC_INFO;
 
 }
 
-void LinkMotionDebugRunRunner::slotProcess_ReadyReadStandardError() {
-    QByteArray data = m_process.readAllStandardError();
+void LinkMotionDebugRunRunner::slotStart_ReadyReadStandardError() {
+    QByteArray data = m_processStart.readAllStandardError();
     qDebug() << Q_FUNC_INFO << data;
 
     QStringList lines = QString::fromLatin1(data).split("\n");
@@ -130,8 +146,8 @@ void LinkMotionDebugRunRunner::slotProcess_ReadyReadStandardError() {
 
 }
 
-void LinkMotionDebugRunRunner::slotProcess_ReadyReadStandardOutput() {
-    QByteArray data = m_process.readAllStandardOutput();
+void LinkMotionDebugRunRunner::slotStart_ReadyReadStandardOutput() {
+    QByteArray data = m_processStart.readAllStandardOutput();
     qDebug() << Q_FUNC_INFO << data;
 
     QStringList lines = QString::fromLatin1(data).split("\n");
@@ -143,4 +159,28 @@ void LinkMotionDebugRunRunner::slotProcess_ReadyReadStandardOutput() {
         m_runControl->appendMessage(line,outputFormat);
         m_runControl->appendMessage(QString::fromLatin1("\n"),outputFormat);
     }
+}
+
+void LinkMotionDebugRunRunner::slotStop_Finished(int retval, QProcess::ExitStatus status) {
+    qDebug() << Q_FUNC_INFO << retval << status;
+    m_runControl->notifyInferiorExited();
+}
+
+void LinkMotionDebugRunRunner::slotStop_StateChanged(QProcess::ProcessState state) {
+    qDebug() << Q_FUNC_INFO << state;
+}
+
+void LinkMotionDebugRunRunner::slotStop_ReadyRead() {
+    qDebug() << Q_FUNC_INFO;
+}
+
+
+void LinkMotionDebugRunRunner::slotStop_ReadyReadStandardError() {
+    QByteArray data = m_processStop.readAllStandardError();
+    qDebug() << Q_FUNC_INFO << data;
+}
+
+void LinkMotionDebugRunRunner::slotStop_ReadyReadStandardOutput() {
+    QByteArray data = m_processStop.readAllStandardOutput();
+    qDebug() << Q_FUNC_INFO << data;
 }

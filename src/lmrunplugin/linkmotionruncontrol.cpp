@@ -27,11 +27,15 @@ LinkMotionRunControl::LinkMotionRunControl(LinkMotionRunConfiguration *rc)
     , m_running(false)
 {
     qDebug() << Q_FUNC_INFO;
-   // setIcon(QLatin1String(ProjectExplorer::Constants::ICON_RUN_SMALL));
-    connect(&m_process,SIGNAL(readyReadStandardError()),this,SLOT(onStdErr()));
-    connect(&m_process,SIGNAL(readyReadStandardOutput()),this,SLOT(onStdOut()));
-    connect(&m_process,SIGNAL(errorOccurred(QProcess::ProcessError)),this,SLOT(onError(QProcess::ProcessError)));
-    connect(&m_process,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(onFinished(int, QProcess::ExitStatus)));
+    connect(&m_processStart,SIGNAL(readyReadStandardError()),this,SLOT(slotStart_StdErr()));
+    connect(&m_processStart,SIGNAL(readyReadStandardOutput()),this,SLOT(slotStart_StdOut()));
+    connect(&m_processStart,SIGNAL(errorOccurred(QProcess::ProcessError)),this,SLOT(slotStart_Error(QProcess::ProcessError)));
+    connect(&m_processStart,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(slotStart_Finished(int, QProcess::ExitStatus)));
+
+    connect(&m_processStop,SIGNAL(readyReadStandardError()),this,SLOT(slotStop_StdErr()));
+    connect(&m_processStop,SIGNAL(readyReadStandardOutput()),this,SLOT(slotStop_StdOut()));
+    connect(&m_processStop,SIGNAL(errorOccurred(QProcess::ProcessError)),this,SLOT(slotStop_Error(QProcess::ProcessError)));
+    connect(&m_processStop,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(slotStop_Finished(int, QProcess::ExitStatus)));
 }
 
 LinkMotionRunControl::~LinkMotionRunControl()
@@ -40,13 +44,13 @@ LinkMotionRunControl::~LinkMotionRunControl()
     stop();
 }
 
-void LinkMotionRunControl::onFinished(int code, QProcess::ExitStatus status) {
+void LinkMotionRunControl::slotStart_Finished(int code, QProcess::ExitStatus status) {
     qDebug() << Q_FUNC_INFO << code << status;
     stop();
 }
 
-void LinkMotionRunControl::onStdErr() {
-    QByteArray data = m_process.readAllStandardError();
+void LinkMotionRunControl::slotStart_StdErr() {
+    QByteArray data = m_processStart.readAllStandardError();
     qDebug() << Q_FUNC_INFO << data;
 
     QStringList lines = QString::fromLatin1(data).split("\n");
@@ -65,8 +69,8 @@ void LinkMotionRunControl::onStdErr() {
     }
 }
 
-void LinkMotionRunControl::onStdOut() {
-    QByteArray data = m_process.readAllStandardOutput();
+void LinkMotionRunControl::slotStart_StdOut() {
+    QByteArray data = m_processStart.readAllStandardOutput();
     qDebug() << Q_FUNC_INFO << data;
 
     QStringList lines = QString::fromLatin1(data).split("\n");
@@ -82,9 +86,9 @@ void LinkMotionRunControl::onStdOut() {
     }
 }
 
-void LinkMotionRunControl::onError(QProcess::ProcessError err) {
-    qDebug() << Q_FUNC_INFO << err << m_process.errorString();
-    appendMessage(m_process.errorString(), Utils::ErrorMessageFormat);
+void LinkMotionRunControl::slotStart_Error(QProcess::ProcessError err) {
+    qDebug() << Q_FUNC_INFO << err << m_processStart.errorString();
+    appendMessage(m_processStart.errorString(), Utils::ErrorMessageFormat);
     stop();
 }
 
@@ -92,11 +96,8 @@ void LinkMotionRunControl::start()
 {
     qDebug() << Q_FUNC_INFO;
     m_running = true;
-    QStringList args;
     QString projectName = this->runConfiguration()->target()->project()->displayName();
-    args << projectName;
-    m_process.setArguments(args);
-    emit started();
+
     appendMessage(tr("Starting remote process.\n"), Utils::NormalMessageFormat);
     Utils::Environment env = Utils::Environment::systemEnvironment();
     env.prependOrSetPath("/opt/linkmotion/sdk/vm");
@@ -107,21 +108,55 @@ void LinkMotionRunControl::start()
     env.set(QStringLiteral("LINKMOTION_USERNAME"),QStringLiteral("linkmotion"));
     env.set(QStringLiteral("LINKMOTION_PASSWORD"),QStringLiteral("notset"));
 
-    m_process.setEnvironment(env.toStringList());
+    m_processStart.setEnvironment(env);
 
     ProjectExplorer::TaskHub::clearTasks(LinkMotion::Constants::TASK_CATEGORY_RUN);
 
-    m_process.start(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-start"),args);
-    m_process.waitForStarted();
+    m_processStart.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-start"),projectName);
+    m_processStart.start();
+    emit started();
+}
 
+
+void LinkMotionRunControl::slotStop_StdErr() {
+    QByteArray data = m_processStop.readAllStandardError();
+    qDebug() << Q_FUNC_INFO << data;
+}
+
+void LinkMotionRunControl::slotStop_StdOut() {
+    QByteArray data = m_processStop.readAllStandardOutput();
+    qDebug() << Q_FUNC_INFO << data;
+}
+
+void LinkMotionRunControl::slotStop_Error(QProcess::ProcessError err) {
+    qDebug() << Q_FUNC_INFO << err << m_processStop.errorString();
+    appendMessage(m_processStop.errorString(), Utils::ErrorMessageFormat);
+}
+
+void LinkMotionRunControl::slotStop_Finished(int code, QProcess::ExitStatus status) {
+    qDebug() << Q_FUNC_INFO << code << status;
 }
 
 ProjectExplorer::RunControl::StopResult LinkMotionRunControl::stop()
 {
     qDebug() << Q_FUNC_INFO;
-    m_process.terminate();
+    m_processStart.terminate();
+
     QString projectName = this->runConfiguration()->target()->project()->displayName();
-    m_process.startDetached(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-stop %0").arg(projectName));
+    Utils::Environment env = Utils::Environment::systemEnvironment();
+    env.prependOrSetPath("/opt/linkmotion/sdk/vm");
+    env.prependOrSetPath("/opt/linkmotion/sdk/hw");
+
+    //FIXME
+    env.set(QStringLiteral("LINKMOTION_DEVICE"),QStringLiteral("intel"));
+    env.set(QStringLiteral("LINKMOTION_USERNAME"),QStringLiteral("linkmotion"));
+    env.set(QStringLiteral("LINKMOTION_PASSWORD"),QStringLiteral("notset"));
+
+    m_processStop.setEnvironment(env);
+
+    m_processStop.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-stop"),projectName);
+    m_processStop.start();
+
     m_running = false;
     emit finished();
     appendMessage(tr("Stopped remote process."), Utils::NormalMessageFormat);

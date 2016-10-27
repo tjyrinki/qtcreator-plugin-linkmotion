@@ -24,16 +24,22 @@ protected slots:
     void slotRunControl_Started();
     void slotRunControl_StateChanged(Debugger::DebuggerState state);
 
-    void slotProcess_Finished(int, QProcess::ExitStatus);
-    void slotProcess_StateChanged(QProcess::ProcessState);
-    void slotProcess_ReadyRead();
-    void slotProcess_ReadyReadStandardError();
-    void slotProcess_ReadyReadStandardOutput();
+    void slotStart_Finished(int, QProcess::ExitStatus);
+    void slotStart_StateChanged(QProcess::ProcessState);
+    void slotStart_ReadyRead();
+    void slotStart_ReadyReadStandardError();
+    void slotStart_ReadyReadStandardOutput();
 
+    void slotStop_Finished(int, QProcess::ExitStatus);
+    void slotStop_StateChanged(QProcess::ProcessState);
+    void slotStop_ReadyRead();
+    void slotStop_ReadyReadStandardError();
+    void slotStop_ReadyReadStandardOutput();
 protected:
     ProjectExplorer::RunConfiguration* m_runConfig;
     Debugger::DebuggerRunControl* m_runControl;
-    Utils::QtcProcess m_process;
+    Utils::QtcProcess m_processStart;
+    Utils::QtcProcess m_processStop;
 };
 
 }
