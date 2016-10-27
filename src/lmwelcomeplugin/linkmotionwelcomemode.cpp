@@ -11,7 +11,6 @@
 
 #include "linkmotionwelcomemode.h"
 #include "linkmotionwelcomeplugin_constants.h"
-#include "linkmotionwelcomemodels.h"
 
 #include <QtQml>
 #include <QVBoxLayout>
@@ -33,25 +32,20 @@ LinkMotionWelcomeMode::LinkMotionWelcomeMode() {
     setId(Constants::MODE_LINKMOTION);
     setContext(Core::Context(Constants::C_LINKMOTION_MODE));
 
-    m_sessionModel = new LinkMotion::Internal::SessionModel(this);
-    m_projectModel = new LinkMotion::Internal::ProjectModel(this);
-
     m_rootWidget = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(m_rootWidget);
     layout->setMargin(0);
     layout->setSpacing(0);
-
     m_quickWidget = new QQuickWidget(m_rootWidget);
+/*
     QStringList importPaths = m_quickWidget->engine()->importPathList();
     const QString resourcePath = Utils::FileUtils::normalizePathName(Core::ICore::resourcePath());
     importPaths << resourcePath + QLatin1String("/welcomescreen/");
 
     m_quickWidget->engine()->setImportPathList(importPaths);
     QQmlContext *ctx = m_quickWidget->engine()->rootContext();
-    ctx->setContextProperty(QLatin1String("sessionList"), m_sessionModel);
-    ctx->setContextProperty(QLatin1String("projectList"), m_projectModel);
     ctx->setContextProperty(QLatin1String("linkMotionWelcome"),this);
-
+*/
     connect(m_quickWidget, SIGNAL(sceneGraphError(QQuickWindow::SceneGraphError,QString)),
             this, SLOT(onSceneGraphError(QQuickWindow::SceneGraphError,QString)));
     layout->addWidget(m_quickWidget);

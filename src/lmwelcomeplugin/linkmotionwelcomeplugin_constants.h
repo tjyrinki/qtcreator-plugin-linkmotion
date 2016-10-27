@@ -18,7 +18,7 @@ namespace LinkMotion {
 namespace Welcome {
 namespace Constants {
 
-const QString LINKMOTION_WELCOMESCREEN_QML = QLatin1String("qrc:/linkmotion/qml/welcome.qml");
+const QString LINKMOTION_WELCOMESCREEN_QML = QLatin1String("qrc:/linkmotion/qml/main.qml");
 const int  P_MODE_LINKMOTION          = 100;
 const char C_LINKMOTION_MODE[]        = "LinkMotion.WelcomeMode";
 const char MODE_LINKMOTION[]          = "LinkMotion";

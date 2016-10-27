@@ -16,18 +16,14 @@ HEADERS += \
     linkmotionwelcomeglobal.h \
     linkmotionwelcomeplugin.h \
     linkmotionwelcomeplugin_constants.h \
-    linkmotionwelcomemode.h \
-    linkmotionwelcomemodels.h
+    linkmotionwelcomemode.h
 
 SOURCES += \
     linkmotionwelcomeplugin.cpp \
-    linkmotionwelcomemode.cpp \
-    linkmotionwelcomemodels.cpp
+    linkmotionwelcomemode.cpp
 
 DISTFILES += \
     lmwelcomeplugin_dependencies.pri \
-    qml/welcome.qml \
-    qml/LM_logo_boxed_2.png \
     lmwelcomeplugin.json.in
 
 RESOURCES += \

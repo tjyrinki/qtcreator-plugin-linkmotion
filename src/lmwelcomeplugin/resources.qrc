@@ -2,6 +2,6 @@
     <qresource prefix="/linkmotion">
         <file>qml/LM_logo_boxed_2.png</file>
         <file>qml/Nexa Light.otf</file>
-        <file>qml/welcome.qml</file>
+        <file>qml/main.qml</file>
     </qresource>
 </RCC>
