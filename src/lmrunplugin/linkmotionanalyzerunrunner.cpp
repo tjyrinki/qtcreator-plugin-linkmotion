@@ -6,6 +6,9 @@
 #include <debugger/debuggercore.h>
 #include <debugger/debuggeractions.h>
 #include <debugger/analyzer/analyzerruncontrol.h>
+#include <projectexplorer/taskhub.h>
+#include <projectexplorer/task.h>
+#include "linkmotionrunplugin_constants.h"
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
@@ -31,26 +34,40 @@ LinkMotionAnalyzeRunRunner::LinkMotionAnalyzeRunRunner(ProjectExplorer::RunConfi
 void LinkMotionAnalyzeRunRunner::slotRunControl_Finished() {
     qDebug() << Q_FUNC_INFO;
     m_process.terminate();
-
+    QString projectName =  m_runConfig->target()->project()->displayName();
+    m_process.startDetached(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-debug-stop %0").arg(projectName));
+    m_runControl->notifyRemoteFinished();
 }
 
 void LinkMotionAnalyzeRunRunner::slotRunControl_Started() {
     qDebug() << Q_FUNC_INFO;    qDebug() << Q_FUNC_INFO;
     QString appName = m_runConfig->target()->project()->displayName();
 
-    QString executable = QStringLiteral("/altdata/apps/%0/bin/%0").arg(appName);
+    Utils::Environment env = Utils::Environment::systemEnvironment();
+    env.prependOrSetPath("/opt/linkmotion/sdk/vm");
+    env.prependOrSetPath("/opt/linkmotion/sdk/hw");
 
-    // launch the debugger and our application
-//    m_process.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-shell"),QStringLiteral("gdbserver --once --multi :25555 %0 -platform eglfs -qmljsdebugger=port:3768,services:CanvasFrameRate,EngineControl,DebugMessages").arg(executable));
-    m_process.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-shell"),QStringLiteral("%0 -platform eglfs -qmljsdebugger=port:3768,block").arg(executable));
+    //FIXME
+    env.set(QStringLiteral("LINKMOTION_DEVICE"),QStringLiteral("intel"));
+    env.set(QStringLiteral("LINKMOTION_USERNAME"),QStringLiteral("linkmotion"));
+    env.set(QStringLiteral("LINKMOTION_PASSWORD"),QStringLiteral("notset"));
+
+    m_process.setEnvironment(env);
+
+    ProjectExplorer::TaskHub::clearTasks(LinkMotion::Constants::TASK_CATEGORY_ANALYZE);
+
+    // launch the application for profiling
+    m_process.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-profile-start"),QStringLiteral("%0 %1").arg(appName).arg(3768));
     m_process.start();
 }
 
 
 void LinkMotionAnalyzeRunRunner::slotProcess_Finished(int retval, QProcess::ExitStatus status) {
     qDebug() << Q_FUNC_INFO << retval << status;
+    m_process.terminate();
+    QString projectName =  m_runConfig->target()->project()->displayName();
+    m_process.startDetached(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-debug-stop %0").arg(projectName));
     m_runControl->notifyRemoteFinished();
-
 }
 
 void LinkMotionAnalyzeRunRunner::slotProcess_StateChanged(QProcess::ProcessState state) {
@@ -70,20 +87,40 @@ void LinkMotionAnalyzeRunRunner::slotProcess_ReadyReadStandardError() {
     QStringList lines = QString::fromLatin1(data).split("\n");
 
     foreach (QString line, lines) {
+        Utils::OutputFormat outputFormat = Utils::StdOutFormat;
         if (line.startsWith(QStringLiteral("Can't bind address"))) {
-            m_runControl->appendMessage(line,Utils::ErrorMessageFormat);
-            m_runControl->appendMessage(QString::fromLatin1("\n"),Utils::ErrorMessageFormat);
+            outputFormat = Utils::ErrorMessageFormat;
             m_runControl->notifyRemoteSetupFailed(line);
+            ProjectExplorer::TaskHub::addTask(ProjectExplorer::Task::Error, line, LinkMotion::Constants::TASK_CATEGORY_ANALYZE);
         } else if (line.startsWith(QStringLiteral("Listening on port "))) {
             //m_runControl->notifyRemoteSetupDone(Utils::Port(3768));
-        } else {
-            m_runControl->appendMessage(line,Utils::ErrorMessageFormat);
-            m_runControl->appendMessage(QString::fromLatin1("\n"),Utils::ErrorMessageFormat);
+        } else if (line.startsWith(QStringLiteral("Cannot exec "))) {
+            outputFormat = Utils::ErrorMessageFormat;
+            m_runControl->notifyRemoteSetupFailed(line);
+            ProjectExplorer::TaskHub::addTask(ProjectExplorer::Task::Error, line, LinkMotion::Constants::TASK_CATEGORY_ANALYZE);
+        } else if (line.startsWith(QStringLiteral("QQmlApplicationEngine failed to load component"))) {
+            outputFormat = Utils::ErrorMessageFormat;
+            ProjectExplorer::TaskHub::addTask(ProjectExplorer::Task::Error, line, LinkMotion::Constants::TASK_CATEGORY_ANALYZE);
+        } else if (line.startsWith(QStringLiteral("qrc:/"))) {
+            outputFormat = Utils::NormalMessageFormat;
+            ProjectExplorer::TaskHub::addTask(ProjectExplorer::Task::Error, line, LinkMotion::Constants::TASK_CATEGORY_ANALYZE);
         }
+
+        m_runControl->appendMessage(line,outputFormat);
+        m_runControl->appendMessage(QString::fromLatin1("\n"),outputFormat);
     }
 }
 
 void LinkMotionAnalyzeRunRunner::slotProcess_ReadyReadStandardOutput() {
-    qDebug() << Q_FUNC_INFO << m_process.readAllStandardOutput();
+    QByteArray data = m_process.readAllStandardOutput();
+    qDebug() << Q_FUNC_INFO << data;
+
+    QStringList lines = QString::fromLatin1(data).split("\n");
+
+    foreach (QString line, lines) {
+        Utils::OutputFormat outputFormat = Utils::StdOutFormat;
+        m_runControl->appendMessage(line,outputFormat);
+        m_runControl->appendMessage(QString::fromLatin1("\n"),outputFormat);
+    }
 
 }

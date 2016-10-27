@@ -16,6 +16,8 @@
 #include "linkmotionrunconfiguration.h"
 #include "linkmotiondebugruncontrol.h"
 #include "linkmotionanalyzeruncontrol.h"
+#include <projectexplorer/taskhub.h>
+#include "linkmotionrunplugin_constants.h"
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
@@ -24,7 +26,9 @@ LinkMotionRunControlFactory::LinkMotionRunControlFactory(QObject *parent)
     : IRunControlFactory(parent)
 {
     qDebug() << Q_FUNC_INFO;
-
+    ProjectExplorer::TaskHub::addCategory(Core::Id(LinkMotion::Constants::TASK_CATEGORY_DEBUG),QStringLiteral("Debug"), true);
+    ProjectExplorer::TaskHub::addCategory(Core::Id(LinkMotion::Constants::TASK_CATEGORY_RUN),QStringLiteral("Run"), true);
+    ProjectExplorer::TaskHub::addCategory(Core::Id(LinkMotion::Constants::TASK_CATEGORY_ANALYZE),QStringLiteral("Analyze"), true);
 }
 
 bool LinkMotionRunControlFactory::canRun(ProjectExplorer::RunConfiguration *runConfiguration, Core::Id mode) const
@@ -36,13 +40,13 @@ bool LinkMotionRunControlFactory::canRun(ProjectExplorer::RunConfiguration *runC
             mode != ProjectExplorer::Constants::QML_PROFILER_RUN_MODE) {
         return false;
     }
-    qDebug() << Q_FUNC_INFO << "yes";
     return qobject_cast<LinkMotionRunConfiguration *>(runConfiguration);
 }
 
-ProjectExplorer::RunControl *LinkMotionRunControlFactory::create(ProjectExplorer::RunConfiguration *runConfig,
-                                        Core::Id mode, QString *errorMessage)
+ProjectExplorer::RunControl *LinkMotionRunControlFactory::create(ProjectExplorer::RunConfiguration *runConfig, Core::Id mode, QString *errorMessage)
 {
+    Q_UNUSED(errorMessage)
+
     qDebug() << Q_FUNC_INFO << mode;
     Q_ASSERT(canRun(runConfig, mode));
     LinkMotionRunConfiguration *rc = qobject_cast<LinkMotionRunConfiguration *>(runConfig);

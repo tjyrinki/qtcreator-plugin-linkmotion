@@ -15,9 +15,10 @@
 #include <QString>
 
 namespace LinkMotion {
-namespace Internal {
 namespace Constants {
-
+    const char TASK_CATEGORY_DEBUG[] = "LinkMotion.Task.Category.Debug";
+    const char TASK_CATEGORY_ANALYZE[] = "LinkMotion.Task.Category.Analyze";
+    const char TASK_CATEGORY_RUN[] = "LinkMotion.Task.Category.Run";
 }
 }
 #endif // LINKMOTION_RUN_CONSTANTS_H

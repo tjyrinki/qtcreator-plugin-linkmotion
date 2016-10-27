@@ -15,7 +15,9 @@
 #include <projectexplorer/target.h>
 #include <utils/environment.h>
 #include <QDebug>
-
+#include <projectexplorer/taskhub.h>
+#include <projectexplorer/task.h>
+#include "linkmotionrunplugin_constants.h"
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
@@ -44,13 +46,40 @@ void LinkMotionRunControl::onFinished(int code, QProcess::ExitStatus status) {
 }
 
 void LinkMotionRunControl::onStdErr() {
-    qDebug() << Q_FUNC_INFO;
-    appendMessage(QString::fromLatin1(m_process.readAllStandardError()), Utils::ErrorMessageFormat);
+    QByteArray data = m_process.readAllStandardError();
+    qDebug() << Q_FUNC_INFO << data;
+
+    QStringList lines = QString::fromLatin1(data).split("\n");
+
+    foreach (QString line, lines) {
+        Utils::OutputFormat outputFormat = Utils::StdOutFormat;
+        if (line.startsWith(QStringLiteral("QQmlApplicationEngine failed to load component"))) {
+            outputFormat = Utils::ErrorMessageFormat;
+            ProjectExplorer::TaskHub::addTask(ProjectExplorer::Task::Error, line, LinkMotion::Constants::TASK_CATEGORY_RUN);
+        } else if (line.startsWith(QStringLiteral("qrc:/"))) {
+            outputFormat = Utils::NormalMessageFormat;
+            ProjectExplorer::TaskHub::addTask(ProjectExplorer::Task::Error, line, LinkMotion::Constants::TASK_CATEGORY_RUN);
+        }
+        appendMessage(line, outputFormat);
+        appendMessage(QString::fromLatin1("\n"),outputFormat);
+    }
 }
 
 void LinkMotionRunControl::onStdOut() {
-    qDebug() << Q_FUNC_INFO;
-    appendMessage(QString::fromLatin1(m_process.readAllStandardOutput()), Utils::NormalMessageFormat);
+    QByteArray data = m_process.readAllStandardOutput();
+    qDebug() << Q_FUNC_INFO << data;
+
+    QStringList lines = QString::fromLatin1(data).split("\n");
+
+    foreach (QString line, lines) {
+        Utils::OutputFormat outputFormat = Utils::StdOutFormat;
+        if (line.startsWith(QStringLiteral("Can't bind address"))) {
+            ProjectExplorer::TaskHub::addTask(ProjectExplorer::Task::Error, line, LinkMotion::Constants::TASK_CATEGORY_RUN);
+            outputFormat = Utils::ErrorMessageFormat;
+        }
+        appendMessage(line, outputFormat);
+        appendMessage(QString::fromLatin1("\n"),outputFormat);
+    }
 }
 
 void LinkMotionRunControl::onError(QProcess::ProcessError err) {
@@ -73,14 +102,14 @@ void LinkMotionRunControl::start()
     env.prependOrSetPath("/opt/linkmotion/sdk/vm");
     env.prependOrSetPath("/opt/linkmotion/sdk/hw");
 
+    //FIXME
     env.set(QStringLiteral("LINKMOTION_DEVICE"),QStringLiteral("intel"));
     env.set(QStringLiteral("LINKMOTION_USERNAME"),QStringLiteral("linkmotion"));
     env.set(QStringLiteral("LINKMOTION_PASSWORD"),QStringLiteral("notset"));
 
     m_process.setEnvironment(env.toStringList());
-    qDebug() << m_process.environment() << args;
 
-    //FIXME: env is not actually set!
+    ProjectExplorer::TaskHub::clearTasks(LinkMotion::Constants::TASK_CATEGORY_RUN);
 
     m_process.start(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-start"),args);
     m_process.waitForStarted();
