@@ -9,12 +9,13 @@
 # (C) 2016 Link Motion Oy
 ####################################################################*/
 #include "linkmotiondebuggeritem.h"
+#include "linkmotionkitplugin_constants.h"
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
 
 LinkMotionDebuggerItem::LinkMotionDebuggerItem(ProjectExplorer::Abi abi) : Debugger::DebuggerItem() {
-    setCommand(Utils::FileName::fromString(QStringLiteral("/opt/linkmotion/gdb/bin/gdb")));
+    setCommand(Utils::FileName::fromString(LinkMotion::Constants::LINKMOTION_GDB_COMMAND));
     setEngineType(Debugger::GdbEngineType);
     setUnexpandedDisplayName(QStringLiteral("GDB for LinkMotion"));
     setAutoDetected(true);

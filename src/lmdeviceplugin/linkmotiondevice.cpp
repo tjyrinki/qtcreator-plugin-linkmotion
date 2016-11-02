@@ -12,6 +12,7 @@
 #include "linkmotiondeviceplugin_constants.h"
 
 #include <QCoreApplication>
+#include <utils/icon.h>
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
@@ -32,11 +33,15 @@ LinkMotionDevice::LinkMotionDevice(const LinkMotionDevice &other)
 LinkMotionDevice::LinkMotionDevice(const QString &uid)
     : IDevice(Core::Id(Constants::LINKMOTION_DEVICE_TYPE),
                              IDevice::AutoDetected,
-                             IDevice::Hardware,
-                             Core::Id(Constants::LINKMOTION_DEVICE_ID).withSuffix(uid))
+                             IDevice::Emulator,
+                             Core::Id(Constants::LINKMOTION_DEVICE_ID))
 {
     setDisplayName(LinkMotionDevice::name());
     setDeviceState(DeviceConnected);
+    setDeviceIcon({Utils::Icon({{":/linkmotion/qml/LM_logo_boxed_2.png",
+                                 Utils::Theme::PanelTextColorDark}}, Utils::Icon::Tint),
+                   Utils::Icon({{":/alinkmotion/qml/LM_logo_boxed_2.png",
+                                 Utils::Theme::IconsBaseColor}})});
 }
 
 

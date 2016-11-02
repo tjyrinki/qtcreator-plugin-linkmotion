@@ -17,6 +17,8 @@ namespace Constants {
 const char LINKMOTION_LINUX_QT[] = "LinkMotion.LinuxQt";
 const char LINKMOTION_AUTODECTION_SOURCE_ID[] = "LinkMotion.Qt.AutoDetect.Id";
 const char LINKMOTION_QT_QMAKE[] = "/opt/linkmotion/qt/5.8.0/bin/qmake";
+const char LINKMOTION_KIT_ID[] = "LinkMotion.QtKit.5.8.0";
+const char LINKMOTION_GDB_COMMAND[] = "/opt/linkmotion/gdb/bin/gdb";
 
 }
 }
