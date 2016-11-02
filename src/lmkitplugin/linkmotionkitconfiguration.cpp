@@ -43,7 +43,16 @@ void LinkMotionKitConfiguration::autoConfigure() {
         qWarning() << Q_FUNC_INFO << "LinkMotion Qt is not installed!";
         return;
     }
-    QtSupport::QtVersionManager::addVersion(new LinkMotionQtVersion(qmake,true,LinkMotion::Constants::LINKMOTION_AUTODECTION_SOURCE_ID));
+    m_qtVersion = new LinkMotionQtVersion(qmake,true,LinkMotion::Constants::LINKMOTION_AUTODECTION_SOURCE_ID);
+    QtSupport::QtVersionManager::addVersion(m_qtVersion);
+
+    // register debuggers
+    QList<ProjectExplorer::Abi> linkMotionQtAbis = m_qtVersion->qtAbis();
+    foreach(ProjectExplorer::Abi abi, linkMotionQtAbis) {
+        LinkMotionDebuggerItem debugger(abi);
+        QVariant id = Debugger::DebuggerItemManager::registerDebugger((Debugger::DebuggerItem)debugger);
+
+    }
 }
 
 void LinkMotionKitConfiguration::initialize() {

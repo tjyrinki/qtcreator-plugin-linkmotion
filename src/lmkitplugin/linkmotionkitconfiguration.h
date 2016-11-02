@@ -12,6 +12,8 @@
 #define LINKMOTIONKITCONFIGURATION_H
 
 #include <QObject>
+#include "linkmotiondebuggeritem.h"
+#include "linkmotionqtversion.h"
 
 namespace LinkMotion {
 namespace Internal {
@@ -28,7 +30,8 @@ public slots:
     void initialize();
     void autoConfigure();
 
-
+protected:
+    LinkMotionQtVersion* m_qtVersion;
 };
 
 }

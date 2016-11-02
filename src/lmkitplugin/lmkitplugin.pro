@@ -22,10 +22,12 @@ HEADERS += \
     ../lmdeviceplugin/linkmotiondeviceplugin_constants.h \
     linkmotionkitplugin_constants.h \
     linkmotionqtversionfactory.h \
-    linkmotionkitconfiguration.h
+    linkmotionkitconfiguration.h \
+    linkmotiondebuggeritem.h
 
 SOURCES += \
     linkmotionkitplugin.cpp \
     linkmotionqtversion.cpp \
     linkmotionqtversionfactory.cpp \
-    linkmotionkitconfiguration.cpp
+    linkmotionkitconfiguration.cpp \
+    linkmotiondebuggeritem.cpp
