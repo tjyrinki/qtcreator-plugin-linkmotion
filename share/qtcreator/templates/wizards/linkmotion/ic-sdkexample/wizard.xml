@@ -4,8 +4,8 @@
         class="linkmotion-project"
         featuresRequired="">
     <icon>../share/linkmotion.png</icon>
-    <description>This wizard will create an IC application based on the LinkMotion UI Toolkit.</description>
-    <displayname>Cluster Application</displayname>
+    <description>This wizard will create a Virtual Instrument Cluster application based on the LinkMotion UI Toolkit.</description>
+    <displayname>Virtual Instrument Cluster</displayname>
     <displaycategory>LinkMotion</displaycategory>
     <files>
         <file source="src/src.pro" openeditor="false"/>

@@ -4,8 +4,8 @@
         class="linkmotion-project"
         featuresRequired="">
     <icon>../share/linkmotion.png</icon>
-    <description>This wizard will create an IVI application based on the LinkMotion UI Toolkit.</description>
-    <displayname>IVI Application</displayname>
+    <description>This wizard will create an In-Vehicle Infotainment application based on the LinkMotion UI Toolkit.</description>
+    <displayname>In-Vehicle Infotainment</displayname>
     <displaycategory>LinkMotion</displaycategory>
     <files>
         <file source="src/src.pro" openeditor="false"/>

@@ -1,17 +1,14 @@
 #!/bin/bash
 #set -e
 
-rm ${HOME}/.local/share/data/QtProject/qtcreator/plugins/3.5.1/*
+rm ${HOME}/.local/share/data/QtProject/qtcreator/plugins/4.2.82/*
 rm -rf /opt/linkmotion/qtcreator/lib/qtcreator/plugins/liblm*
 set -e
 
-#pushd ${HOME}/git/qtcreator
-# make
-#popd
 QTC_INSTALL=/opt/linkmotion/qtcreator/ QTC_SOURCE=/opt/linkmotion/src/qtcreator/ qmake -r CONFIG+=BUILDTOHOME
 make
 set +e
 sudo rm -r /opt/linkmotion/qtcreator/share/qtcreator/templates/wizards/linkmotion
 set -e
 sudo cp -r share/* /opt/linkmotion/qtcreator/share
-gdb /opt/linkmotion/qtcreator/bin/qtcreator
+#gdb /opt/linkmotion/qtcreator/bin/qtcreator

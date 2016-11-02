@@ -12,4 +12,20 @@
 include(../linkmotion-qtc-plugin.pri)
 
 DISTFILES += \
-    lmkitplugin_dependencies.pri
+    lmkitplugin_dependencies.pri \
+    lmkitplugin.json.in
+
+HEADERS += \
+    linkmotionkitplugin.h \
+    linkmotionkitplugin_global.h \
+    linkmotionqtversion.h \
+    ../lmdeviceplugin/linkmotiondeviceplugin_constants.h \
+    linkmotionkitplugin_constants.h \
+    linkmotionqtversionfactory.h \
+    linkmotionkitconfiguration.h
+
+SOURCES += \
+    linkmotionkitplugin.cpp \
+    linkmotionqtversion.cpp \
+    linkmotionqtversionfactory.cpp \
+    linkmotionkitconfiguration.cpp

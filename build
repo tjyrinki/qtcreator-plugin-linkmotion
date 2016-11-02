@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+QTC_SRC=$1
+
+if [[ -z ${QTC_SRC} ]]; then
+  echo "USAGE: ./build [qtc_src]"
+  exit 1
+fi
+
+QTC_SOURCE=$QTC_SRC QTC_BUILD=$QTC_SRC QTC_INSTALL="/opt/linkmotion/qtcreator" qmake -r
+make install INSTALL_ROOT=$QTC_SRC
+set +e
+sudo rm -r ${QTC_SRC}/share/qtcreator/templates/wizards/linkmotion
+set -e
+sudo cp -r share/* ${QTC_SRC}/share
+gdb ${QTC_SRC}/bin/qtcreator
