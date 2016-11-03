@@ -16,6 +16,7 @@
         <file source="src/modules/Clock/clocklabel.cpp" openeditor="false"/>
         <file source="src/modules/Clock/clocklabel.h" openeditor="false"/>
         <file source="src/modules/Clock/clock_plugin.cpp" openeditor="false"/>
+        <file source="src/modules/Clock/qml.qrc" openeditor="false"/>
         <file source="src/modules/Components/qmldir" openeditor="false"/>
         <file source="src/modules/Components/qml.qrc" openeditor="false"/>
         <file source="src/modules/Components/components_plugin.cpp" openeditor="false"/>

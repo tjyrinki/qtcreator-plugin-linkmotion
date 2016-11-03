@@ -1,4 +1,4 @@
 module Components
 plugin components
-NotificationBar 1.0 qrc:/NotificationBar.qml
+NotificationBar 1.0 NotificationBar.qml
 typeinfo plugins.qmltypes

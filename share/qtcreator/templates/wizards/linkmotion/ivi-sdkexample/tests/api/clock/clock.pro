@@ -1,5 +1,5 @@
 TARGET = tst_clock
-IMPORTPATH = ../../../src/modules
+QML_IMPORT_PATH = ../../../src/modules
 
 CONFIG += lm_qmltests
 
