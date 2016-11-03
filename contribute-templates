@@ -1,0 +1,3 @@
+#!/bin/bash
+git subtree push --prefix share/qtcreator/templates/wizards/linkmotion/ivi-sdkexample https://git.nomovok.info/git/lm/lmmw-ivi-sdkexample master
+git subtree push --prefix share/qtcreator/templates/wizards/linkmotion/ic-sdkexample https://git.nomovok.info/git/lm/lmmw-ic-sdkexample master
