@@ -92,6 +92,7 @@ LinkMotionBuildStep::LinkMotionBuildStep(ProjectExplorer::BuildStepList *parent,
 void LinkMotionBuildStep::ctor()
 {
     qDebug() << Q_FUNC_INFO;
+    setProperty(LinkMotion::Internal::Constants::PROPERTY_USEQMLDEBUG,true);
     setDefaultDisplayName(QCoreApplication::translate("LinkMotion::Internal::LinkMotionBuildStep",
                                                       LINKMOTION_BUILD_STEP_DISPLAY_NAME));
     connect(this,SIGNAL(finished()),this,SLOT(onFinished()));
