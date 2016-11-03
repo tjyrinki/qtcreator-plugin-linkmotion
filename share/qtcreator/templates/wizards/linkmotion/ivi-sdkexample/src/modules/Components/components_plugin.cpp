@@ -5,5 +5,6 @@
 void ComponentsPlugin::registerTypes(const char *uri)
 {
     // @uri Components
+    Q_UNUSED(uri);
 }
 
