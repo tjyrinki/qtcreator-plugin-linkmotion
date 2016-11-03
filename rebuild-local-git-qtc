@@ -5,7 +5,7 @@ rm ${HOME}/.local/share/data/QtProject/qtcreator/plugins/4.2.82/*
 rm -rf /opt/linkmotion/qtcreator/lib/qtcreator/plugins/liblm*
 set -e
 
-QTC_INSTALL=/opt/linkmotion/qtcreator/ QTC_SOURCE=/opt/linkmotion/src/qtcreator/ qmake -r CONFIG+=BUILDTOHOME
+QTC_INSTALL=/opt/linkmotion/qtcreator/ QTC_SOURCE=/opt/linkmotion/src/qtcreator/ /opt/linkmotion/qt/5.8.0/bin/qmake -r CONFIG+=BUILDTOHOME
 make
 set +e
 sudo rm -r /opt/linkmotion/qtcreator/share/qtcreator/templates/wizards/linkmotion

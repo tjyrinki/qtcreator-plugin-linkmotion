@@ -173,21 +173,21 @@ void LinkMotionKitConfiguration::initialize() {
             lmkit->makeSticky();
             qDebug() << "Registering kit" << lmkit->displayName();
 
-            bool isAlreadyRegistered = false;
+            //bool isAlreadyRegistered = false;
             foreach(ProjectExplorer::Kit* k, existingKits) {
                 if (k->displayName().compare(lmkit->displayName()) == 0) {
                     // left on purpose, this can be used in the future to remove the old kits
                     // if we create changes above and we need to recreate the kit which uses the same name
-                    //ProjectExplorer::KitManager::deregisterKit(k);
-                    isAlreadyRegistered = true;
+                    ProjectExplorer::KitManager::deregisterKit(k);
+                    //isAlreadyRegistered = true;
                 }
             }
 
-            if (!isAlreadyRegistered) {
-                ProjectExplorer::KitManager::registerKit(lmkit);
-            } else {
-                qDebug() << "was already registered";
-            }
+            //if (!isAlreadyRegistered) {
+            ProjectExplorer::KitManager::registerKit(lmkit);
+           // } else {
+            //    qDebug() << "was already registered";
+            //}
         }
     }
 
