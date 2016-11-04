@@ -3,7 +3,7 @@
         platformIndependent="true"
         class="linkmotion-project"
         featuresRequired="">
-    <icon>../share/linkmotion.png</icon>
+    <icon>../lm_logo.png</icon>
     <description>This wizard will create a Virtual Instrument Cluster application based on the LinkMotion UI Toolkit.</description>
     <displayname>Virtual Instrument Cluster</displayname>
     <displaycategory>LinkMotion</displaycategory>
