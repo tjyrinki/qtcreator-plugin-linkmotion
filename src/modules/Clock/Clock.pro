@@ -1,7 +1,7 @@
 uri = Clock
 TARGET = clock
 APPNAME = %ProjectName%
-
+QT_PRIVATE += quick-private quickcontrols2-private quicktemplates2-private
 CONFIG += lm_lib
 
 # Input
@@ -13,4 +13,7 @@ HEADERS += \
     clock_plugin.h \
     clocklabel.h
 
-DISTFILES = qmldir
+RESOURCES = qml.qrc
+
+DISTFILES = qmldir plugins.qmltypes
+OTHER_FILES = qmldir plugins.qmltypes

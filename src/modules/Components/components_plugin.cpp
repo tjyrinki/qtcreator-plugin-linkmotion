@@ -4,7 +4,7 @@
 
 void ComponentsPlugin::registerTypes(const char *uri)
 {
-    // @uri com.link-motion.toolkit
-//    qmlRegisterType<ClockLabel>(uri, 1, 0, "ClockLabel");
+    // @uri Components
+    Q_UNUSED(uri);
 }
 

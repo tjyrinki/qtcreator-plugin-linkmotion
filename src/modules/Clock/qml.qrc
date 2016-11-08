@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>NotificationBar.qml</file>
         <file>qmldir</file>
-	<file>plugins.qmltypes</file>
+        <file>plugins.qmltypes</file>
     </qresource>
 </RCC>
