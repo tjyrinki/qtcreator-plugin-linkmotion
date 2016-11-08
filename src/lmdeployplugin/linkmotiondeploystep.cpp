@@ -169,16 +169,17 @@ bool LinkMotionDeployStep::init(QList<const BuildStep *> &earlierSteps)
 
     pp->setEnvironment(env);
     pp->setMacroExpander(dc->macroExpander());
-    pp->setWorkingDirectory(QDir(bc->buildDirectory().toString()).dirName());
+    QString projectPath = Utils::FileName::fromString(QStringLiteral("%0/..").arg(bc->buildDirectory().toString())).toFileInfo().absoluteFilePath();
+    pp->setWorkingDirectory(projectPath);
     pp->setCommand(QStringLiteral("vmsdk-install"));
     // TODO: find all generated rpm files.
     //       those should be parsed from the output when buildplugin is creating the rpm packages.
     QString arch = env.value(QStringLiteral("LINKMOTION_DEVICE"));
     if (arch.isEmpty())
         arch = QStringLiteral("intel");
-    pp->setArguments(QString(QStringLiteral("%0/../build-%1-%2-latest/*.rpm")).arg(bc->buildDirectory().toString()).arg(projectName).arg(arch));
+
+    pp->setArguments(QString(QStringLiteral("%0/build-%1-%2-latest/*.rpm")).arg(projectPath).arg(projectName).arg(arch));
     pp->resolveAll();
-    qDebug() << "INIT PATH" << pp->arguments();
 
     // If we are cleaning, then build can fail with an error code, but that doesn't mean
     // we should stop the clean queue
@@ -300,7 +301,6 @@ void LinkMotionDeployStep::run(QFutureInterface<bool> &fi)
     env.prependOrSetPath("/opt/linkmotion/sdk/hw");
 
     pp->setEnvironment(env);
-    pp->setWorkingDirectory(QDir(bc->buildDirectory().toString()).dirName());
     QString arch = env.value(QStringLiteral("LINKMOTION_DEVICE"));
     if (arch.isEmpty())
         arch = QStringLiteral("intel");
@@ -311,10 +311,10 @@ void LinkMotionDeployStep::run(QFutureInterface<bool> &fi)
         qDebug() << Q_FUNC_INFO << "no project";
     }
     QString projectName = QDir(target()->project()->projectDirectory().toString()).dirName();
-
-    pp->setArguments(QString(QStringLiteral("%0/../build-%1-%2-latest/*.rpm")).arg(bc->buildDirectory().toString()).arg(projectName).arg(arch));
+    QString projectPath = Utils::FileName::fromString(QStringLiteral("%0/..").arg(bc->buildDirectory().toString())).toFileInfo().absoluteFilePath();
+    pp->setWorkingDirectory(projectPath);
+    pp->setArguments(QString(QStringLiteral("%0/build-%1-%2-latest/*.rpm")).arg(projectPath).arg(projectName).arg(arch));
     pp->resolveAll();
-
 
     AbstractProcessStep::run(fi);
 }

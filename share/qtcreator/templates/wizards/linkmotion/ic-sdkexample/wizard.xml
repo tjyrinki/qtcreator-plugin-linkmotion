@@ -26,38 +26,38 @@
         <file source="src/modules/Components/Components.pro" openeditor="false"/>
         <file source="src/modules/modules.pro" openeditor="false"/>
 	<file source="src/app/assets/images/indicators.qrc" openeditor="false"/>
-	<file source="src/app/assets/images/icons/previous.png" openeditor="false"/>
-	<file source="src/app/assets/images/icons/next.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/airbag_on.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/abs_on.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/tractionoff_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/wheellock_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/keys_on.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/warning_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/tractionoff_on.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/wheellock_on.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/tv_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/warning_on.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/tv_on.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/trac_on.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/drivinglight_on.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/trac_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/charge_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/fog_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/lights_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/airbag_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/seatbelt_on.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/drivinglight_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/keys_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/blink_right_on.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/blink_left_on.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/charge_on.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/abs_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/seatbelt_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/blink_left_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/fog_on.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/blink_right_off.png" openeditor="false"/>
-	<file source="src/app/assets/images/indicators/lights_on.png" openeditor="false"/>
+        <file source="src/app/assets/images/icons/previous.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/icons/next.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/airbag_on.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/abs_on.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/tractionoff_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/wheellock_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/keys_on.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/warning_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/tractionoff_on.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/wheellock_on.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/tv_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/warning_on.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/tv_on.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/trac_on.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/drivinglight_on.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/trac_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/charge_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/fog_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/lights_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/airbag_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/seatbelt_on.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/drivinglight_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/keys_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/blink_right_on.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/blink_left_on.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/charge_on.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/abs_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/seatbelt_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/blink_left_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/fog_on.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/blink_right_off.png" openeditor="false" binary="true" />
+        <file source="src/app/assets/images/indicators/lights_on.png" openeditor="false" binary="true" />
 	<file source="src/app/assets/images/images.qrc" openeditor="false"/>
 	<file source="src/app/main.qml" openeditor="false"/>
 	<file source="src/app/qml.qrc" openeditor="false"/>

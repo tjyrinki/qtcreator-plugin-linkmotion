@@ -160,7 +160,8 @@ bool LinkMotionBuildStep::init(QList<const BuildStep *> &earlierSteps)
     pp->setMacroExpander(bc->macroExpander());
     pp->setWorkingDirectory(QDir(bc->buildDirectory().toString()).dirName());
     pp->setCommand(QStringLiteral("vmsdk-build"));
-    pp->setArguments(QStringLiteral("%0 %1/..").arg(projectName).arg(bc->buildDirectory().toString()));
+    QString projectPath = Utils::FileName::fromString(QStringLiteral("%0/..").arg(bc->buildDirectory().toString())).toFileInfo().absoluteFilePath();
+    pp->setArguments(QStringLiteral("%0 %1").arg(projectName).arg(projectPath));
     pp->resolveAll();
 
     // If we are cleaning, then build can fail with an error code, but that doesn't mean
