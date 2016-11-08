@@ -1,10 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>icons/icon_comfort_active.svg</file>
-        <file>icons/icon_comfort_inactive.svg</file>
-        <file>icons/icon_enjoy_active.svg</file>
-        <file>icons/icon_enjoy_inactive.svg</file>
-        <file>icons/icon_notification_active.svg</file>
-        <file>icons/icon_notification_inactive.svg</file>
+        <file>icons/next.png</file>
+        <file>icons/previous.png</file>
     </qresource>
 </RCC>

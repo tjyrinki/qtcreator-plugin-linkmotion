@@ -3,9 +3,9 @@
         platformIndependent="true"
         class="linkmotion-project"
         featuresRequired="">
-    <icon>../share/linkmotion.png</icon>
-    <description>This wizard will create an IC application based on the LinkMotion UI Toolkit.</description>
-    <displayname>LinkMotion Cluster Application</displayname>
+    <icon>../lm_logo.png</icon>
+    <description>This wizard will create a Virtual Instrument Cluster application based on the LinkMotion UI Toolkit.</description>
+    <displayname>Virtual Instrument Cluster</displayname>
     <displaycategory>LinkMotion</displaycategory>
     <files>
         <file source="src/src.pro" openeditor="false"/>
@@ -16,6 +16,7 @@
         <file source="src/modules/Clock/clocklabel.cpp" openeditor="false"/>
         <file source="src/modules/Clock/clocklabel.h" openeditor="false"/>
         <file source="src/modules/Clock/clock_plugin.cpp" openeditor="false"/>
+        <file source="src/modules/Clock/qml.qrc" openeditor="false"/>
         <file source="src/modules/Components/qmldir" openeditor="false"/>
         <file source="src/modules/Components/qml.qrc" openeditor="false"/>
         <file source="src/modules/Components/components_plugin.cpp" openeditor="false"/>
@@ -24,18 +25,54 @@
         <file source="src/modules/Components/components_plugin.h" openeditor="false"/>
         <file source="src/modules/Components/Components.pro" openeditor="false"/>
         <file source="src/modules/modules.pro" openeditor="false"/>
-        <file source="src/app/qml.qrc" openeditor="false"/>
-        <file source="src/app/app.pro" openeditor="false"/>
-        <file source="src/app/pages/PageCluster.qml" openeditor="false"/>
-        <file source="src/app/assets/images/icons/icon_comfort_active.svg" openeditor="false"/>
-        <file source="src/app/assets/images/icons/icon_enjoy_active.svg" openeditor="false"/>
-        <file source="src/app/assets/images/icons/icon_comfort_inactive.svg" openeditor="false"/>
-        <file source="src/app/assets/images/icons/icon_notification_inactive.svg" openeditor="false"/>
-        <file source="src/app/assets/images/icons/icon_notification_active.svg" openeditor="false"/>
-        <file source="src/app/assets/images/icons/icon_enjoy_inactive.svg" openeditor="false"/>
-        <file source="src/app/assets/images/images.qrc" openeditor="false"/>
-        <file source="src/app/main.qml" openeditor="true"/>
-        <file source="src/app/main.cpp" openeditor="false"/>
+	<file source="src/app/assets/images/indicators.qrc" openeditor="false"/>
+	<file source="src/app/assets/images/icons/previous.png" openeditor="false"/>
+	<file source="src/app/assets/images/icons/next.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/airbag_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/abs_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/tractionoff_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/wheellock_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/keys_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/warning_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/tractionoff_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/wheellock_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/tv_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/warning_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/tv_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/trac_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/drivinglight_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/trac_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/charge_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/fog_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/lights_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/airbag_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/seatbelt_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/drivinglight_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/keys_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/blink_right_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/blink_left_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/charge_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/abs_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/seatbelt_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/blink_left_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/fog_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/blink_right_off.png" openeditor="false"/>
+	<file source="src/app/assets/images/indicators/lights_on.png" openeditor="false"/>
+	<file source="src/app/assets/images/images.qrc" openeditor="false"/>
+	<file source="src/app/main.qml" openeditor="false"/>
+	<file source="src/app/qml.qrc" openeditor="false"/>
+	<file source="src/app/main.cpp" openeditor="false"/>
+	<file source="src/app/apps/car/car.qrc" openeditor="false"/>
+	<file source="src/app/apps/car/CarApp.qml" openeditor="false"/>
+	<file source="src/app/apps/media/media.qrc" openeditor="false"/>
+	<file source="src/app/apps/media/MediaApp.qml" openeditor="false"/>
+	<file source="src/app/apps/settings/SettingsAppTheme.qml" openeditor="false"/>
+	<file source="src/app/apps/settings/SettingsAppUnits.qml" openeditor="false"/>
+	<file source="src/app/apps/settings/SettingsAppMain.qml" openeditor="false"/>
+	<file source="src/app/apps/settings/settings.qrc" openeditor="false"/>
+	<file source="src/app/apps/settings/SettingsApp.qml" openeditor="false"/>
+	<file source="src/app/apps/settings/SettingsAppLanguage.qml" openeditor="false"/>
+	<file source="src/app/app.pro" openeditor="false"/>
         <file source=".gitignore" openeditor="false"/>
         <file source="lmmw-ic-sdkexample.spec" target="%ProjectName%.spec" openeditor="false"/>
         <file source="tests/tests.pro" openeditor="false"/>
@@ -52,6 +89,7 @@
         <file source="tests/api/components/tst_notificationbar.qml" openeditor="false"/>
         <file source="tests/api/components/tst_components.cpp" openeditor="false"/>
         <file source="tests/api/components/components.pro" openeditor="false"/>
-        <file source="lmmw-ic-sdkexample.pro" target="%ProjectName%.pro" openproject="true" />
+        <file source="lmmw-ic-sdkexample.pro" target="%ProjectName%.pro" openproject="false" />
+        <file source="lmmw-ic-sdkexample.lmproject" target="%ProjectName%.lmproject" openproject="true" />
     </files>
 </wizard>

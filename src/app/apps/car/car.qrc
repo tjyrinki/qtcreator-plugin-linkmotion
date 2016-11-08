@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/apps/car">
+        <file>CarApp.qml</file>
+    </qresource>
+</RCC>
