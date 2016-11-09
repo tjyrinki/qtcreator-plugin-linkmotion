@@ -108,35 +108,5 @@ void LinkMotionBuildOutputParser::stdError(const QString &line) {
                        Core::Id(ProjectExplorer::Constants::TASK_CATEGORY_BUILDSYSTEM)), 1, 0);
 
     }
-    /*
-     * ../../../src/qml/qml.qrc: Warning: potential duplicate alias detected: 'enjoy_icon_radio_scan.svg'
-     *
-     *
-     * ListMusicModel_1_0.cpp: In member function 'virtual QHash<int, QByteArray> ListMusicModel_1_0::roleNames() const':
-ListMusicModel_1_0.cpp:4:61: warning: no return statement in function returning non-void [-Wreturn-type]
- QHash<int,QByteArray> ListMusicModel_1_0::roleNames() const{}
-     *
-     * Project WARNING: QML Compiler is enabled.
-     *
-     * error: package lm-ui-plugins is not installed
-     *
-     * Module 'QtSparql' does not contain a module identifier directive - it cannot be protected from external registrations.
-     *
-     *
-     * In file included from bluetoothprofilesession.cpp:21:0:
-bluetoothprofilesession.h: In constructor 'BluetoothProfileSession::BluetoothProfileSession(BluetoothManager*, QObject*)':
-bluetoothprofilesession.h:57:21: warning: 'BluetoothProfileSession::m_sessionInterface' will be initialized after [-Wreorder]
-     QDBusInterface *m_sessionInterface;
-                     ^
-bluetoothprofilesession.h:53:10: warning:   'bool BluetoothProfileSession::m_creatingSession' [-Wreorder]
-     bool m_creatingSession;
-          ^
-bluetoothprofilesession.cpp:25:1: warning:   when initialized here [-Wreorder]
- BluetoothProfileSession::BluetoothProfileSession(BluetoothManager *btm, QObject *parent) :
- ^
-     *
 
-     * warning: File listed twice: /usr/lib/debug/.build-id
-     *
-     */
 }

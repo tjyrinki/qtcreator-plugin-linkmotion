@@ -11,6 +11,7 @@
 
 #include "linkmotionbuildconfigurationfactory.h"
 #include "linkmotionbuildplugin_constants.h"
+#include "../lmprojectplugin/linkmotionprojectplugin_constants.h"
 #include "linkmotionbuildstep.h"
 
 #include <qmlprojectmanager/qmlprojectconstants.h>
@@ -79,11 +80,14 @@ LinkMotionBuildConfiguration *LinkMotionBuildConfigurationFactory::create(Projec
     conf->setDefaultDisplayName(info->displayName);
     conf->setDisplayName(info->displayName);
 
-    // TODO: Check that this is a linkmotion project
+    // Check that this is a linkmotion project
     // then only add the steps
-    qDebug() << "INSERTING build step";
-    ProjectExplorer::BuildStepList *bs = conf->stepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
-    bs->insertStep(0, new LinkMotionBuildStep(bs));
+    if (canHandle(parent)) {
+        ProjectExplorer::BuildStepList *bs = conf->stepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
+        bs->insertStep(0, new LinkMotionBuildStep(bs));
+    } else {
+        qDebug() << Q_FUNC_INFO << "Unable to handle project type" << parent->project()->id();
+    }
     return conf;
 }
 
@@ -139,8 +143,10 @@ LinkMotionBuildConfiguration *LinkMotionBuildConfigurationFactory::clone(Project
 bool LinkMotionBuildConfigurationFactory::canHandle(const ProjectExplorer::Target *t) const
 {
     qDebug() << Q_FUNC_INFO;
+    if (!t) return false;
+    if (!t->project()) return false;
 
-    return true;
+    return (t->project()->id() == LinkMotion::Constants::LINKMOTIONPROJECT_ID);
 }
 
 QList<ProjectExplorer::BuildInfo *> LinkMotionBuildConfigurationFactory::createBuildInfos(const ProjectExplorer::Kit *k, const QString &projectDir) const
@@ -157,6 +163,5 @@ QList<ProjectExplorer::BuildInfo *> LinkMotionBuildConfigurationFactory::createB
     info->displayName = tr("Default");
 
     builds << info;
-    qDebug() << Q_FUNC_INFO << info->buildDirectory << info->kitId;
     return builds;
 }

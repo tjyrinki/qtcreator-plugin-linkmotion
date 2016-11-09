@@ -15,6 +15,6 @@ using namespace LinkMotion::Internal;
 
 LinkMotionBuildStepConfigWidget::LinkMotionBuildStepConfigWidget(ProjectExplorer::BuildStep* step) : BuildStepConfigWidget()
 {
+    qDebug() << Q_FUNC_INFO;
     m_step = step;
-
 }

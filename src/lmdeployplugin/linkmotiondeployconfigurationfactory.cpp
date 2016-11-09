@@ -65,9 +65,14 @@ bool LinkMotionDeployConfigurationFactory::canCreate(ProjectExplorer::Target *pa
 
 ProjectExplorer::DeployConfiguration* LinkMotionDeployConfigurationFactory::create(ProjectExplorer::Target *parent, Core::Id id) {
     qDebug() << Q_FUNC_INFO;
+    QString defaultDisplayName(QStringLiteral("LinkMotionApp Deploy"));
+    if (parent->activeBuildConfiguration()) {
+        defaultDisplayName = parent->activeBuildConfiguration()->displayName();
+    }
+
     LinkMotionDeployConfiguration *conf = new LinkMotionDeployConfiguration(parent);
-    conf->setDefaultDisplayName(parent->activeBuildConfiguration()->displayName());
-    conf->setDisplayName(parent->activeBuildConfiguration()->displayName());
+    conf->setDefaultDisplayName(defaultDisplayName);
+    conf->setDisplayName(defaultDisplayName);
 
     ProjectExplorer::BuildStepList *bs = conf->stepList();
 

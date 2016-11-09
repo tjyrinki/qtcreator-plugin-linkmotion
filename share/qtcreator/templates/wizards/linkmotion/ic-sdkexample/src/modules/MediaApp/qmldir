@@ -1,0 +1,4 @@
+module MediaApp
+plugin mediaApp
+MediaApp 1.0 qrc:/apps/media/MediaApp.qml
+typeinfo plugins.qmltypes

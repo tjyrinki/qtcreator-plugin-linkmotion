@@ -18,21 +18,25 @@ using namespace Internal;
 
 LinkMotionDeviceFactory::LinkMotionDeviceFactory()
 {
+    qDebug() << Q_FUNC_INFO;
     setObjectName(QLatin1String("LinkMotionDeviceFactory"));
 }
 
 QString LinkMotionDeviceFactory::displayNameForId(Core::Id type) const
 {
+    qDebug() << Q_FUNC_INFO;
     return type == Constants::LINKMOTION_DEVICE_TYPE ? LinkMotionDevice::name() : QString();
 }
 
 QList<Core::Id> LinkMotionDeviceFactory::availableCreationIds() const
 {
+    qDebug() << Q_FUNC_INFO;
     return QList<Core::Id>() << Core::Id(Constants::LINKMOTION_DEVICE_TYPE);
 }
 
 bool LinkMotionDeviceFactory::canCreate() const
 {
+    qDebug() << Q_FUNC_INFO;
     return false;
 }
 
@@ -44,6 +48,7 @@ ProjectExplorer::IDevice::Ptr LinkMotionDeviceFactory::create(Core::Id id) const
 
 bool LinkMotionDeviceFactory::canRestore(const QVariantMap &map) const
 {
+    qDebug() << Q_FUNC_INFO;
     if (ProjectExplorer::IDevice::typeFromMap(map) != Constants::LINKMOTION_DEVICE_TYPE)
         return false;
     QVariantMap vMap = map.value(QLatin1String(Constants::EXTRA_INFO_KEY)).toMap();
@@ -55,6 +60,7 @@ bool LinkMotionDeviceFactory::canRestore(const QVariantMap &map) const
 
 ProjectExplorer::IDevice::Ptr LinkMotionDeviceFactory::restore(const QVariantMap &map) const
 {
+    qDebug() << Q_FUNC_INFO;
     LinkMotionDevice *newDev = new LinkMotionDevice;
     newDev->fromMap(map);
     return ProjectExplorer::IDevice::Ptr(newDev);

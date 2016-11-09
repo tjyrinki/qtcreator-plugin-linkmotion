@@ -41,12 +41,10 @@ LinkMotionRunControl::LinkMotionRunControl(LinkMotionRunConfiguration *rc)
 LinkMotionRunControl::~LinkMotionRunControl()
 {
     qDebug() << Q_FUNC_INFO;
-    stop();
 }
 
 void LinkMotionRunControl::slotStart_Finished(int code, QProcess::ExitStatus status) {
     qDebug() << Q_FUNC_INFO << code << status;
-    stop();
 }
 
 void LinkMotionRunControl::slotStart_StdErr() {
@@ -89,7 +87,6 @@ void LinkMotionRunControl::slotStart_StdOut() {
 void LinkMotionRunControl::slotStart_Error(QProcess::ProcessError err) {
     qDebug() << Q_FUNC_INFO << err << m_processStart.errorString();
     appendMessage(m_processStart.errorString(), Utils::ErrorMessageFormat);
-    stop();
 }
 
 void LinkMotionRunControl::start()
@@ -135,12 +132,22 @@ void LinkMotionRunControl::slotStop_Error(QProcess::ProcessError err) {
 
 void LinkMotionRunControl::slotStop_Finished(int code, QProcess::ExitStatus status) {
     qDebug() << Q_FUNC_INFO << code << status;
+    emit finished();
+    m_running = false;
+
+    appendMessage(QLatin1String("\n"), Utils::NormalMessageFormat);
+    appendMessage(tr("Stopped remote process."), Utils::NormalMessageFormat);
 }
 
 ProjectExplorer::RunControl::StopResult LinkMotionRunControl::stop()
 {
     qDebug() << Q_FUNC_INFO;
+    if (m_processStop.state() == QProcess::Running) return AsynchronousStop;
     m_processStart.terminate();
+
+    if (!this->runConfiguration()) return StoppedSynchronously;
+    if (!this->runConfiguration()->target()) return StoppedSynchronously;
+    if (!this->runConfiguration()->target()->project()) return StoppedSynchronously;
 
     QString projectName = this->runConfiguration()->target()->project()->displayName();
     Utils::Environment env = Utils::Environment::systemEnvironment();
@@ -156,11 +163,10 @@ ProjectExplorer::RunControl::StopResult LinkMotionRunControl::stop()
 
     m_processStop.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-stop"),projectName);
     m_processStop.start();
+    appendMessage(QLatin1String("\n"), Utils::NormalMessageFormat);
+    appendMessage(tr("Stopping remote process.."), Utils::NormalMessageFormat);
 
-    m_running = false;
-    emit finished();
-    appendMessage(tr("Stopped remote process."), Utils::NormalMessageFormat);
-    return StoppedSynchronously;
+    return AsynchronousStop;
 }
 
 bool LinkMotionRunControl::isRunning() const
@@ -172,5 +178,12 @@ bool LinkMotionRunControl::isRunning() const
 QString LinkMotionRunControl::displayName() const
 {
     qDebug() << Q_FUNC_INFO;
-    return QLatin1String("LinkMotion Runner");
+    QString retval = QLatin1String("LinkMotion Runner");
+    if (!this->runConfiguration()) return retval;
+    if (!this->runConfiguration()->target()) return retval;
+    if (!this->runConfiguration()->target()->project()) return retval;
+
+    retval = this->runConfiguration()->target()->project()->displayName();
+
+    return retval;
 }

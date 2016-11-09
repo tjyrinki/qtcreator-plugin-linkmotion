@@ -34,14 +34,15 @@ ProjectExplorer::Project* LinkMotionProjectManager::openProject(const QString &f
     QString proFileName = lmprojectReader->value(QStringLiteral("MainProjectFile")).toString();
     lmprojectReader->deleteLater();
 
-    qDebug() << "Read the projectFile" << proFileName;
     QFileInfo fileInfoProject(filePath);
 
     QString proFilePath = QStringLiteral("%0/%1").arg(fileInfoProject.dir().absolutePath()).arg(proFileName);
-    qDebug() << "Full path is" << proFilePath;
     QFileInfo fileInfo(proFilePath);
 
     foreach (ProjectExplorer::Project *pi, ProjectExplorer::SessionManager::projects()) {
+        if (!pi) continue;
+        if (!pi->document()) continue;
+
         if (filePath == pi->document()->filePath().toString()) {
             if (errorString)
                 *errorString = tr("Failed opening project '%1': Project already open") .arg(QDir::toNativeSeparators(filePath));

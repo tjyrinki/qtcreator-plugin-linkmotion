@@ -22,9 +22,6 @@ private:
     Debugger::AnalyzerRunControl *m_runControl;
     LinkMotionRunConfiguration *m_runConfig;
     Utils::QtcProcess m_process;
-
-
-
 };
 
 }

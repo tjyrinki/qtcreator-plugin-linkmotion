@@ -13,7 +13,7 @@ VirtualClusterApp {
             ColumnLayout {
                 anchors.fill: parent
                 Label {
-                    text: "Media"
+                    text: "TODO"
                 }
             }
         }

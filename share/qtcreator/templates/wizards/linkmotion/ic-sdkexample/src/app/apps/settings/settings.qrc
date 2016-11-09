@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/apps/settings">
-        <file>SettingsApp.qml</file>
-        <file>SettingsAppMain.qml</file>
-        <file>SettingsAppLanguage.qml</file>
-        <file>SettingsAppUnits.qml</file>
-        <file>SettingsAppTheme.qml</file>
-    </qresource>
-</RCC>

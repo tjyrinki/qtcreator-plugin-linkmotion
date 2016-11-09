@@ -55,9 +55,11 @@ bool LinkMotionProjectFile::isSaveAsAllowed() const {
 }
 
 Core::IDocument::ReloadBehavior LinkMotionProjectFile::reloadBehavior(ChangeTrigger state, ChangeType type) const {
+    qDebug() << Q_FUNC_INFO;
     return Core::IDocument::BehaviorSilent;
 }
 
 bool LinkMotionProjectFile::reload(QString *errorString, ReloadFlag flag, ChangeType) {
+    qDebug() << Q_FUNC_INFO;
     return true;
 }

@@ -60,8 +60,12 @@ void LinkMotionDebugRunRunner::slotRunControl_RequestRemoteSetup() {
 void LinkMotionDebugRunRunner::slotRunControl_Finished() {
     qDebug() << Q_FUNC_INFO;
     m_processStart.terminate();
+
+    if (!m_runConfig) return;
+    if (!m_runConfig->target()) return;
+    if (!m_runConfig->target()->project()) return;
+
     QString projectName = m_runConfig->target()->project()->displayName();
-    QString appName = m_runConfig->target()->project()->displayName();
 
     Utils::Environment env = Utils::Environment::systemEnvironment();
     env.prependOrSetPath("/opt/linkmotion/sdk/vm");
@@ -105,6 +109,8 @@ void LinkMotionDebugRunRunner::slotStart_ReadyRead() {
 void LinkMotionDebugRunRunner::slotStart_ReadyReadStandardError() {
     QByteArray data = m_processStart.readAllStandardError();
     qDebug() << Q_FUNC_INFO << data;
+    if (!m_runControl) return;
+
 
     QStringList lines = QString::fromLatin1(data).split("\n");
 
@@ -149,6 +155,7 @@ void LinkMotionDebugRunRunner::slotStart_ReadyReadStandardError() {
 void LinkMotionDebugRunRunner::slotStart_ReadyReadStandardOutput() {
     QByteArray data = m_processStart.readAllStandardOutput();
     qDebug() << Q_FUNC_INFO << data;
+    if (!m_runControl) return;
 
     QStringList lines = QString::fromLatin1(data).split("\n");
     foreach (QString line, lines) {
@@ -163,6 +170,7 @@ void LinkMotionDebugRunRunner::slotStart_ReadyReadStandardOutput() {
 
 void LinkMotionDebugRunRunner::slotStop_Finished(int retval, QProcess::ExitStatus status) {
     qDebug() << Q_FUNC_INFO << retval << status;
+    if (!m_runControl) return;
     m_runControl->notifyInferiorExited();
 }
 

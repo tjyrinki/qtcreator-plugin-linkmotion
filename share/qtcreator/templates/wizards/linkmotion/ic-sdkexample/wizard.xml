@@ -17,15 +17,25 @@
         <file source="src/modules/Clock/clocklabel.h" openeditor="false"/>
         <file source="src/modules/Clock/clock_plugin.cpp" openeditor="false"/>
         <file source="src/modules/Clock/qml.qrc" openeditor="false"/>
-        <file source="src/modules/Components/qmldir" openeditor="false"/>
-        <file source="src/modules/Components/qml.qrc" openeditor="false"/>
-        <file source="src/modules/Components/components_plugin.cpp" openeditor="false"/>
-        <file source="src/modules/Components/NotificationBar.qml" openeditor="false"/>
-        <file source="src/modules/Components/plugins.qmltypes" openeditor="false"/>
-        <file source="src/modules/Components/components_plugin.h" openeditor="false"/>
-        <file source="src/modules/Components/Components.pro" openeditor="false"/>
+
+        <file source="src/modules/CarApp/qml.qrc" openeditor="false"/>
+        <file source="src/modules/CarApp/qmldir" openeditor="false"/>
+        <file source="src/modules/CarApp/carapp_plugin.cpp" openeditor="false"/>
+        <file source="src/modules/CarApp/carapp_plugin.h" openeditor="false"/>
+        <file source="src/modules/CarApp/plugins.qmltypes" openeditor="false"/>
+        <file source="src/modules/CarApp/CarApp.qml" openeditor="false"/>
+        <file source="src/modules/CarApp/CarApp.pro" openeditor="false"/>
+
+        <file source="src/modules/MediaApp/qml.qrc" openeditor="false"/>
+        <file source="src/modules/MediaApp/qmldir" openeditor="false"/>
+        <file source="src/modules/MediaApp/mediaapp_plugin.cpp" openeditor="false"/>
+        <file source="src/modules/MediaApp/mediaapp_plugin.h" openeditor="false"/>
+        <file source="src/modules/MediaApp/plugins.qmltypes" openeditor="false"/>
+        <file source="src/modules/MediaApp/MediaApp.pro" openeditor="false"/>
+        <file source="src/modules/MediaApp/MediaApp.qml" openeditor="false"/>
+
         <file source="src/modules/modules.pro" openeditor="false"/>
-	<file source="src/app/assets/images/indicators.qrc" openeditor="false"/>
+        <file source="src/app/assets/images/indicators.qrc" openeditor="false"/>
         <file source="src/app/assets/images/icons/previous.png" openeditor="false" binary="true" />
         <file source="src/app/assets/images/icons/next.png" openeditor="false" binary="true" />
         <file source="src/app/assets/images/indicators/airbag_on.png" openeditor="false" binary="true" />
@@ -58,21 +68,11 @@
         <file source="src/app/assets/images/indicators/fog_on.png" openeditor="false" binary="true" />
         <file source="src/app/assets/images/indicators/blink_right_off.png" openeditor="false" binary="true" />
         <file source="src/app/assets/images/indicators/lights_on.png" openeditor="false" binary="true" />
-	<file source="src/app/assets/images/images.qrc" openeditor="false"/>
-	<file source="src/app/main.qml" openeditor="false"/>
-	<file source="src/app/qml.qrc" openeditor="false"/>
-	<file source="src/app/main.cpp" openeditor="false"/>
-	<file source="src/app/apps/car/car.qrc" openeditor="false"/>
-	<file source="src/app/apps/car/CarApp.qml" openeditor="false"/>
-	<file source="src/app/apps/media/media.qrc" openeditor="false"/>
-	<file source="src/app/apps/media/MediaApp.qml" openeditor="false"/>
-	<file source="src/app/apps/settings/SettingsAppTheme.qml" openeditor="false"/>
-	<file source="src/app/apps/settings/SettingsAppUnits.qml" openeditor="false"/>
-	<file source="src/app/apps/settings/SettingsAppMain.qml" openeditor="false"/>
-	<file source="src/app/apps/settings/settings.qrc" openeditor="false"/>
-	<file source="src/app/apps/settings/SettingsApp.qml" openeditor="false"/>
-	<file source="src/app/apps/settings/SettingsAppLanguage.qml" openeditor="false"/>
-	<file source="src/app/app.pro" openeditor="false"/>
+        <file source="src/app/assets/images/images.qrc" openeditor="false"/>
+        <file source="src/app/main.qml" openeditor="false"/>
+        <file source="src/app/qml.qrc" openeditor="false"/>
+        <file source="src/app/main.cpp" openeditor="false"/>
+        <file source="src/app/app.pro" openeditor="false"/>
         <file source=".gitignore" openeditor="false"/>
         <file source="lmmw-ic-sdkexample.spec" target="%ProjectName%.spec" openeditor="false"/>
         <file source="tests/tests.pro" openeditor="false"/>

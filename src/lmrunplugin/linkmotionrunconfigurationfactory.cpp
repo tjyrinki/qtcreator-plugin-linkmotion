@@ -15,6 +15,8 @@
 #include <qmakeprojectmanager/qmakeprojectmanagerconstants.h>
 #include <projectexplorer/target.h>
 
+#include "../lmprojectplugin/linkmotionprojectplugin_constants.h"
+
 #include <QDebug>
 
 using namespace LinkMotion;
@@ -44,9 +46,10 @@ bool LinkMotionRunConfigurationFactory::canCreate(ProjectExplorer::Target *paren
     if (!parent)
         return false;
 
-    //TODO: do id based filtering
+    if (!parent->project()) return false;
 
-    return true;
+    // do id based filtering
+    return (parent->project()->id() == LinkMotion::Constants::LINKMOTIONPROJECT_ID);;
 }
 
 bool LinkMotionRunConfigurationFactory::canRestore(ProjectExplorer::Target *parent, const QVariantMap &map) const {

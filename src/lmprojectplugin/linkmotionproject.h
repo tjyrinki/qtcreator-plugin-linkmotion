@@ -29,10 +29,7 @@ class LinkMotionProject : public QmakeProjectManager::QmakeProject
 {
 public:
     LinkMotionProject(LinkMotionProjectManager *manager, const QString &fileName);
-
-protected:
-    LinkMotionProjectManager *m_projectManager;
-    QString m_lmprojectFile;
+    ~LinkMotionProject();
 
 };
 

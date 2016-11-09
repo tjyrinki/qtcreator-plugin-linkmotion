@@ -1,0 +1,47 @@
+
+1) This seems to be the timer which updates the code model for qml. If a user creates a new project and closes it before the timer has triggered
+the qt creator will crash. This is a Qt Creator bug.
+
+#0  0x00007fffda58da37 in ?? () from /opt/linkmotion/qtcreator/lib/qtcreator/plugins/../libQmlJS.so.4
+#1  0x00007fffda59fc22 in ?? () from /opt/linkmotion/qtcreator/lib/qtcreator/plugins/../libQmlJS.so.4
+#2  0x00007fffda596e2f in ?? () from /opt/linkmotion/qtcreator/lib/qtcreator/plugins/../libQmlJS.so.4
+#3  0x00007fffda5a1db9 in QmlJS::LibraryInfo::~LibraryInfo() () from /opt/linkmotion/qtcreator/lib/qtcreator/plugins/../libQmlJS.so.4
+#4  0x00007fffda5a730d in ?? () from /opt/linkmotion/qtcreator/lib/qtcreator/plugins/../libQmlJS.so.4
+#5  0x00007ffff6877289 in QHashData::free_helper(void (*)(QHashData::Node*)) () from /opt/linkmotion/qt/5.8.0/lib/libQt5Core.so.5
+#6  0x00007fffda5ebbd8 in ?? () from /opt/linkmotion/qtcreator/lib/qtcreator/plugins/../libQmlJS.so.4
+#7  0x00007fffda5e4fee in QmlJS::ModelManagerInterface::resetCodeModel() () from /opt/linkmotion/qtcreator/lib/qtcreator/plugins/../libQmlJS.so.4
+#8  0x00007ffff6a23fd6 in QMetaObject::activate(QObject*, int, int, void**) () from /opt/linkmotion/qt/5.8.0/lib/libQt5Core.so.5
+#9  0x00007ffff6a305b8 in QTimer::timerEvent(QTimerEvent*) () from /opt/linkmotion/qt/5.8.0/lib/libQt5Core.so.5
+#10 0x00007ffff6a24b33 in QObject::event(QEvent*) () from /opt/linkmotion/qt/5.8.0/lib/libQt5Core.so.5
+#11 0x00007ffff72becbc in QApplicationPrivate::notify_helper(QObject*, QEvent*) () from /opt/linkmotion/qt/5.8.0/lib/libQt5Widgets.so.5
+#12 0x00007ffff72c66d6 in QApplication::notify(QObject*, QEvent*) () from /opt/linkmotion/qt/5.8.0/lib/libQt5Widgets.so.5
+#13 0x00007ffff69f8f28 in QCoreApplication::notifyInternal2(QObject*, QEvent*) () from /opt/linkmotion/qt/5.8.0/lib/libQt5Core.so.5
+#14 0x00007ffff6a4b26e in QTimerInfoList::activateTimers() () from /opt/linkmotion/qt/5.8.0/lib/libQt5Core.so.5
+#15 0x00007ffff6a4bad1 in ?? () from /opt/linkmotion/qt/5.8.0/lib/libQt5Core.so.5
+#16 0x00007ffff3b121a7 in g_main_context_dispatch () from /lib/x86_64-linux-gnu/libglib-2.0.so.0
+#17 0x00007ffff3b12400 in ?? () from /lib/x86_64-linux-gnu/libglib-2.0.so.0
+#18 0x00007ffff3b124ac in g_main_context_iteration () from /lib/x86_64-linux-gnu/libglib-2.0.so.0
+#19 0x00007ffff6a4c64f in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /opt/linkmotion/qt/5.8.0/lib/libQt5Core.so.5
+#20 0x00007ffff69f6f1a in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /opt/linkmotion/qt/5.8.0/lib/libQt5Core.so.5
+#21 0x00007ffff69ff574 in QCoreApplication::exec() () from /opt/linkmotion/qt/5.8.0/lib/libQt5Core.so.5
+#22 0x00000000004095db in ?? ()
+#23 0x00007ffff5c13830 in __libc_start_main () from /lib/x86_64-linux-gnu/libc.so.6
+#24 0x0000000000409ec9 in ?? ()
+
+
+2) For this there is workaround in Qt Creator source tree in session.cpp near line 722
+#5  0x00007fffd55898bc in ProjectExplorer::ProjectConfiguration::~ProjectConfiguration (this=0x2f784d0, __in_chrg=<optimized out>) at ../../../qtcreator/src/plugins/projectexplorer/projectconfiguration.h:47
+#6  0x00007fffd55899d8 in ProjectExplorer::BuildConfiguration::~BuildConfiguration (this=0x2f784d0, __in_chrg=<optimized out>) at ../../../qtcreator/src/plugins/projectexplorer/buildconfiguration.h:44
+#7  0x00007fffd55947b2 in LinkMotion::Internal::LinkMotionBuildConfiguration::~LinkMotionBuildConfiguration (this=0x2f784d0, __in_chrg=<optimized out>) at .moc/debug-shared/../../linkmotionbuildconfiguration.h:21
+#8  0x00007fffd55947e2 in LinkMotion::Internal::LinkMotionBuildConfiguration::~LinkMotionBuildConfiguration (this=0x2f784d0, __in_chrg=<optimized out>) at .moc/debug-shared/../../linkmotionbuildconfiguration.h:21
+#9  0x00007fffe0d4ec3e in ProjectExplorer::Target::~Target() () from /opt/linkmotion/qtcreator/lib/qtcreator/plugins/libProjectExplorer.so
+#10 0x00007fffe0d4edc9 in ProjectExplorer::Target::~Target() () from /opt/linkmotion/qtcreator/lib/qtcreator/plugins/libProjectExplorer.so
+#11 0x00007fffe0d8967e in ProjectExplorer::Project::~Project() () from /opt/linkmotion/qtcreator/lib/qtcreator/plugins/libProjectExplorer.so
+#12 0x00007fffd4d24112 in LinkMotion::Internal::LinkMotionProject::~LinkMotionProject (this=0x2f75390, __in_chrg=<optimized out>) at linkmotionproject.h:28
+#13 0x00007fffd4d24142 in LinkMotion::Internal::LinkMotionProject::~LinkMotionProject (this=0x2f75390, __in_chrg=<optimized out>) at linkmotionproject.h:28
+#14 0x00007fffe0d7a973 in ProjectExplorer::SessionManager::removeProjects(QList<ProjectExplorer::Project*>) () from /opt/linkmotion/qtcreator/lib/qtcreator/plugins/libProjectExplorer.so
+#15 0x00007fffe0d7abe3 in ProjectExplorer::SessionManager::removeProject(ProjectExplorer::Project*) () from /opt/linkmotion/qtcreator/lib/qtcreator/plugins/libProjectExplorer.so
+#16 0x00007fffe0cdda49 in ProjectExplorer::ProjectExplorerPlugin::unloadProject(ProjectExplorer::Project*) () from /opt/linkmotion/qtcreator/lib/qtcreator/plugins/libProjectExplorer.so
+
+
+

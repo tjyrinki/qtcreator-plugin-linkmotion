@@ -1,5 +1,5 @@
-TARGET = components
-uri = Components
+TARGET = mediaApp
+uri = MediaApp
 APPNAME = %ProjectName%
 
 CONFIG += lm_lib
@@ -10,6 +10,6 @@ OTHER_FILES += $$system(find . |grep qml$) \
 	qmldir \
 	plugins.qmltypes
 
-SOURCES += components_plugin.cpp
-HEADERS += components_plugin.h
+SOURCES += mediaapp_plugin.cpp
+HEADERS += mediaapp_plugin.h
 RESOURCES += qml.qrc

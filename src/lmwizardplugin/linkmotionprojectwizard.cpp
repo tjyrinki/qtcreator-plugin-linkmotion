@@ -38,5 +38,13 @@ bool LinkMotionProjectWizard::postGenerateFiles(const QWizard *w, const Core::Ge
         }
     }
 
-    return ProjectExplorer::CustomProjectWizard::postGenerateOpen(l ,errorMessage);
+    for (int idx=0; idx<l.length(); idx++) {
+        Core::GeneratedFile file = l.at(idx);
+        qDebug() << Q_FUNC_INFO << file.path() << file.isBinary();
+    }
+    // Developer Note: A crash has been seen inside this function. To be investigated.
+    //    that is why the debug prints up there.
+    bool retval = ProjectExplorer::CustomProjectWizard::postGenerateOpen(l ,errorMessage);
+    qDebug() << Q_FUNC_INFO << errorMessage;
+    return retval;
 }

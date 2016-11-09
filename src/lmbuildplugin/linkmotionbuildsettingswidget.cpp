@@ -48,15 +48,18 @@ void LinkMotionBuildSettingsWidget::updateBuildDirectory() const
 
 void LinkMotionBuildSettingsWidget::onUsernameChanged(QString username) {
     qDebug() << Q_FUNC_INFO;
+    if (!m_buildConfiguration) return;
     m_buildConfiguration->m_username = username;
 }
 
 void LinkMotionBuildSettingsWidget::onPasswordChanged(QString password) {
     qDebug() << Q_FUNC_INFO;
+    if (!m_buildConfiguration) return;
     m_buildConfiguration->m_password = password;
 }
 
 void LinkMotionBuildSettingsWidget::onDeviceChanged(QString device) {
     qDebug() << Q_FUNC_INFO;
+    if (!m_buildConfiguration) return;
     m_buildConfiguration->m_device = device;
 }

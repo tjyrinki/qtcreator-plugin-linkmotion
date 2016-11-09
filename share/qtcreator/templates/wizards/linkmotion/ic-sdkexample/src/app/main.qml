@@ -5,9 +5,10 @@ import LinkMotion.Base.Core 1.0
 import LinkMotion.Base.Conf 1.0
 import LinkMotion.Base.Gauges 1.0
 
-import "apps/car"
-import "apps/media"
-import "apps/settings"
+import Clock 1.0
+
+import CarApp 1.0
+import MediaApp 1.0
 
 VirtualClusterWindow {
     background: Rectangle {
@@ -43,6 +44,11 @@ VirtualClusterWindow {
                 maximumValue: vehicleConfiguration.rpm.max
                 value: vehicleConfiguration.rpm.value
             },
+            ClockLabel {
+                font.pointSize: 14
+                color: "#eee"
+                anchors.horizontalCenter: parent.horizontalCenter
+            },
             FuelGauge {
                 minimumValue: vehicleConfiguration.fuel.min
                 maximumValue: vehicleConfiguration.fuel.max
@@ -61,8 +67,7 @@ VirtualClusterWindow {
                 height: 300
                 apps: [
                     CarApp {},
-                    MediaApp {},
-                    SettingsApp {}
+                    MediaApp {}
                 ]
             },
 

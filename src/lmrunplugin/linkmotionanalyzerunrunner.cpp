@@ -44,6 +44,11 @@ void LinkMotionAnalyzeRunRunner::slotRunControl_Finished() {
 
 void LinkMotionAnalyzeRunRunner::slotRunControl_Started() {
     qDebug() << Q_FUNC_INFO;    qDebug() << Q_FUNC_INFO;
+
+    if (!m_runConfig) return;
+    if (!m_runConfig->target()) return;
+    if (!m_runConfig->target()->project()) return;
+
     QString appName = m_runConfig->target()->project()->displayName();
 
     Utils::Environment env = Utils::Environment::systemEnvironment();
@@ -68,6 +73,11 @@ void LinkMotionAnalyzeRunRunner::slotRunControl_Started() {
 void LinkMotionAnalyzeRunRunner::slotStart_Finished(int retval, QProcess::ExitStatus status) {
     qDebug() << Q_FUNC_INFO << retval << status;
     m_processStart.terminate();
+
+    if (!m_runConfig) return;
+    if (!m_runConfig->target()) return;
+    if (!m_runConfig->target()->project()) return;
+
     QString projectName =  m_runConfig->target()->project()->displayName();
     Utils::Environment env = Utils::Environment::systemEnvironment();
     env.prependOrSetPath("/opt/linkmotion/sdk/vm");
@@ -97,6 +107,7 @@ void LinkMotionAnalyzeRunRunner::slotStart_ReadyRead() {
 void LinkMotionAnalyzeRunRunner::slotStart_ReadyReadStandardError() {
     QByteArray data = m_processStart.readAllStandardError();
     qDebug() << Q_FUNC_INFO << data;
+    if (!m_runControl) return;
 
     QStringList lines = QString::fromLatin1(data).split("\n");
 
@@ -128,6 +139,7 @@ void LinkMotionAnalyzeRunRunner::slotStart_ReadyReadStandardError() {
 void LinkMotionAnalyzeRunRunner::slotStart_ReadyReadStandardOutput() {
     QByteArray data = m_processStart.readAllStandardOutput();
     qDebug() << Q_FUNC_INFO << data;
+    if (!m_runControl) return;
 
     QStringList lines = QString::fromLatin1(data).split("\n");
 
@@ -141,6 +153,7 @@ void LinkMotionAnalyzeRunRunner::slotStart_ReadyReadStandardOutput() {
 
 void LinkMotionAnalyzeRunRunner::slotStop_Finished(int retval, QProcess::ExitStatus status) {
     qDebug() << Q_FUNC_INFO << retval << status;
+    if (!m_runControl) return;
     m_runControl->notifyRemoteFinished();
 }
 

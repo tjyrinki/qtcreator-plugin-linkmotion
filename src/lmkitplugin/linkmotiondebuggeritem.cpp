@@ -11,10 +11,13 @@
 #include "linkmotiondebuggeritem.h"
 #include "linkmotionkitplugin_constants.h"
 
+#include <QDebug>
+
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
 
 LinkMotionDebuggerItem::LinkMotionDebuggerItem(ProjectExplorer::Abi abi) : Debugger::DebuggerItem() {
+    qDebug() << Q_FUNC_INFO;
     setCommand(Utils::FileName::fromString(LinkMotion::Constants::LINKMOTION_GDB_COMMAND));
     setEngineType(Debugger::GdbEngineType);
     setUnexpandedDisplayName(QStringLiteral("GDB for LinkMotion"));

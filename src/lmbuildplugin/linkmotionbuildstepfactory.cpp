@@ -20,6 +20,7 @@
 #include "linkmotionbuildplugin_constants.h"
 
 #include <projectexplorer/kitinformation.h>
+#include <QDebug>
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
@@ -29,13 +30,19 @@ using namespace LinkMotion::Internal::Constants;
 LinkMotionBuildStepFactory::LinkMotionBuildStepFactory(QObject *parent) :
     IBuildStepFactory(parent)
 {
+    qDebug() << Q_FUNC_INFO;
 }
 
 bool LinkMotionBuildStepFactory::canCreate(ProjectExplorer::BuildStepList *parent, const Core::Id id) const
 {
+    qDebug() << Q_FUNC_INFO;
     if (parent->id() != ProjectExplorer::Constants::BUILDSTEPS_CLEAN
             && parent->id() != ProjectExplorer::Constants::BUILDSTEPS_BUILD)
         return false;
+
+    if (!parent->target()) return false;
+    if (!parent->target()->kit()) return false;
+
     ProjectExplorer::Kit *kit = parent->target()->kit();
     Core::Id deviceType = ProjectExplorer::DeviceTypeKitInformation::deviceTypeId(kit);
     return ((deviceType == Constants::LINKMOTION_DEVICE_TYPE
@@ -45,6 +52,7 @@ bool LinkMotionBuildStepFactory::canCreate(ProjectExplorer::BuildStepList *paren
 
 ProjectExplorer::BuildStep *LinkMotionBuildStepFactory::create(ProjectExplorer::BuildStepList *parent, const Core::Id id)
 {
+    qDebug() << Q_FUNC_INFO;
     if (!canCreate(parent, id))
         return 0;
     LinkMotionBuildStep *step = new LinkMotionBuildStep(parent);
@@ -52,18 +60,20 @@ ProjectExplorer::BuildStep *LinkMotionBuildStepFactory::create(ProjectExplorer::
         step->setClean(true);
         step->setExtraArguments(QStringList(QLatin1String("clean")));
     } else if (parent->id() == ProjectExplorer::Constants::BUILDSTEPS_BUILD) {
-        // nomal setup
+        // normal setup
     }
     return step;
 }
 
 bool LinkMotionBuildStepFactory::canClone(ProjectExplorer::BuildStepList *parent, ProjectExplorer::BuildStep *source) const
 {
+    qDebug() << Q_FUNC_INFO;
     return canCreate(parent, source->id());
 }
 
 ProjectExplorer::BuildStep *LinkMotionBuildStepFactory::clone(ProjectExplorer::BuildStepList *parent, ProjectExplorer::BuildStep *source)
 {
+    qDebug() << Q_FUNC_INFO;
     if (!canClone(parent, source))
         return 0;
     LinkMotionBuildStep *old(qobject_cast<LinkMotionBuildStep *>(source));
@@ -73,11 +83,13 @@ ProjectExplorer::BuildStep *LinkMotionBuildStepFactory::clone(ProjectExplorer::B
 
 bool LinkMotionBuildStepFactory::canRestore(ProjectExplorer::BuildStepList *parent, const QVariantMap &map) const
 {
+    qDebug() << Q_FUNC_INFO;
     return canCreate(parent, ProjectExplorer::idFromMap(map));
 }
 
 ProjectExplorer::BuildStep *LinkMotionBuildStepFactory::restore(ProjectExplorer::BuildStepList *parent, const QVariantMap &map)
 {
+    qDebug() << Q_FUNC_INFO;
     if (!canRestore(parent, map))
         return 0;
     LinkMotionBuildStep *bs(new LinkMotionBuildStep(parent));
@@ -89,7 +101,11 @@ ProjectExplorer::BuildStep *LinkMotionBuildStepFactory::restore(ProjectExplorer:
 
 QList<ProjectExplorer::BuildStepInfo> LinkMotionBuildStepFactory::availableSteps(ProjectExplorer::BuildStepList *parent) const
 {
+    qDebug() << Q_FUNC_INFO;
     QList<ProjectExplorer::BuildStepInfo> retval;
+    if (!parent->target()) return retval;
+    if (!parent->target()->kit()) return retval;
+
     ProjectExplorer::Kit *kit = parent->target()->kit();
     Core::Id deviceType = ProjectExplorer::DeviceTypeKitInformation::deviceTypeId(kit);
     if (deviceType == Constants::LINKMOTION_DEVICE_TYPE
@@ -101,6 +117,7 @@ QList<ProjectExplorer::BuildStepInfo> LinkMotionBuildStepFactory::availableSteps
 
 QString LinkMotionBuildStepFactory::displayNameForId(const Core::Id id) const
 {
+    qDebug() << Q_FUNC_INFO;
     if (id == LINKMOTION_BUILD_STEP_ID)
         return QCoreApplication::translate("LinkMotion::Internal::LinkMotionBuildStep",
                                            LINKMOTION_BUILD_STEP_DISPLAY_NAME);

@@ -1,6 +1,6 @@
 <RCC>
-    <qresource prefix="/">
-        <file>NotificationBar.qml</file>
+    <qresource prefix="/apps/media">
+        <file>MediaApp.qml</file>
         <file>qmldir</file>
         <file>plugins.qmltypes</file>
     </qresource>

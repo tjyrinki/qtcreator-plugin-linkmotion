@@ -21,7 +21,8 @@ HEADERS += \
     linkmotionbuildplugin.h \
     linkmotionbuildplugin_global.h \
     linkmotionbuildplugin_constants.h \
-    linkmotionbuildoutputparser.h
+    linkmotionbuildoutputparser.h \
+    ../lmprojectplugin/linkmotionprojectplugin_constants.h
 
 SOURCES += \
     linkmotionbuildconfiguration.cpp \

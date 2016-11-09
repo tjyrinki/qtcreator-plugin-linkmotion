@@ -69,6 +69,7 @@ LinkMotionBuildStep::LinkMotionBuildStep(ProjectExplorer::BuildStepList *parent)
     m_useDefaultArguments(true),
     m_clean(false)
 {
+    qDebug() << Q_FUNC_INFO;
     ctor();
 }
 
@@ -77,6 +78,7 @@ LinkMotionBuildStep::LinkMotionBuildStep(ProjectExplorer::BuildStepList *parent,
     m_useDefaultArguments(true),
     m_clean(false)
 {
+    qDebug() << Q_FUNC_INFO;
     ctor();
 }
 
@@ -86,6 +88,7 @@ LinkMotionBuildStep::LinkMotionBuildStep(ProjectExplorer::BuildStepList *parent,
     m_useDefaultArguments(bs->m_useDefaultArguments),
     m_clean(bs->m_clean)
 {
+    qDebug() << Q_FUNC_INFO;
     ctor();
 }
 
@@ -95,23 +98,12 @@ void LinkMotionBuildStep::ctor()
     setProperty(LinkMotion::Internal::Constants::PROPERTY_USEQMLDEBUG,true);
     setDefaultDisplayName(QCoreApplication::translate("LinkMotion::Internal::LinkMotionBuildStep",
                                                       LINKMOTION_BUILD_STEP_DISPLAY_NAME));
-    connect(this,SIGNAL(finished()),this,SLOT(onFinished()));
 
-}
-
-void LinkMotionBuildStep::onFinished() {
-    qDebug() << Q_FUNC_INFO;
-    /*BuildConfiguration *bc = buildConfiguration();
-    if (bc) {
-        emit addOutput(QStringLiteral("Build directory is here @ %0").arg(QDir(bc->buildDirectory().toString()).dirName()),ProjectExplorer::BuildStep::NormalOutput);
-
-    }*/
 }
 
 LinkMotionBuildStep::~LinkMotionBuildStep()
 {
     qDebug() << Q_FUNC_INFO;
-    disconnect(this,SIGNAL(finished()),this,SLOT(onFinished()));
 }
 
 bool LinkMotionBuildStep::init(QList<const BuildStep *> &earlierSteps)
@@ -127,24 +119,23 @@ bool LinkMotionBuildStep::init(QList<const BuildStep *> &earlierSteps)
         emit addTask(ProjectExplorer::Task::buildConfigurationMissingTask());
     }
 
-    /*ToolChain *tc = ToolChainKitInformation::toolChain(target()->kit());
-    if (!tc) {
-        qDebug() << "missing compiler";
-        emit addTask(Task::compilerMissingTask());
-    }*/
-
-    if (!bc /*|| !tc*/) {
+    if (!bc ) {
         qDebug() << "faulty configuration";
-       // emitFaultyConfigurationMessage();
         return false;
     }
 
 
     if (!target()) {
         qDebug() << Q_FUNC_INFO << "no target";
+        return false;
     }
     if (!target()->project()) {
         qDebug() << Q_FUNC_INFO << "no project";
+        return false;
+    }
+    if (!target()->kit()) {
+        qDebug() << Q_FUNC_INFO << "no kit";
+        return false;
     }
     QString projectName = QDir(target()->project()->projectDirectory().toString()).dirName();
     QString arch = bc->m_device;
@@ -177,7 +168,8 @@ bool LinkMotionBuildStep::init(QList<const BuildStep *> &earlierSteps)
         appendOutputParser(parser);
     outputParser()->setWorkingDirectory(pp->effectiveWorkingDirectory());
 
-    qDebug() << "init almost done";
+    // Developer note! check run(QFutureInterface<bool> &fi)
+
     return AbstractProcessStep::init(earlierSteps);
 }
 
@@ -224,6 +216,10 @@ QStringList LinkMotionBuildStep::allArguments() const
 QStringList LinkMotionBuildStep::defaultArguments() const
 {
     qDebug() << Q_FUNC_INFO;
+
+    if (!target()) return QStringList();
+    if (!target()->activeBuildConfiguration()) return QStringList();
+
     QStringList res;
     ProjectExplorer::Kit *kit = target()->kit();
 
@@ -248,7 +244,7 @@ QStringList LinkMotionBuildStep::defaultArguments() const
 QString LinkMotionBuildStep::buildCommand() const
 {
     qDebug() << Q_FUNC_INFO;
-    return QLatin1String("vmsdk-build"); // add path?
+    return QLatin1String("vmsdk-build");
 }
 
 void LinkMotionBuildStep::run(QFutureInterface<bool> &fi)
@@ -263,11 +259,8 @@ void LinkMotionBuildStep::run(QFutureInterface<bool> &fi)
     env.set(QStringLiteral("LINKMOTION_USERNAME"),bc->m_username);
     env.set(QStringLiteral("LINKMOTION_PASSWORD"),bc->m_password);
 
-    // Force output to english for the parsers. Do this here and not in the toolchain's
-    // addToEnvironment() to not screw up the users run environment.
     env.set(QLatin1String("LC_ALL"), QLatin1String("C"));
     pp->setEnvironment(env);
-    qDebug() << "Running tasks!";
     AbstractProcessStep::run(fi);
 }
 

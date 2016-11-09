@@ -78,9 +78,13 @@ bool LinkMotionProjectWizardDialog::writeUserFile(const QString &projectFileName
     if (mt.isValid()) {
         QList<ProjectExplorer::IProjectManager*> allProjectManagers = ExtensionSystem::PluginManager::getObjects<ProjectExplorer::IProjectManager>();
         foreach (ProjectExplorer::IProjectManager *manager, allProjectManagers) {
+            if (!manager) continue;
+
             if (manager->mimeType() == mt.name()) {
                 QString tmp;
                 if (ProjectExplorer::Project *pro = manager->openProject(filePath, &tmp)) {
+
+                    if (!pro) continue;
 
                     bool success = m_targetSetupPage->setupProject(pro);
                     if(success) {

@@ -78,12 +78,11 @@ void LinkMotionKitConfiguration::initialize() {
         connect(ProjectExplorer::KitManager::instance(),SIGNAL(kitsLoaded()),this,SLOT(initialize()));
         return;
     }
-    //connect(ProjectExplorer::KitManager::instance(),SIGNAL(kitsChanged()),this,SLOT(initialize()));
 
     disconnect(QtSupport::QtVersionManager::instance(),SIGNAL(qtVersionsLoaded()));
     disconnect(QtSupport::QtVersionManager::instance(),SIGNAL(qtVersionsChanged(QList<int>,QList<int>,QList<int>)));
     if (!QtSupport::QtVersionManager::isLoaded()) {
-        qDebug() << Q_FUNC_INFO << "Qtversionmanager is not ready";
+        qDebug() << Q_FUNC_INFO << "QtVersionmanager is not ready";
         connect(QtSupport::QtVersionManager::instance(),SIGNAL(qtVersionsLoaded()),this,SLOT(initialize()));
         return;
     }
@@ -173,21 +172,15 @@ void LinkMotionKitConfiguration::initialize() {
             lmkit->makeSticky();
             qDebug() << "Registering kit" << lmkit->displayName();
 
-            //bool isAlreadyRegistered = false;
             foreach(ProjectExplorer::Kit* k, existingKits) {
                 if (k->displayName().compare(lmkit->displayName()) == 0) {
-                    // left on purpose, this can be used in the future to remove the old kits
-                    // if we create changes above and we need to recreate the kit which uses the same name
+                    // left on purpose, this is used to remove the old kits
+                    // as it might be that there is an older configuration with malfunctioning stuff
                     ProjectExplorer::KitManager::deregisterKit(k);
-                    //isAlreadyRegistered = true;
                 }
             }
 
-            //if (!isAlreadyRegistered) {
             ProjectExplorer::KitManager::registerKit(lmkit);
-           // } else {
-            //    qDebug() << "was already registered";
-            //}
         }
     }
 

@@ -1,0 +1,4 @@
+module CarApp
+plugin carApp
+CarApp 1.0 qrc:/apps/car/CarApp.qml
+typeinfo plugins.qmltypes

@@ -20,10 +20,14 @@ using namespace LinkMotion::Internal;
 
 ProjectExplorer::RunControl* LinkMotionDebugRunControl::create(ProjectExplorer::RunConfiguration *runConfig, QString *errorMessage) {
     qDebug() << Q_FUNC_INFO;
+
+    if (!runConfig) return NULL;
+    if (!runConfig->target()) return NULL;
+    if (!runConfig->target()->project()) return NULL;
+
     QString appName = runConfig->target()->project()->displayName();
 
     Debugger::Internal::DebuggerRunParameters params;
-    //params.debugInfoLocation = QStringLiteral("/usr/lib/debug/altdata/apps/%0").arg(appName);
     params.debugSourceLocation.append(QStringLiteral("/usr/src/debug/altdata/apps/%0").arg(appName));
     params.startMode = Debugger::AttachToRemoteServer;
     params.closeMode = Debugger::KillAndExitMonitorAtClose;
@@ -54,10 +58,7 @@ ProjectExplorer::RunControl* LinkMotionDebugRunControl::create(ProjectExplorer::
         params.inferior.executable = QStringLiteral("/altdata/apps/%0/bin/%0").arg(appName);
 
         params.inferior.commandLineArguments = QStringLiteral(" -platform eglfs");
-
-        qDebug() << params.inferior.commandLineArguments;
         params.remoteChannel = dev->sshParameters().host + QLatin1String(":-1");
-   //     params.symbolFile =  QStringLiteral("/usr/lib/debug/altdata/apps/%0/bin/%0.debug").arg(appName);
     }
 
     Debugger::DebuggerRunControl* const debuggerRunControl = Debugger::createDebuggerRunControl(params, runConfig, errorMessage);

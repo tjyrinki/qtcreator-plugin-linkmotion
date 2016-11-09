@@ -21,24 +21,31 @@ static LinkMotionConfiguration *m_instance = 0;
 
 LinkMotionConfiguration::LinkMotionConfiguration(QObject *parent) : QObject(parent)
 {
+    qDebug() << Q_FUNC_INFO;
 
 }
 
 
 QObject *LinkMotionConfiguration::instance()
 {
+    qDebug() << Q_FUNC_INFO;
+
     return m_instance;
 }
 
 
 void LinkMotionConfiguration::initialize()
 {
+    qDebug() << Q_FUNC_INFO;
     m_instance = new LinkMotionConfiguration(0);
     m_instance->updateDevices();
 }
 
 void LinkMotionConfiguration::updateDevices() {
+    qDebug() << Q_FUNC_INFO;
     ProjectExplorer::DeviceManager *devManager = ProjectExplorer::DeviceManager::instance();
+    if (!devManager) return;
+
     Core::Id devId = Constants::LINKMOTION_DEVICE_ID;
     ProjectExplorer::IDevice::ConstPtr dev = devManager->find(devId);
     if (dev.isNull()) {

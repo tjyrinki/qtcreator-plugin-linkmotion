@@ -74,6 +74,7 @@ LinkMotionDeployStep::LinkMotionDeployStep(ProjectExplorer::BuildStepList *paren
     m_useDefaultArguments(true),
     m_clean(false)
 {
+    qDebug() << Q_FUNC_INFO;
     ctor();
 }
 
@@ -82,6 +83,7 @@ LinkMotionDeployStep::LinkMotionDeployStep(ProjectExplorer::BuildStepList *paren
     m_useDefaultArguments(true),
     m_clean(false)
 {
+    qDebug() << Q_FUNC_INFO;
     ctor();
 }
 
@@ -91,6 +93,7 @@ LinkMotionDeployStep::LinkMotionDeployStep(ProjectExplorer::BuildStepList *paren
     m_useDefaultArguments(bs->m_useDefaultArguments),
     m_clean(bs->m_clean)
 {
+    qDebug() << Q_FUNC_INFO;
     ctor();
 }
 
@@ -99,23 +102,12 @@ void LinkMotionDeployStep::ctor()
     qDebug() << Q_FUNC_INFO;
     setDefaultDisplayName(QCoreApplication::translate("LinkMotion::Internal::LinkMotionDeployStep",
                                                       LINKMOTION_DEPLOY_STEP_DISPLAY_NAME));
-    connect(this,SIGNAL(finished()),this,SLOT(onFinished()));
 
-}
-
-void LinkMotionDeployStep::onFinished() {
-    qDebug() << Q_FUNC_INFO;
-    /*BuildConfiguration *bc = buildConfiguration();
-    if (bc) {
-        emit addOutput(QStringLiteral("Build directory is here @ %0").arg(QDir(bc->buildDirectory().toString()).dirName()),ProjectExplorer::BuildStep::NormalOutput);
-
-    }*/
 }
 
 LinkMotionDeployStep::~LinkMotionDeployStep()
 {
     qDebug() << Q_FUNC_INFO;
-    disconnect(this,SIGNAL(finished()),this,SLOT(onFinished()));
 }
 
 bool LinkMotionDeployStep::init(QList<const BuildStep *> &earlierSteps)
@@ -137,18 +129,10 @@ bool LinkMotionDeployStep::init(QList<const BuildStep *> &earlierSteps)
         return false;
     }
 
-    /*ToolChain *tc = ToolChainKitInformation::toolChain(target()->kit());
-    if (!tc) {
-        qDebug() << "missing compiler";
-        emit addTask(Task::compilerMissingTask());
-    }*/
-
-    if (!dc /*|| !tc*/) {
+    if (!dc) {
         qDebug() << "faulty configuration";
-       // emitFaultyConfigurationMessage();
         return false;
     }
-
 
     if (!target()) {
         qDebug() << Q_FUNC_INFO << "no target";
@@ -192,7 +176,9 @@ bool LinkMotionDeployStep::init(QList<const BuildStep *> &earlierSteps)
         appendOutputParser(parser);
     outputParser()->setWorkingDirectory(pp->effectiveWorkingDirectory());
 
-    qDebug() << "init almost done";
+    //Developer Note! Check run(QFutureInterface<bool> &fi)
+    //   this needs refactoring, probably we can remove most of the duplicates from this function.
+
     return AbstractProcessStep::init(earlierSteps);
 }
 
@@ -240,28 +226,22 @@ QStringList LinkMotionDeployStep::defaultArguments() const
 {
     qDebug() << Q_FUNC_INFO;
     QStringList res;
-   /* ProjectExplorer::Kit *kit = target()->kit();
-    ProjectExplorer::ToolChain *tc = ProjectExplorer::ToolChainKitInformation::toolChain(kit);
-    if (tc->type() == QLatin1String("gcc") || tc->type() == QLatin1String("clang")) {
-      //  GccToolChain *gtc = static_cast<GccToolChain *>(tc);
-        //res << gtc->platformCodeGenFlags();
-    }*/
-    //if (!SysRootKitInformation::sysRoot(kit).isEmpty())
-    //    res << QLatin1String("-sdk") << SysRootKitInformation::sysRoot(kit).toString();
-    //res << QLatin1String("SYMROOT=") + LINKMOTIONManager::resDirForTarget(target());
-    //res << QStringLiteral("ui_center-plugin");
+
     return res;
 }
 
 QString LinkMotionDeployStep::buildCommand() const
 {
     qDebug() << Q_FUNC_INFO;
-    return QLatin1String("vmsdk-install"); // add path?
+    return QLatin1String("vmsdk-install");
 }
 
 void LinkMotionDeployStep::run(QFutureInterface<bool> &fi)
 {
     qDebug() << Q_FUNC_INFO;
+    if (!target()) return;
+    if (!target()->project()) return;
+
     LinkMotionBuildConfiguration *bc = qobject_cast<LinkMotionBuildConfiguration*>(buildConfiguration());
     LinkMotionDeployConfiguration *dc = qobject_cast<LinkMotionDeployConfiguration*>(deployConfiguration());
     if (!dc) {
@@ -279,15 +259,8 @@ void LinkMotionDeployStep::run(QFutureInterface<bool> &fi)
         emit addTask(ProjectExplorer::Task::buildConfigurationMissingTask());
     }
 
-    /*ToolChain *tc = ToolChainKitInformation::toolChain(target()->kit());
-    if (!tc) {
-        qDebug() << "missing compiler";
-        emit addTask(Task::compilerMissingTask());
-    }*/
-
-    if (!bc /*|| !tc*/) {
+    if (!bc) {
         qDebug() << "faulty configuration";
-       // emitFaultyConfigurationMessage();
         return;
     }
 
@@ -323,7 +296,6 @@ ProjectExplorer::BuildStepConfigWidget *LinkMotionDeployStep::createConfigWidget
 {
     qDebug() << Q_FUNC_INFO << this;
     ProjectExplorer::BuildStepConfigWidget* retval = new LinkMotionDeployStepConfigWidget(this);
-    qDebug() << Q_FUNC_INFO << retval->displayName();
     return retval;
 }
 

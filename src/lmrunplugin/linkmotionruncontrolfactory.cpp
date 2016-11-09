@@ -52,16 +52,27 @@ ProjectExplorer::RunControl *LinkMotionRunControlFactory::create(ProjectExplorer
     LinkMotionRunConfiguration *rc = qobject_cast<LinkMotionRunConfiguration *>(runConfig);
     Q_ASSERT(rc);
     if (mode == ProjectExplorer::Constants::NORMAL_RUN_MODE) {
-        return new LinkMotionRunControl(rc);
+        ProjectExplorer::RunControl* retval = new LinkMotionRunControl(rc);
+        if (!retval) {
+            qWarning() << Q_FUNC_INFO << "Unable to create Run control";
+        }
+        return retval;
     } else if (mode == ProjectExplorer::Constants::DEBUG_RUN_MODE || mode == ProjectExplorer::Constants::DEBUG_RUN_MODE_WITH_BREAK_ON_MAIN) {
         QString errorMessage;
         ProjectExplorer::RunControl* retval = LinkMotionDebugRunControl::create(rc, &errorMessage);
+        if (!retval) {
+            qWarning() << Q_FUNC_INFO << "Unable to create Debug run control";
+        }
         if (!errorMessage.isEmpty()) {
             qWarning() << Q_FUNC_INFO << errorMessage;
         }
         return retval;
     } else if (mode == ProjectExplorer::Constants::QML_PROFILER_RUN_MODE) {
-        return LinkMotionAnalyzeRunControl::create(rc, mode);
+        ProjectExplorer::RunControl* retval = LinkMotionAnalyzeRunControl::create(rc, mode);
+        if (!retval) {
+            qWarning() << Q_FUNC_INFO << "Unable to create Analyze run control";
+        }
+        return retval;
     } else {
         qWarning() << Q_FUNC_INFO << "UNHANDLED mode detected";
     }

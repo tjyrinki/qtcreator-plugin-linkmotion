@@ -44,9 +44,6 @@ public:
 
     QVariantMap toMap() const override;
 
-protected slots:
-    void onFinished();
-
 protected:
     LinkMotionDeployStep(ProjectExplorer::BuildStepList *parent, LinkMotionDeployStep *bs);
     LinkMotionDeployStep(ProjectExplorer::BuildStepList *parent, Core::Id id);
