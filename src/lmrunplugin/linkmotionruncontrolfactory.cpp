@@ -40,17 +40,22 @@ bool LinkMotionRunControlFactory::canRun(ProjectExplorer::RunConfiguration *runC
             mode != ProjectExplorer::Constants::QML_PROFILER_RUN_MODE) {
         return false;
     }
+
     return qobject_cast<LinkMotionRunConfiguration *>(runConfiguration);
 }
 
 ProjectExplorer::RunControl *LinkMotionRunControlFactory::create(ProjectExplorer::RunConfiguration *runConfig, Core::Id mode, QString *errorMessage)
 {
     Q_UNUSED(errorMessage)
+    LinkMotionRunConfiguration *rc = qobject_cast<LinkMotionRunConfiguration *>(runConfig);
+    Q_ASSERT(rc);
+
+    // lets make sure that the debuggers are enabled.
+    // we will ignore the Projects tab settings and make them true
+    rc->enableDebuggers();
 
     qDebug() << Q_FUNC_INFO << mode;
     Q_ASSERT(canRun(runConfig, mode));
-    LinkMotionRunConfiguration *rc = qobject_cast<LinkMotionRunConfiguration *>(runConfig);
-    Q_ASSERT(rc);
     if (mode == ProjectExplorer::Constants::NORMAL_RUN_MODE) {
         ProjectExplorer::RunControl* retval = new LinkMotionRunControl(rc);
         if (!retval) {

@@ -13,6 +13,7 @@
 #include <QDebug>
 #include <qtsupport/qtoutputformatter.h>
 #include <projectexplorer/target.h>
+#include <debugger/debuggerrunconfigurationaspect.h>
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
@@ -21,12 +22,21 @@ LinkMotionRunConfiguration::LinkMotionRunConfiguration(ProjectExplorer::Target *
     : RunConfiguration(parent, id)
 {
     qDebug() << Q_FUNC_INFO;
+    connect(this,SIGNAL(configurationFinished()),this,SLOT(enableDebuggers()));
 }
 
 LinkMotionRunConfiguration::LinkMotionRunConfiguration(ProjectExplorer::Target *parent, LinkMotionRunConfiguration *source)
     : RunConfiguration(parent, source)
 {
     qDebug() << Q_FUNC_INFO;
+}
+
+void LinkMotionRunConfiguration::enableDebuggers() {
+    qDebug() << Q_FUNC_INFO;
+    auto aspect = extraAspect<Debugger::DebuggerRunConfigurationAspect>();
+    // override the checkboxes in the Projects tab
+    aspect->setUseCppDebugger(true);
+    aspect->setUseQmlDebugger(true);
 }
 
 QWidget *LinkMotionRunConfiguration::createConfigurationWidget()

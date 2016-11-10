@@ -48,6 +48,7 @@ ProjectExplorer::RunControl* LinkMotionDebugRunControl::create(ProjectExplorer::
 
      auto aspect = runConfig->extraAspect<Debugger::DebuggerRunConfigurationAspect>();
 
+
     if (aspect->useQmlDebugger()) {
         params.qmlServer.host = dev->sshParameters().host;
         params.qmlServer.port = Utils::Port();
@@ -62,6 +63,7 @@ ProjectExplorer::RunControl* LinkMotionDebugRunControl::create(ProjectExplorer::
     }
 
     Debugger::DebuggerRunControl* const debuggerRunControl = Debugger::createDebuggerRunControl(params, runConfig, errorMessage);
+
     new LinkMotionDebugRunRunner(runConfig, debuggerRunControl);
     return debuggerRunControl;
 }

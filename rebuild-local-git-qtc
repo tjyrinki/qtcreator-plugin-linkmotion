@@ -1,14 +1,23 @@
 #!/bin/bash
-#set -e
 
-rm ${HOME}/.local/share/data/QtProject/qtcreator/plugins/4.2.82/*
-rm -rf /opt/linkmotion/qtcreator/lib/qtcreator/plugins/liblm*
+rm -f ${HOME}/.local/share/data/QtProject/qtcreator/plugins/4.2.82/*
+sudo rm -rf /opt/linkmotion/qtcreator/lib/qtcreator/plugins/liblm*
+sudo rm -rf /opt/linkmotion/qtcreator/share/qtcreator/templates/wizards/linkmotion
+
 set -e
 
-QTC_INSTALL=/opt/linkmotion/qtcreator/ QTC_SOURCE=/opt/linkmotion/src/qtcreator/ /opt/linkmotion/qt/5.8.0/bin/qmake -r CONFIG+=BUILDTOHOME
+export QTC_INSTALL=/opt/linkmotion/qtcreator/
+export QTC_SOURCE=/opt/linkmotion/src/qtcreator/
+if [[ ! -d ${QTC_SOURCE} ]]; then
+  echo
+  echo "Qt Creator source path does not exist."
+  echo " => ${QTC_SOURCE}"
+  echo
+  exit 1
+fi
+
+/opt/linkmotion/qt/5.8/bin/qmake -r
 make
-set +e
-sudo rm -r /opt/linkmotion/qtcreator/share/qtcreator/templates/wizards/linkmotion
-set -e
+sudo make install
 sudo cp -r share/* /opt/linkmotion/qtcreator/share
 #gdb /opt/linkmotion/qtcreator/bin/qtcreator

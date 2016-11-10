@@ -55,14 +55,7 @@ Q_LOGGING_CATEGORY(LinkMotionLog, "linkmotion.linkmotion.common")
 
 using namespace LinkMotion;
 using namespace LinkMotion::Internal;
-
-const char LINKMOTION_BUILD_STEP_ID[] = "LinkMotion.LinkMotionBuildStep";
-const char LINKMOTION_BUILD_STEP_DISPLAY_NAME[] = QT_TRANSLATE_NOOP("LinkMotion::Internal::LinkMotionBuildStep",
-                                                             "vmsdk-build");
-
-const char BUILD_USE_DEFAULT_ARGS_KEY[] = "LinkMotion.LinkMotionBuildStep.ArgumentsUseDefaults";
-const char BUILD_ARGUMENTS_KEY[] = "LinkMotion.LinkMotionBuildStep.Arguments";
-const char CLEAN_KEY[] = "LinkMotion.LinkMotionBuildStep.Clean";
+using namespace LinkMotion::Internal::Constants;
 
 LinkMotionBuildStep::LinkMotionBuildStep(ProjectExplorer::BuildStepList *parent) :
     ProjectExplorer::AbstractProcessStep(parent, Core::Id(LINKMOTION_BUILD_STEP_ID)),
@@ -95,6 +88,7 @@ LinkMotionBuildStep::LinkMotionBuildStep(ProjectExplorer::BuildStepList *parent,
 void LinkMotionBuildStep::ctor()
 {
     qDebug() << Q_FUNC_INFO;
+
     setProperty(LinkMotion::Internal::Constants::PROPERTY_USEQMLDEBUG,true);
     setDefaultDisplayName(QCoreApplication::translate("LinkMotion::Internal::LinkMotionBuildStep",
                                                       LINKMOTION_BUILD_STEP_DISPLAY_NAME));

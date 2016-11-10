@@ -27,6 +27,8 @@ public:
     QWidget *createConfigurationWidget();
     Utils::OutputFormatter *createOutputFormatter() const;
 
+public slots:
+    void enableDebuggers();
 };
 
 }
