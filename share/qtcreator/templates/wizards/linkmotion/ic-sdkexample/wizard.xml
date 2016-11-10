@@ -69,7 +69,7 @@
         <file source="src/app/assets/images/indicators/blink_right_off.png" openeditor="false" binary="true" />
         <file source="src/app/assets/images/indicators/lights_on.png" openeditor="false" binary="true" />
         <file source="src/app/assets/images/images.qrc" openeditor="false"/>
-        <file source="src/app/main.qml" openeditor="false"/>
+        <file source="src/app/main.qml" openeditor="true"/>
         <file source="src/app/qml.qrc" openeditor="false"/>
         <file source="src/app/main.cpp" openeditor="false"/>
         <file source="src/app/app.pro" openeditor="false"/>

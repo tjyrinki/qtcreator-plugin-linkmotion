@@ -46,3 +46,9 @@ the qt creator will crash. This is a Qt Creator bug.
 
 
 3) creates [projectname].pro named directories
+
+4) produces only debug packages and builds. No possibility to change between Release and Debug builds.
+
+5) toggles compile output when it should only show it if it is not shown already.
+
+6) should switch to application output when application is executed.

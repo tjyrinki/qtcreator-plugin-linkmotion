@@ -2,8 +2,8 @@ import QtQuick 2.8
 import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
 
-import LinkMotion.Base.Core 1.0
-import LinkMotion.Base.Conf 1.0
+import LinkMotion.IC.Base.Core 1.0
+import LinkMotion.IC.Base.Conf 1.0
 
 VirtualClusterApp {
     id: carApp

@@ -1,9 +1,9 @@
 import QtQuick 2.8
 
-import LinkMotion.Base.Layouts 1.0
-import LinkMotion.Base.Core 1.0
-import LinkMotion.Base.Conf 1.0
-import LinkMotion.Base.Gauges 1.0
+import LinkMotion.IC.Base.Layouts 1.0
+import LinkMotion.IC.Base.Core 1.0
+import LinkMotion.IC.Base.Conf 1.0
+import LinkMotion.IC.Base.Gauges 1.0
 
 import Clock 1.0
 
