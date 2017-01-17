@@ -7,7 +7,7 @@ sudo rm -rf /opt/linkmotion/qtcreator/share/qtcreator/templates/wizards/linkmoti
 set -e
 
 export QTC_INSTALL=/opt/linkmotion/qtcreator/
-export QTC_SOURCE=/opt/linkmotion/src/qtcreator/
+
 if [[ ! -d ${QTC_SOURCE} ]]; then
   echo
   echo "Qt Creator source path does not exist."
