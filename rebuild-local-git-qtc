@@ -17,7 +17,7 @@ if [[ ! -d ${QTC_SOURCE} ]]; then
 fi
 
 /opt/linkmotion/qt/5.8.0/bin/qmake -r
-make
+make -j8
 sudo make install
 sudo cp -r share/* /opt/linkmotion/qtcreator/share
 #gdb /opt/linkmotion/qtcreator/bin/qtcreator
