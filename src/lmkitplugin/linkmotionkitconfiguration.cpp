@@ -10,6 +10,8 @@
 ####################################################################*/
 #include "linkmotionkitconfiguration.h"
 #include <QDebug>
+#include <QDirIterator>
+#include <QVersionNumber>
 #include <projectexplorer/kitmanager.h>
 #include <projectexplorer/kitinformation.h>
 #include <qtsupport/baseqtversion.h>
@@ -38,8 +40,29 @@ void LinkMotionKitConfiguration::autoConfigure() {
     // remove old autodetections
 
     bool foundQtVersion = false;
-    Utils::FileName qmake = Utils::FileName::fromLatin1(LinkMotion::Constants::LINKMOTION_QT_QMAKE);
-    if (!qmake.exists()) {
+
+    Utils::FileName qmake;
+    {
+        // Find qmake binary of the highest Qt version in LINKMOTION_QT_DIR
+        QVersionNumber qtVersion;
+
+        QDirIterator it(LinkMotion::Constants::LINKMOTION_QT_DIR,
+                        QDir::Dirs | QDir::NoDotAndDotDot);
+        while (it.hasNext()) {
+            QDir dir = it.next();
+
+            auto version = QVersionNumber::fromString(dir.dirName());
+            auto file = Utils::FileName::fromString(
+                    dir.absoluteFilePath(QStringLiteral("bin/qmake")));
+
+            if (version > qtVersion && file.exists()) {
+                qtVersion = version;
+                qmake = file;
+            }
+        }
+    }
+
+    if (qmake.isNull()) {
         qWarning() << Q_FUNC_INFO << "LinkMotion Qt is not installed!";
         return;
     }
