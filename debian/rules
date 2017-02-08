@@ -20,7 +20,7 @@ DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 	dh $@ --fail-missing --parallel
 
 override_dh_auto_configure:
-	dh_auto_configure -- IDE_LIBRARY_BASENAME=lib -r 
+	dh_auto_configure -- IDE_LIBRARY_BASENAME=lib QMAKE_STRIP=: -r 
  
 #override_dh_auto_test:
 #	cd builddir/linkmotion && LD_LIBRARY_PATH=/opt/linkmotion/qtcreator/lib/qtcreator:/opt/linkmotion/qtcreator/lib/qtcreator/plugins/QtProject make check
