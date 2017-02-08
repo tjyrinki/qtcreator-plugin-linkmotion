@@ -68,7 +68,7 @@ void LinkMotionAnalyzeRunRunner::slotRunControl_Started() {
     ProjectExplorer::TaskHub::clearTasks(LinkMotion::Constants::TASK_CATEGORY_ANALYZE);
 
     // launch the application for profiling
-    m_processStart.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-profile-start"),QStringLiteral("%0 %1").arg(appName).arg(3768));
+    m_processStart.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-profile-start"),QStringLiteral("%0").arg(appName));
     m_processStart.start();
 }
 
@@ -123,7 +123,7 @@ void LinkMotionAnalyzeRunRunner::slotStart_ReadyReadStandardError() {
             m_runControl->notifyRemoteSetupFailed(line);
             ProjectExplorer::TaskHub::addTask(ProjectExplorer::Task::Error, line, LinkMotion::Constants::TASK_CATEGORY_ANALYZE);
         } else if (line.startsWith(QStringLiteral("Listening on port "))) {
-            //m_runControl->notifyRemoteSetupDone(Utils::Port(3768));
+            //m_runControl->notifyRemoteSetupDone(Utils::Port(55525));
         } else if (line.startsWith(QStringLiteral("Cannot exec "))) {
             outputFormat = Utils::ErrorMessageFormat;
             m_runControl->notifyRemoteSetupFailed(line);

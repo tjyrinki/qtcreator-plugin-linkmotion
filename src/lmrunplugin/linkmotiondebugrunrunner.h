@@ -5,6 +5,7 @@
 #include <projectexplorer/runconfiguration.h>
 #include <debugger/debuggerruncontrol.h>
 #include <utils/qtcprocess.h>
+#include <utils/port.h>
 #include <QProcess>
 
 namespace LinkMotion {
@@ -40,6 +41,8 @@ protected:
     Debugger::DebuggerRunControl* m_runControl;
     Utils::QtcProcess m_processStart;
     Utils::QtcProcess m_processStop;
+    Utils::Port m_gdbPort;
+    Utils::Port m_qmlPort;
 };
 
 }

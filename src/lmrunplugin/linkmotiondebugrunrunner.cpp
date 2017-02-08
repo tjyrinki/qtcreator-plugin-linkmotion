@@ -54,8 +54,34 @@ void LinkMotionDebugRunRunner::slotRunControl_RequestRemoteSetup() {
     m_processStart.setEnvironment(env);
     ProjectExplorer::TaskHub::clearTasks(LinkMotion::Constants::TASK_CATEGORY_DEBUG);
 
+    // get debugging ports
+    QProcess p;
+    p.setEnvironment(env.toStringList());
+    p.start("/bin/bash -c \". /opt/linkmotion/sdk/vm/.vmsdk-target-source; os_gdb_port; os_qml_port\"");
+
+    if (p.waitForFinished(1000)) {
+        QString out = QString::fromLocal8Bit(p.readAllStandardOutput());
+        QString gdb = out.section('\n', 0, 0);
+        QString qml = out.section('\n', 1, 1);
+
+        bool isNumber;
+        quint16 portNum;
+
+        portNum = gdb.toLong(&isNumber);
+        m_gdbPort = (isNumber) ? Utils::Port(portNum) : Utils::Port();
+        portNum = qml.toLong(&isNumber);
+        m_qmlPort = (isNumber) ? Utils::Port(portNum) : Utils::Port();
+    } else {
+        qWarning() << Q_FUNC_INFO << "Can't get debugging port numbers!";
+        m_gdbPort = Utils::Port();
+        m_qmlPort = Utils::Port();
+    }
+
+    qDebug() << Q_FUNC_INFO << "For GDB using port:" << m_gdbPort.number();
+    qDebug() << Q_FUNC_INFO << "For QML using port:" << m_qmlPort.number();
+
     // launch the debugger and our application
-    m_processStart.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-debug-start"),QStringLiteral("%0 %1 %2").arg(appName).arg(3768).arg(25555));
+    m_processStart.setCommand(QStringLiteral("/opt/linkmotion/sdk/vm/vmsdk-app-debug-start"),QStringLiteral("%0").arg(appName));
     m_processStart.start();
 
 }
@@ -130,14 +156,14 @@ void LinkMotionDebugRunRunner::slotStart_ReadyReadStandardError() {
             ProjectExplorer::TaskHub::addTask(ProjectExplorer::Task::Error, line, LinkMotion::Constants::TASK_CATEGORY_DEBUG);
         } else if (line.startsWith(QStringLiteral("Listening on port "))) {
             Debugger::RemoteSetupResult result;
-            result.gdbServerPort = Utils::Port(25555);
-            result.qmlServerPort = Utils::Port(3768);
+            result.gdbServerPort = m_gdbPort;
+            result.qmlServerPort = m_qmlPort;
             result.success = true;
             m_runControl->notifyEngineRemoteSetupFinished(result);
         } else if (line.startsWith(QStringLiteral("Cannot exec "))) {
             outputFormat = Utils::ErrorMessageFormat;
             Debugger::RemoteSetupResult result;
-            result.gdbServerPort = Utils::Port(25555);
+            result.gdbServerPort = m_gdbPort;
             result.success = false;
             result.reason = line;
             // we have already notified the EngineRemoteSetupFinished, so just abort
