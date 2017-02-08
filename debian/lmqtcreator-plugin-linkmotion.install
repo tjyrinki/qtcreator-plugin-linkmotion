@@ -1,3 +1,2 @@
 opt/linkmotion/qtcreator/lib/qtcreator/plugins
-opt/linkmotion/qtcreator/share
-usr/bin/linkmotion-sdk
+share opt/linkmotion/qtcreator
