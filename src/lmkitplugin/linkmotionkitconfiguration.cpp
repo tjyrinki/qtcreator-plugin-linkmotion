@@ -162,12 +162,15 @@ void LinkMotionKitConfiguration::initialize() {
     }
     connect(dm,SIGNAL(updated()),this,SLOT(initialize()));
 
-    ProjectExplorer::IDevice::ConstPtr dev = dm->find(Core::Id(LinkMotion::Constants::LINKMOTION_IVIOS_DEVICE_ID));
     qDebug() << dm->deviceCount() << dm->defaultDevice(Core::Id(LinkMotion::Constants::LINKMOTION_IVIOS_DEVICE_ID));
     for (int i=0; i<dm->deviceCount(); i++) {
         qDebug() << "Detected:" << dm->deviceAt(i)->displayName() << dm->deviceAt(i)->id();
     }
-    if (dev.isNull()) {
+
+    ProjectExplorer::IDevice::ConstPtr autoDevice = dm->find(Constants::LINKMOTION_AUTOOS_DEVICE_ID);
+    ProjectExplorer::IDevice::ConstPtr iviDevice = dm->find(Constants::LINKMOTION_IVIOS_DEVICE_ID);
+
+    if (iviDevice.isNull() || autoDevice.isNull()) {
         qDebug() << "Unable to detect LinkMotion device!";
         foreach(ProjectExplorer::Kit* k, existingKits) {
             qDebug() << "deregistering kits" << k->displayName();
@@ -176,36 +179,59 @@ void LinkMotionKitConfiguration::initialize() {
         return;
     }
 
-    qDebug() << "Valid LinkMotion device found" << dev->displayName();
+    qDebug() << "Valid LinkMotion Auto OS device found" << autoDevice->displayName();
+    qDebug() << "Valid LinkMotion IVI OS device found" << iviDevice->displayName();
 
     // lets register our qt kits
     foreach(ProjectExplorer::Abi abi, linkMotionQtVersionsAvailable.keys()) {
         QList<QtSupport::BaseQtVersion*> availableQtVersionsForAbi = linkMotionQtVersionsAvailable[abi];
 
         foreach(QtSupport::BaseQtVersion* qt, availableQtVersionsForAbi) {
-            Utils::FileName gdb = Utils::FileName::fromLatin1(LinkMotion::Constants::LINKMOTION_GDB_COMMAND);
-            QVariant debuggerId = Debugger::DebuggerItemManager::findByCommand(gdb)->id();
-            ProjectExplorer::Kit* lmkit = new ProjectExplorer::Kit(Core::Id(LinkMotion::Constants::LINKMOTION_KIT_ID));
-            lmkit->setAutoDetected(true);
-            ProjectExplorer::DeviceTypeKitInformation::setDeviceTypeId(lmkit, Core::Id(LinkMotion::Constants::LINKMOTION_DEVICE_TYPE));
-            QtSupport::QtKitInformation::setQtVersion(lmkit, qt);
-            ProjectExplorer::DeviceKitInformation::setDevice(lmkit, dev);
-            Debugger::DebuggerKitInformation::setDebugger(lmkit, debuggerId);
-            lmkit->setUnexpandedDisplayName(QStringLiteral("LinkMotion Emulator Kit"));
-            lmkit->makeSticky();
-            qDebug() << "Registering kit" << lmkit->displayName();
-
-            foreach(ProjectExplorer::Kit* k, existingKits) {
-                if (k->displayName().compare(lmkit->displayName()) == 0) {
-                    // left on purpose, this is used to remove the old kits
-                    // as it might be that there is an older configuration with malfunctioning stuff
-                    ProjectExplorer::KitManager::deregisterKit(k);
-                }
-            }
-
-            ProjectExplorer::KitManager::registerKit(lmkit);
+            registerKit(Constants::LINKMOTION_AUTOOS_KIT_ID,
+                        QStringLiteral("LinkMotion Auto OS Emulator Kit"), qt,
+                        autoDevice, existingKits);
+            registerKit(Constants::LINKMOTION_IVIOS_KIT_ID,
+                        QStringLiteral("LinkMotion IVI OS Emulator Kit"), qt,
+                        iviDevice, existingKits);
         }
     }
 
 
+}
+
+void LinkMotionKitConfiguration::registerKit(Core::Id id,
+                                             const QString &displayName,
+                                             QtSupport::BaseQtVersion* qt,
+                                             ProjectExplorer::IDevice::ConstPtr dev,
+                                             QList<ProjectExplorer::Kit*> &existingKits)
+{
+    ProjectExplorer::Kit* kit = new ProjectExplorer::Kit(id);
+    kit->setAutoDetected(true);
+    kit->setUnexpandedDisplayName(displayName);
+    kit->makeSticky();
+
+    ProjectExplorer::DeviceTypeKitInformation::setDeviceTypeId(kit, Core::Id(LinkMotion::Constants::LINKMOTION_DEVICE_TYPE));
+    QtSupport::QtKitInformation::setQtVersion(kit, qt);
+    ProjectExplorer::DeviceKitInformation::setDevice(kit, dev);
+
+    Utils::FileName gdb = Utils::FileName::fromLatin1(LinkMotion::Constants::LINKMOTION_GDB_COMMAND);
+    Debugger::DebuggerItem *gdbDebuggerItem = Debugger::DebuggerItemManager::findByCommand(gdb);
+    if (gdbDebuggerItem) {
+        Debugger::DebuggerKitInformation::setDebugger(kit, gdbDebuggerItem->id());
+    } else {
+        qWarning() << "Could not find Link Motion gdb!";
+    }
+
+    qDebug() << "Registering kit" << kit->displayName();
+
+    foreach(ProjectExplorer::Kit* k, existingKits) {
+        if (k->displayName().compare(kit->displayName()) == 0) {
+            // Left on purpose, this is used to remove the old kits as it might
+            // be that there is an older configuration with malfunctioning stuff.
+            ProjectExplorer::KitManager::deregisterKit(k);
+            existingKits.removeOne(k);
+        }
+    }
+
+    ProjectExplorer::KitManager::registerKit(kit);
 }

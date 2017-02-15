@@ -12,6 +12,9 @@
 #define LINKMOTIONKITCONFIGURATION_H
 
 #include <QObject>
+
+#include <projectexplorer/devicesupport/idevice.h>
+
 #include "linkmotiondebuggeritem.h"
 #include "linkmotionqtversion.h"
 
@@ -32,6 +35,13 @@ public slots:
 
 protected:
     LinkMotionQtVersion* m_qtVersion;
+
+private:
+    void registerKit(Core::Id id,
+                     const QString &displayName,
+                     QtSupport::BaseQtVersion* qt,
+                     ProjectExplorer::IDevice::ConstPtr dev,
+                     QList<ProjectExplorer::Kit*> &existingKits);
 };
 
 }
