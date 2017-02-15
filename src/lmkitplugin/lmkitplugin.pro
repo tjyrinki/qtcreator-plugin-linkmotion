@@ -18,6 +18,7 @@ DISTFILES += \
 HEADERS += \
     linkmotionkitplugin.h \
     linkmotionkitplugin_global.h \
+    linkmotionoskitinformation.h \
     linkmotionqtversion.h \
     ../lmdeviceplugin/linkmotiondeviceplugin_constants.h \
     linkmotionkitplugin_constants.h \
@@ -27,6 +28,7 @@ HEADERS += \
 
 SOURCES += \
     linkmotionkitplugin.cpp \
+    linkmotionoskitinformation.cpp \
     linkmotionqtversion.cpp \
     linkmotionqtversionfactory.cpp \
     linkmotionkitconfiguration.cpp \

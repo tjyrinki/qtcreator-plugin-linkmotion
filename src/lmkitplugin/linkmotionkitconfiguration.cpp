@@ -24,6 +24,7 @@
 
 #include "../lmdeviceplugin/linkmotiondeviceplugin_constants.h"
 #include "linkmotionkitplugin_constants.h"
+#include "linkmotionoskitinformation.h"
 #include "linkmotionqtversion.h"
 
 using namespace LinkMotion;
@@ -181,6 +182,8 @@ void LinkMotionKitConfiguration::initialize() {
 
     qDebug() << "Valid LinkMotion Auto OS device found" << autoDevice->displayName();
     qDebug() << "Valid LinkMotion IVI OS device found" << iviDevice->displayName();
+
+    ProjectExplorer::KitManager::registerKitInformation(new LinkMotionOsKitInformation);
 
     // lets register our qt kits
     foreach(ProjectExplorer::Abi abi, linkMotionQtVersionsAvailable.keys()) {
