@@ -30,7 +30,7 @@ public:
     virtual Ptr clone() const override;
 
     static QString name();
-    LinkMotionDevice(const QString &uid);
+    LinkMotionDevice(Core::Id id);
 
 protected:
     friend class LinkMotionDeviceFactory;

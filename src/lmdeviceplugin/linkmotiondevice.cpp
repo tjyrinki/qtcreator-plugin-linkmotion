@@ -32,14 +32,14 @@ LinkMotionDevice::LinkMotionDevice(const LinkMotionDevice &other)
     qDebug() << Q_FUNC_INFO;
 }
 
-LinkMotionDevice::LinkMotionDevice(const QString &uid)
+LinkMotionDevice::LinkMotionDevice(Core::Id id)
     : IDevice(Core::Id(Constants::LINKMOTION_DEVICE_TYPE),
                              IDevice::AutoDetected,
                              IDevice::Emulator,
-                             Core::Id(Constants::LINKMOTION_IVIOS_DEVICE_ID))
+                             id)
 {
     qDebug() << Q_FUNC_INFO;
-    setDisplayName(LinkMotionDevice::name());
+    setDisplayName(id.toString());
     setDeviceState(DeviceConnected);
     setDeviceIcon({Utils::Icon({{":/linkmotion/qml/LM_logo_boxed_2.png",
                                  Utils::Theme::PanelTextColorDark}}, Utils::Icon::Tint),

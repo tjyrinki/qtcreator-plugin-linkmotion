@@ -46,10 +46,12 @@ void LinkMotionConfiguration::updateDevices() {
     ProjectExplorer::DeviceManager *devManager = ProjectExplorer::DeviceManager::instance();
     if (!devManager) return;
 
-    Core::Id devId = Constants::LINKMOTION_IVIOS_DEVICE_ID;
-    ProjectExplorer::IDevice::ConstPtr dev = devManager->find(devId);
-    if (dev.isNull()) {
-        dev = ProjectExplorer::IDevice::ConstPtr(new LinkMotionDevice(devId.toString()));
-        devManager->addDevice(dev);
+    for (Core::Id devId: { Constants::LINKMOTION_AUTOOS_DEVICE_ID,
+                           Constants::LINKMOTION_IVIOS_DEVICE_ID }) {
+        ProjectExplorer::IDevice::ConstPtr dev = devManager->find(devId);
+        if (dev.isNull()) {
+            dev = ProjectExplorer::IDevice::ConstPtr(new LinkMotionDevice(devId));
+            devManager->addDevice(dev);
+        }
     }
 }
