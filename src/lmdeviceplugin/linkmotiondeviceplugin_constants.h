@@ -16,7 +16,7 @@ namespace Constants {
 const char LINKMOTION_SIMULATOR_TYPE[] = "LinkMotion.Simulator";
 const char LINKMOTION_DEVICE_TYPE[] = "LinkMotion.Device";
 const char EXTRA_INFO_KEY[] = "extraInfo";
-const char LINKMOTION_DEVICE_ID[] = "LinkMotion Device Emulator";
+const char LINKMOTION_IVIOS_DEVICE_ID[] = "LinkMotion IVI OS Emulator";
 }
 }
 

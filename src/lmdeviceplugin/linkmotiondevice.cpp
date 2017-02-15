@@ -20,7 +20,7 @@ using namespace LinkMotion::Internal;
 LinkMotionDevice::LinkMotionDevice() : ProjectExplorer::IDevice::IDevice(Core::Id(Constants::LINKMOTION_DEVICE_TYPE),
                                                                                      IDevice::AutoDetected,
                                                                                      IDevice::Hardware,
-                                                                                    Constants::LINKMOTION_DEVICE_ID)
+                                                                                     Constants::LINKMOTION_IVIOS_DEVICE_ID)
 {
     qDebug() << Q_FUNC_INFO;
 }
@@ -36,7 +36,7 @@ LinkMotionDevice::LinkMotionDevice(const QString &uid)
     : IDevice(Core::Id(Constants::LINKMOTION_DEVICE_TYPE),
                              IDevice::AutoDetected,
                              IDevice::Emulator,
-                             Core::Id(Constants::LINKMOTION_DEVICE_ID))
+                             Core::Id(Constants::LINKMOTION_IVIOS_DEVICE_ID))
 {
     qDebug() << Q_FUNC_INFO;
     setDisplayName(LinkMotionDevice::name());

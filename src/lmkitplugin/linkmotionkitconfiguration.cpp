@@ -162,8 +162,8 @@ void LinkMotionKitConfiguration::initialize() {
     }
     connect(dm,SIGNAL(updated()),this,SLOT(initialize()));
 
-    ProjectExplorer::IDevice::ConstPtr dev = dm->find(Core::Id(LinkMotion::Constants::LINKMOTION_DEVICE_ID));
-    qDebug() << dm->deviceCount() << dm->defaultDevice(Core::Id(LinkMotion::Constants::LINKMOTION_DEVICE_ID));
+    ProjectExplorer::IDevice::ConstPtr dev = dm->find(Core::Id(LinkMotion::Constants::LINKMOTION_IVIOS_DEVICE_ID));
+    qDebug() << dm->deviceCount() << dm->defaultDevice(Core::Id(LinkMotion::Constants::LINKMOTION_IVIOS_DEVICE_ID));
     for (int i=0; i<dm->deviceCount(); i++) {
         qDebug() << "Detected:" << dm->deviceAt(i)->displayName() << dm->deviceAt(i)->id();
     }
