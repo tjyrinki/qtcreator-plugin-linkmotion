@@ -15,6 +15,7 @@
 #include <projectexplorer/target.h>
 #include <utils/environment.h>
 #include <QDebug>
+#include <projectexplorer/kit.h>
 #include <projectexplorer/taskhub.h>
 #include <projectexplorer/task.h>
 #include "linkmotionrunplugin_constants.h"
@@ -97,6 +98,8 @@ void LinkMotionRunControl::start()
 
     appendMessage(tr("Starting remote process.\n"), Utils::NormalMessageFormat);
     Utils::Environment env = Utils::Environment::systemEnvironment();
+    runConfiguration()->target()->kit()->addToEnvironment(env);
+
     env.prependOrSetPath("/opt/linkmotion/sdk/vm");
     env.prependOrSetPath("/opt/linkmotion/sdk/hw");
 
@@ -151,6 +154,8 @@ ProjectExplorer::RunControl::StopResult LinkMotionRunControl::stop()
 
     QString projectName = this->runConfiguration()->target()->project()->displayName();
     Utils::Environment env = Utils::Environment::systemEnvironment();
+    runConfiguration()->target()->kit()->addToEnvironment(env);
+
     env.prependOrSetPath("/opt/linkmotion/sdk/vm");
     env.prependOrSetPath("/opt/linkmotion/sdk/hw");
 

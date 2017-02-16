@@ -1,6 +1,7 @@
 #include "linkmotionanalyzerunrunner.h"
 
 #include <debugger/debuggerstartparameters.h>
+#include <projectexplorer/kit.h>
 #include <projectexplorer/target.h>
 #include <projectexplorer/project.h>
 #include <debugger/debuggercore.h>
@@ -52,6 +53,8 @@ void LinkMotionAnalyzeRunRunner::slotRunControl_Started() {
     QString appName = m_runConfig->target()->project()->displayName();
 
     Utils::Environment env = Utils::Environment::systemEnvironment();
+    m_runConfig->target()->kit()->addToEnvironment(env);
+
     env.prependOrSetPath("/opt/linkmotion/sdk/vm");
     env.prependOrSetPath("/opt/linkmotion/sdk/hw");
 
@@ -80,6 +83,8 @@ void LinkMotionAnalyzeRunRunner::slotStart_Finished(int retval, QProcess::ExitSt
 
     QString projectName =  m_runConfig->target()->project()->displayName();
     Utils::Environment env = Utils::Environment::systemEnvironment();
+    m_runConfig->target()->kit()->addToEnvironment(env);
+
     env.prependOrSetPath("/opt/linkmotion/sdk/vm");
     env.prependOrSetPath("/opt/linkmotion/sdk/hw");
 
