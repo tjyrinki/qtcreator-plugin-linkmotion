@@ -129,6 +129,16 @@ void LinkMotionKitConfiguration::initialize() {
             qDebug() << " * was not a linkmotion kit";
             continue;
         }
+
+        if (k->displayName() == QStringLiteral("LinkMotion Emulator Kit")) {
+            qDebug() << " * removing legacy LinkMotion Emulator Kit";
+            // Saved configuration contains old LinkMotion kit used before
+            // separate kits for Auto and IVI OSes replaced it. Remove the
+            // legacy kit.
+            ProjectExplorer::KitManager::deregisterKit(k);
+            continue;
+        }
+
         qDebug() << " => accepted " << k->displayName();
         existingKits << k;
     }
