@@ -13,12 +13,6 @@ TEMPLATE = subdirs
 SUBDIRS = src
 
 ####################################################################
-# This target 'make deb' will create packages under pkg folder
-####################################################################
-QMAKE_EXTRA_TARGETS += deb
-deb.commands += ./package-create
-
-####################################################################
 # This target 'make local' will build and
 # install the plugins to $HOME/.local/share/data/
 #
@@ -28,5 +22,4 @@ QMAKE_EXTRA_TARGETS += local
 local.commands += $$[QT_INSTALL_BINS]/qmake -r CONFIG+=BUILDTOHOME;
 local.commands += make
 
-OTHER_FILES=$$system(find debian) \
-    $$system(find share)
+OTHER_FILES= $$system(find share)

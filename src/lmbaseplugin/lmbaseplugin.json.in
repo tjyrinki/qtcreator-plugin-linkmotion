@@ -1,12 +1,12 @@
 {
-    \"Name\" : \"lmwelcomeplugin\",
+    \"Name\" : \"lmbaseplugin\",
     \"Version\" : \"$$QTCREATOR_VERSION\",
     \"CompatVersion\" : \"$$QTCREATOR_COMPAT_VERSION\",
     \"Vendor\" : \"LinkMotion Oy\",
     \"Copyright\" : \"(C) Link Motion Oy\",
-    \"License\" : [\"Proprietary\"],
+    \"License\" : [\"GNU Lesser General Public License Version 2.1\"],
     \"Category\" : \"LinkMotion\",
-    \"Description\" : \"Link Motion welcome screen plugin\",
+    \"Description\" : \"Link Motion base plugin\",
     \"Url\" : \"http://www.link-motion.com\",
     $$dependencyList
 }

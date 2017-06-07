@@ -1,2 +1,0 @@
-#!/bin/bash
-qmake -r && make deb && sudo dpkg -i /home/jplinkmotion/pbuilder/xenial_result/qtcreator-plugin-linkmotion_3.5.0+16.04.20160524-0ubuntu2_amd64.deb && gdb qtcreator
