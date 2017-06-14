@@ -44,11 +44,17 @@ QLatin1String LM_TARGET_CONTAINER_KEY = QLatin1String("LinkMotion.ToolChain.Targ
 static QMap <QString,ProjectExplorer::Abi> init_architectures()
 {
     QMap<QString,ProjectExplorer::Abi> map;
-    map.insert(QLatin1String("armhf") , ProjectExplorer::Abi(ProjectExplorer::Abi::ArmArchitecture,
+    map.insert(QLatin1String("armv7tnhl") , ProjectExplorer::Abi(ProjectExplorer::Abi::ArmArchitecture,
                                                              ProjectExplorer::Abi::LinuxOS,
                                                              ProjectExplorer::Abi::GenericLinuxFlavor,
                                                              ProjectExplorer::Abi::ElfFormat,
                                                              32));
+
+    map.insert(QLatin1String("i686") ,ProjectExplorer::Abi(ProjectExplorer::Abi::X86Architecture,
+                                                           ProjectExplorer::Abi::LinuxOS,
+                                                           ProjectExplorer::Abi::GenericLinuxFlavor,
+                                                           ProjectExplorer::Abi::ElfFormat,
+                                                           32));
 
     map.insert(QLatin1String("i386") ,ProjectExplorer::Abi(ProjectExplorer::Abi::X86Architecture,
                                                            ProjectExplorer::Abi::LinuxOS,
@@ -56,12 +62,12 @@ static QMap <QString,ProjectExplorer::Abi> init_architectures()
                                                            ProjectExplorer::Abi::ElfFormat,
                                                            32));
 
-    map.insert(QLatin1String("amd64"),ProjectExplorer::Abi(ProjectExplorer::Abi::X86Architecture,
+    map.insert(QLatin1String("x86_64"),ProjectExplorer::Abi(ProjectExplorer::Abi::X86Architecture,
                                                            ProjectExplorer::Abi::LinuxOS,
                                                            ProjectExplorer::Abi::GenericLinuxFlavor,
                                                            ProjectExplorer::Abi::ElfFormat,
                                                            64));
-    map.insert(QLatin1String("arm64") , ProjectExplorer::Abi(ProjectExplorer::Abi::ArmArchitecture,
+    map.insert(QLatin1String("aarch64") , ProjectExplorer::Abi(ProjectExplorer::Abi::ArmArchitecture,
                                                              ProjectExplorer::Abi::LinuxOS,
                                                              ProjectExplorer::Abi::GenericLinuxFlavor,
                                                              ProjectExplorer::Abi::ElfFormat,
@@ -90,7 +96,7 @@ QString LinkMotionToolChain::typeDisplayName() const
 
 bool LinkMotionToolChain::isValid() const
 {
-    return GccToolChain::isValid() && targetAbi().isValid() && LmTargetTool::targetExists(m_lmTarget);
+    return GccToolChain::isValid() && targetAbi().isValid() && LinkMotionTargetTool::targetExists(m_lmTarget);
 }
 
 void LinkMotionToolChain::addToEnvironment(Utils::Environment &env) const
@@ -100,7 +106,7 @@ void LinkMotionToolChain::addToEnvironment(Utils::Environment &env) const
 
 QString LinkMotionToolChain::makeCommand(const Utils::Environment &) const
 {
-    return LmTargetTool::findOrCreateMakeWrapper(lmTarget());
+    return LinkMotionTargetTool::findOrCreateMakeWrapper(lmTarget());
 }
 
 bool LinkMotionToolChain::operator ==(const ProjectExplorer::ToolChain &tc) const
@@ -117,7 +123,7 @@ ProjectExplorer::ToolChainConfigWidget *LinkMotionToolChain::configurationWidget
     return GccToolChain::configurationWidget();
 }
 
-const LmTargetTool::Target &LinkMotionToolChain::lmTarget() const
+const LinkMotionTargetTool::Target &LinkMotionToolChain::lmTarget() const
 {
     return m_lmTarget;
 }
@@ -142,6 +148,11 @@ QString LinkMotionToolChain::abiToArchitectureName(const ProjectExplorer::Abi &a
 QList<QString> LinkMotionToolChain::supportedArchitectures()
 {
     return lmDeviceArchitectures.keys();
+}
+
+bool LinkMotionToolChain::supportsArchitecture(const QString &arch)
+{
+    return lmDeviceArchitectures.contains(arch);
 }
 
 QString LinkMotionToolChain::remoteCompilerCommand() const
@@ -208,12 +219,13 @@ Utils::FileName LinkMotionToolChain::compilerCommand() const
     return GccToolChain::compilerCommand();
 }
 
-LinkMotionToolChain::LinkMotionToolChain(const LmTargetTool::Target &target, Detection d)
+LinkMotionToolChain::LinkMotionToolChain(const LinkMotionTargetTool::Target &target, const Core::Id &language, Detection d)
     : GccToolChain(Constants::LM_TARGET_TOOLCHAIN_ID, d)
     , m_lmTarget(target)
 {
+    setLanguage(language);
     resetToolChain(Utils::FileName::fromString(
-                           LmTargetTool::findOrCreateGccWrapper(target)
+                           LinkMotionTargetTool::findOrCreateGccWrapper(target, language)
                            ));
 
     setDisplayName(QString::fromLatin1("Link Motion GCC (%1-%2)")
@@ -267,28 +279,34 @@ QList<ProjectExplorer::ToolChain *> LinkMotionToolChainFactory::createToolChains
 {
     QList<ProjectExplorer::ToolChain*> toolChains;
 
-    QList<LmTargetTool::Target> targets = LmTargetTool::listAvailableTargets();
-    foreach(const LmTargetTool::Target &target, targets) {
+    QList<LinkMotionTargetTool::Target> targets = LinkMotionTargetTool::listAvailableTargets();
+    foreach(const LinkMotionTargetTool::Target &target, targets) {
         if(debug) qDebug()<<"Found Target"<<target;
 
         if(!lmDeviceArchitectures.contains(target.architecture))
             continue;
 
-        QString comp = LmTargetTool::findOrCreateGccWrapper(target);
-        if(comp.isEmpty())
-            continue;
+        auto createOrFind = [&] (const Core::Id &language){
+            QString comp = LinkMotionTargetTool::findOrCreateGccWrapper(target, language);
+            if(comp.isEmpty())
+                return;
 
-        auto predicate = [&](ProjectExplorer::ToolChain *tc) {
-            if (tc->typeId() != Constants::LM_TARGET_TOOLCHAIN_ID)
-                return false;
-            auto lmTc = static_cast<LinkMotionToolChain *>(tc);
-            return lmTc->lmTarget().containerName == target.containerName;
+            auto predicate = [&](ProjectExplorer::ToolChain *tc) {
+                if (tc->typeId() != Constants::LM_TARGET_TOOLCHAIN_ID)
+                    return false;
+                auto lmTc = static_cast<LinkMotionToolChain *>(tc);
+                return lmTc->lmTarget().containerName == target.containerName &&
+                        lmTc->language() == language;
+            };
+
+            ProjectExplorer::ToolChain *tc = Utils::findOrDefault(alreadyKnown, predicate);
+            if (!tc)
+                tc = new LinkMotionToolChain(target, language, ProjectExplorer::ToolChain::AutoDetection);
+            toolChains.append(tc);
         };
 
-        ProjectExplorer::ToolChain *tc = Utils::findOrDefault(alreadyKnown, predicate);
-        if (!tc)
-            tc = new LinkMotionToolChain(target, ProjectExplorer::ToolChain::AutoDetection);
-        toolChains.append(tc);
+        createOrFind(ProjectExplorer::Constants::C_LANGUAGE_ID);
+        createOrFind(ProjectExplorer::Constants::CXX_LANGUAGE_ID);
     }
 
     return toolChains;

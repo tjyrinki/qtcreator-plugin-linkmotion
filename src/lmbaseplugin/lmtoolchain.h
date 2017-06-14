@@ -27,6 +27,12 @@ namespace LmBase {
 namespace Internal {
 
 class LinkMotionToolChainFactory;
+class LinkMotionToolChain;
+
+struct LinkMotionToolChainSet {
+    LinkMotionToolChain *cLangToolchain;
+    LinkMotionToolChain *cxxLangToolchain;
+};
 
 class LinkMotionToolChain : public ProjectExplorer::GccToolChain
 {
@@ -34,7 +40,7 @@ class LinkMotionToolChain : public ProjectExplorer::GccToolChain
 
     // ToolChain interface
 public:
-    LinkMotionToolChain(const LmTargetTool::Target &target,Detection d);
+    LinkMotionToolChain(const LinkMotionTargetTool::Target &target, const Core::Id &language, Detection d);
 
     virtual QList<Utils::FileName> suggestedMkspecList() const override;
     virtual Utils::FileName suggestedDebugger() const override;
@@ -48,11 +54,12 @@ public:
 
     QString gnutriplet () const;
     static QString gnutriplet (const ProjectExplorer::Abi &abi);
-    const LmTargetTool::Target &lmTarget () const;
+    const LinkMotionTargetTool::Target &lmTarget () const;
 
     static ProjectExplorer::Abi architectureNameToAbi ( const QString &arch );
     static QString abiToArchitectureName ( const ProjectExplorer::Abi &abi );
     static QList<QString> supportedArchitectures ();
+    static bool supportsArchitecture (const QString &arch);
 
     QString remoteCompilerCommand () const;
 
@@ -63,7 +70,7 @@ protected:
     LinkMotionToolChain();
 
 private:
-    LmTargetTool::Target m_lmTarget;
+    LinkMotionTargetTool::Target m_lmTarget;
 
     // ToolChain interface
 public:

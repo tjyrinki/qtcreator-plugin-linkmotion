@@ -44,15 +44,15 @@ public:
 
     //static void autoCreateKit  ( UbuntuDevice::Ptr device );
     static void autoDetectKits ();
-    static ProjectExplorer::Kit *createKit (LinkMotionToolChain* tc);
+    static ProjectExplorer::Kit *createKit (LinkMotionToolChainSet tcSet);
     static QVariant createOrFindDebugger(const Utils::FileName &path);
     static void fixKit (ProjectExplorer::Kit* k);
-    static QList<LinkMotionToolChain *> linkMotionToolChains();
-    static QList<ProjectExplorer::Kit *> findKitsUsingTarget (const LmTargetTool::Target &target);
+    static QList<LinkMotionToolChainSet> linkMotionToolChains();
+    static QList<ProjectExplorer::Kit *> findKitsUsingTarget (const LinkMotionTargetTool::Target &target);
     static LinkMotionQtVersion *createOrFindQtVersion(LinkMotionToolChain* tc);
     static CMakeProjectManager::CMakeTool *createOrFindCMakeTool(LinkMotionToolChain* tc);
     static CMakeProjectManager::CMakeTool *createCMakeTool(LinkMotionToolChain *tc);
-    static CMakeProjectManager::CMakeTool *createCMakeTool(const LmTargetTool::Target &target);
+    static CMakeProjectManager::CMakeTool *createCMakeTool(const LinkMotionTargetTool::Target &target);
 };
 
 } // namespace Internal

@@ -97,24 +97,50 @@ LinkMotionKitManager::LinkMotionKitManager()
 {
 }
 
-QList<LinkMotionToolChain *> LinkMotionKitManager::linkMotionToolChains()
+QList<LinkMotionToolChainSet> LinkMotionKitManager::linkMotionToolChains()
 {
-    QList<LinkMotionToolChain *> toolchains;
-    // having a empty toolchains list will remove all autodetected kits for android
-    // exactly what we want in that case
-    foreach (ProjectExplorer::ToolChain *tc, ProjectExplorer::ToolChainManager::toolChains()) {
+    QList<LinkMotionToolChainSet> allToolchains;
+
+    QList<ProjectExplorer::ToolChain *> cxxChains = ProjectExplorer::ToolChainManager::toolChains([](const ProjectExplorer::ToolChain *tc){
         if(tc) {
             if (!tc->isAutoDetected())
-                continue;
+                return false;
             if (tc->typeId() != Constants::LM_TARGET_TOOLCHAIN_ID)
-                continue;
-            toolchains << static_cast<LinkMotionToolChain *>(tc);
+                return false;
+            if (tc->language() != ProjectExplorer::Constants::C_LANGUAGE_ID)
+            return true;
         }
+        return false;
+    });
+
+    for(ProjectExplorer::ToolChain *cxxTc : cxxChains) {
+
+        LinkMotionToolChain *lmCxxTc = static_cast<LinkMotionToolChain *>(cxxTc);
+
+        ProjectExplorer::ToolChain *cTc = ProjectExplorer::ToolChainManager::toolChain([&](const ProjectExplorer::ToolChain *tc){
+            if (!tc->isAutoDetected() ||
+                tc->typeId() != Constants::LM_TARGET_TOOLCHAIN_ID ||
+                tc->language() != ProjectExplorer::Constants::C_LANGUAGE_ID)
+                return false;
+            const LinkMotionToolChain *lmCTc =  static_cast<const LinkMotionToolChain *>(tc);
+            if (lmCxxTc->lmTarget().containerName != lmCTc->lmTarget().containerName)
+                return false;
+            return true;
+        });
+
+        if (!cTc)
+            continue;
+
+        LinkMotionToolChainSet set;
+        set.cLangToolchain = static_cast<LinkMotionToolChain *>(cTc);
+        set.cxxLangToolchain = lmCxxTc;
+        allToolchains << set;
     }
-    return toolchains;
+
+    return allToolchains;
 }
 
-QList<ProjectExplorer::Kit *> LinkMotionKitManager::findKitsUsingTarget (const LmTargetTool::Target &target)
+QList<ProjectExplorer::Kit *> LinkMotionKitManager::findKitsUsingTarget (const LinkMotionTargetTool::Target &target)
 {
     auto matcher = [&target](const ProjectExplorer::Kit *k) {
         ProjectExplorer::ToolChain *tc = ProjectExplorer::ToolChainKitInformation::toolChain(k, ProjectExplorer::Constants::CXX_LANGUAGE_ID);
@@ -133,7 +159,7 @@ QList<ProjectExplorer::Kit *> LinkMotionKitManager::findKitsUsingTarget (const L
 
 LinkMotionQtVersion *LinkMotionKitManager::createOrFindQtVersion(LinkMotionToolChain *tc)
 {
-    QString qmakePath = LmTargetTool::findOrCreateQMakeWrapper(tc->lmTarget());
+    QString qmakePath = LinkMotionTargetTool::findOrCreateQMakeWrapper(tc->lmTarget());
     if(!QFile::exists(qmakePath)) {
         return 0;
     } else {
@@ -154,7 +180,7 @@ LinkMotionQtVersion *LinkMotionKitManager::createOrFindQtVersion(LinkMotionToolC
 
 CMakeProjectManager::CMakeTool *LinkMotionKitManager::createOrFindCMakeTool(LinkMotionToolChain *tc)
 {
-    QString cmakePathStr = LmTargetTool::findOrCreateToolWrapper(QStringLiteral("cmake"), tc->lmTarget());
+    QString cmakePathStr = LinkMotionTargetTool::findOrCreateToolWrapper(QStringLiteral("cmake"), tc->lmTarget());
     Utils::FileName cmakePath = Utils::FileName::fromString(cmakePathStr);
 
     CMakeProjectManager::CMakeTool *cmake = CMakeProjectManager::CMakeToolManager::findByCommand(cmakePath);
@@ -175,9 +201,9 @@ CMakeProjectManager::CMakeTool *LinkMotionKitManager::createCMakeTool(LinkMotion
     return createCMakeTool(tc->lmTarget());
 }
 
-CMakeProjectManager::CMakeTool *LinkMotionKitManager::createCMakeTool(const LmTargetTool::Target &target)
+CMakeProjectManager::CMakeTool *LinkMotionKitManager::createCMakeTool(const LinkMotionTargetTool::Target &target)
 {
-    QString cmakePathStr = LmTargetTool::findOrCreateToolWrapper(QStringLiteral("cmake"), target);
+    QString cmakePathStr = LinkMotionTargetTool::findOrCreateToolWrapper(QStringLiteral("cmake"), target);
     Utils::FileName cmakePath = Utils::FileName::fromString(cmakePathStr);
     CMakeProjectManager::CMakeTool *cmake = new CMakeProjectManager::CMakeTool(CMakeProjectManager::CMakeTool::AutoDetection,
                                                                                CMakeProjectManager::CMakeTool::createId());
@@ -329,9 +355,9 @@ void LinkMotionKitManager::autoCreateKit(UbuntuDevice::Ptr device)
 
 void LinkMotionKitManager::autoDetectKits()
 {
-    // having a empty toolchains list will remove all autodetected kits for ubuntu
+    // having a empty toolchains list will remove all autodetected kits for link motion
     // exactly what we want in that case
-    QList<LinkMotionToolChain *> toolchains = linkMotionToolChains();
+    QList<LinkMotionToolChainSet> toolchains = linkMotionToolChains();
 
     QList<ProjectExplorer::Kit *> existingKits;
     foreach (ProjectExplorer::Kit *k, ProjectExplorer::KitManager::kits()) {
@@ -349,8 +375,8 @@ void LinkMotionKitManager::autoDetectKits()
 
     // create new kits
     QList<ProjectExplorer::Kit *> newKits;
-    foreach (LinkMotionToolChain *tc, toolchains) {
-        ProjectExplorer::Kit* newKit = createKit(tc);
+    foreach (LinkMotionToolChainSet tcSet, toolchains) {
+        ProjectExplorer::Kit* newKit = createKit(tcSet);
         newKit->makeSticky();
         newKits << newKit;
     }
@@ -417,7 +443,7 @@ void LinkMotionKitManager::autoDetectKits()
             QString basePath = Settings::settingsPath().toString();
             if (tool->cmakeExecutable().toString().startsWith(basePath)) {
                 qDebug()<<"Setting mapper to "<<tool->displayName();
-                tool->setPathMapperFactory(&LmTargetTool::mapIncludePathsForCMakeFactory);
+                tool->setPathMapperFactory(&LinkMotionTargetTool::mapIncludePathsForCMakeFactory);
             } else {
                 qDebug()<<"Unsetting mapper from "<<tool->displayName();
                 tool->setPathMapperFactory(CMakeProjectManager::CMakeTool::PathMapperFactory());
@@ -436,26 +462,27 @@ void LinkMotionKitManager::autoDetectKits()
  * Creates a new Kit for the LM toolchain and sets default
  * values
  */
-ProjectExplorer::Kit *LinkMotionKitManager::createKit(LinkMotionToolChain *tc)
+ProjectExplorer::Kit *LinkMotionKitManager::createKit(LinkMotionToolChainSet tcSet)
 {
     //@TODO find a qt version
     ProjectExplorer::Kit* newKit = new ProjectExplorer::Kit;
     newKit->setAutoDetected(false); //let the user delete that stuff
     //newKit->setIconPath(Utils::FileName::fromString(QLatin1String(Constants::UBUNTU_ICON)));
-    ProjectExplorer::ToolChainKitInformation::setToolChain(newKit, tc);
+    ProjectExplorer::ToolChainKitInformation::setToolChain(newKit, tcSet.cLangToolchain);
+    ProjectExplorer::ToolChainKitInformation::setToolChain(newKit, tcSet.cxxLangToolchain);
 
-    CMakeProjectManager::CMakeTool *cmake = createOrFindCMakeTool(tc);
+    CMakeProjectManager::CMakeTool *cmake = createOrFindCMakeTool(tcSet.cxxLangToolchain);
     if (cmake) {
-        cmake->setPathMapperFactory(&LmTargetTool::mapIncludePathsForCMakeFactory);
+        cmake->setPathMapperFactory(&LinkMotionTargetTool::mapIncludePathsForCMakeFactory);
         CMakeProjectManager::CMakeKitInformation::setCMakeTool(newKit, cmake->id());
     }
 
-    ProjectExplorer::SysRootKitInformation::setSysRoot(newKit,Utils::FileName::fromString(LmTargetTool::targetBasePath(tc->lmTarget())));
+    ProjectExplorer::SysRootKitInformation::setSysRoot(newKit,Utils::FileName::fromString(LinkMotionTargetTool::targetBasePath(tcSet.cxxLangToolchain->lmTarget())));
 
-    createOrFindDeviceAndType(newKit, tc);
+    createOrFindDeviceAndType(newKit, tcSet.cxxLangToolchain);
 
     //@TODO add gdbserver support
-    QtSupport::QtKitInformation::setQtVersion(newKit, createOrFindQtVersion(tc));
+    QtSupport::QtKitInformation::setQtVersion(newKit, createOrFindQtVersion(tcSet.cxxLangToolchain));
     return newKit;
 }
 
@@ -519,7 +546,7 @@ void LinkMotionKitManager::fixKit(ProjectExplorer::Kit *k)
     }
 
     if(ProjectExplorer::SysRootKitInformation::sysRoot(k).isEmpty()) {
-        ProjectExplorer::SysRootKitInformation::setSysRoot(k,Utils::FileName::fromString(LmTargetTool::targetBasePath(tc->lmTarget())));
+        ProjectExplorer::SysRootKitInformation::setSysRoot(k,Utils::FileName::fromString(LinkMotionTargetTool::targetBasePath(tc->lmTarget())));
     }
 
     //make sure we point to a ubuntu device
@@ -549,10 +576,11 @@ void LinkMotionKitManager::fixKit(ProjectExplorer::Kit *k)
     if(cmake) {
         CMakeProjectManager::CMakeConfig  conf{
             CMakeProjectManager::CMakeConfigItem("QT_QMAKE_EXECUTABLE",  qtVer->remoteQMakeCommand().toUtf8()),
-            CMakeProjectManager::CMakeConfigItem("CMAKE_CXX_COMPILER",  tc->remoteCompilerCommand().toUtf8())
+            CMakeProjectManager::CMakeConfigItem("CMAKE_CXX_COMPILER",  tc->remoteCompilerCommand().toUtf8()),
+            CMakeProjectManager::CMakeConfigItem("CMAKE_C_COMPILER",  tc->remoteCompilerCommand().toUtf8())
         };
 
-        cmake->setPathMapperFactory(&LmTargetTool::mapIncludePathsForCMakeFactory);
+        cmake->setPathMapperFactory(&LinkMotionTargetTool::mapIncludePathsForCMakeFactory);
         CMakeProjectManager::CMakeKitInformation::setCMakeTool(k, cmake->id());
         CMakeProjectManager::CMakeConfigurationKitInformation::setConfiguration(k , conf);
     }

@@ -27,7 +27,9 @@ HEADERS += \
     lmwelcomepage.h \
     lmshared.h \
     processoutputdialog.h \
-    lmshared.h
+    lmtargetdialog.h \
+    lmsettingstargetwidget.h \
+    lmsettingstargetpage.h
 
 DEFINES += LMBASE_LIBRARY
 
@@ -40,8 +42,10 @@ SOURCES += \
     lmbaseplugin.cpp \
     lmwelcomepage.cpp \
     processoutputdialog.cpp \
-    lmshared.cpp
     lmshared.cpp \
+    lmtargetdialog.cpp \
+    lmsettingstargetwidget.cpp \
+    lmsettingstargetpage.cpp
 
 DISTFILES += \
     lmbaseplugin_dependencies.pri \
@@ -51,6 +55,9 @@ RESOURCES += \
     resources.qrc
 
 FORMS += \
-    processoutputdialog.ui
+    processoutputdialog.ui \
+    lmsettingstargetwidget.ui
+
+include(wizards/wizards.pri)
 
 

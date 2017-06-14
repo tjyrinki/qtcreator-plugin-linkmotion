@@ -53,7 +53,7 @@ class UbuntuClickBuildConfiguration;
 } // namespace Internal
 
 
-class LMBASESHARED_EXPORT LmTargetTool
+class LMBASESHARED_EXPORT LinkMotionTargetTool
 {
 public:
 
@@ -63,30 +63,30 @@ public:
     };
 
     struct Target {
+        QString imageArchitecture; //only required for creating new targets
         QString architecture;
         QString containerName;
+        QString distribution;
+        QString version;
         bool upgradesEnabled = false;
-
-        //only set for container creation
-        QString imageName;
     };
 
-    LmTargetTool();
+    LinkMotionTargetTool();
 
-    static void parametersForCreateChroot   (const Target &target, ProjectExplorer::ProcessParameters* params);
+    static void parametersForCreateTarget   (const Target &target, ProjectExplorer::ProcessParameters* params);
     static void parametersForMaintainChroot (const MaintainMode &mode,const Target& target,ProjectExplorer::ProcessParameters* params);
 
-    static void openChrootTerminal (const Target& target);
+    static void openTargetTerminal (const Target& target);
 
     static QString targetBasePath (const Target& target);
     static bool parseContainerName (const QString &name, Target *target, QStringList *allExt = 0);
     //static bool getTargetFromUser (Target* target, const QString &framework=QString());
     static QStringList getSupportedFrameworks (const Target *target);
     static QString getMostRecentFramework ( const QString &subFramework, const Target *target );
-    static QString findOrCreateGccWrapper(const LmTargetTool::Target &target);
-    static QString findOrCreateToolWrapper(const QString &tool, const LmTargetTool::Target &target);
-    static QString findOrCreateQMakeWrapper(const LmTargetTool::Target &target);
-    static QString findOrCreateMakeWrapper(const LmTargetTool::Target &target);
+    static QString findOrCreateGccWrapper(const LinkMotionTargetTool::Target &target, const Core::Id &language);
+    static QString findOrCreateToolWrapper(const QString &tool, const LinkMotionTargetTool::Target &target);
+    static QString findOrCreateQMakeWrapper(const LinkMotionTargetTool::Target &target);
+    static QString findOrCreateMakeWrapper(const LinkMotionTargetTool::Target &target);
     static CMakeProjectManager::CMakeTool::PathMapper mapIncludePathsForCMakeFactory(const ProjectExplorer::Target *t);
     static QString hostArchitecture ();
     static bool    compatibleWithHostArchitecture (const QString &targetArch);
@@ -103,7 +103,7 @@ public:
                                                                     const QMap<QString, QString> &envMap = QMap<QString, QString>() );
 };
 
-QDebug operator<<(QDebug dbg, const LmTargetTool::Target& t);
+QDebug operator<<(QDebug dbg, const LinkMotionTargetTool::Target& t);
 } // namespace LmBase
 
 #endif // LINKMOTION_INTERNAL_TARGETTOOL_H

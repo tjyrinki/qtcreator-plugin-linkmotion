@@ -58,7 +58,7 @@ enum {
     debug = 0
 };
 
-const char CREATE_TARGET_ARGS[]  = "create -n %1 -p %2";
+const char CREATE_TARGET_ARGS[]  = "create -n %1 -d %2 -v %3 -a %4 -b %5";
 const char DESTROY_TARGET_ARGS[] = "destroy %1";
 const char UPGRADE_TARGET_ARGS[] = "upgrade %0";
 const char TARGET_OPEN_TERMINAL[]       = "%0 maint %1";
@@ -68,7 +68,7 @@ const char TARGET_OPEN_TERMINAL[]       = "%0 maint %1";
  * Implements functionality needed for executing the target
  * tool
  */
-LmTargetTool::LmTargetTool()
+LinkMotionTargetTool::LinkMotionTargetTool()
 {
 }
 
@@ -76,7 +76,7 @@ LmTargetTool::LmTargetTool()
  * @brief LmTargetTool::runToolInTarget
  * Adjusts the \a paramsIn to run in the \a target
  */
-ProjectExplorer::ProcessParameters LmTargetTool::prepareToRunInTarget(ProjectExplorer::Kit *target, const QString &cmd,
+ProjectExplorer::ProcessParameters LinkMotionTargetTool::prepareToRunInTarget(ProjectExplorer::Kit *target, const QString &cmd,
                                                                          const QStringList &args,
                                                                          const QString &wd,
                                                                          const QMap<QString, QString> &envMap)
@@ -128,12 +128,15 @@ ProjectExplorer::ProcessParameters LmTargetTool::prepareToRunInTarget(ProjectExp
  * Initializes a ProjectExplorer::ProcessParameters object with command and arguments
  * to create a new chroot
  */
-void LmTargetTool::parametersForCreateChroot(const Target &target, ProjectExplorer::ProcessParameters *params)
+void LinkMotionTargetTool::parametersForCreateTarget(const Target &target, ProjectExplorer::ProcessParameters *params)
 {
     Utils::Environment env = Utils::Environment::systemEnvironment();
     QString command = QString::fromLatin1(CREATE_TARGET_ARGS)
             .arg(target.containerName)
-            .arg(target.imageName);
+            .arg(target.distribution)
+            .arg(target.version)
+            .arg(target.imageArchitecture)
+            .arg(target.architecture);
 
     params->setCommand(Constants::LM_TARGET_TOOL);
     params->setEnvironment(Utils::Environment::systemEnvironment());
@@ -145,7 +148,7 @@ void LmTargetTool::parametersForCreateChroot(const Target &target, ProjectExplor
  * Initializes params with the arguments for maintaining the chroot
  * @note does not call ProjectExplorer::ProcessParameters::resolveAll()
  */
-void LmTargetTool::parametersForMaintainChroot(const LmTargetTool::MaintainMode &mode, const Target &target, ProjectExplorer::ProcessParameters *params)
+void LinkMotionTargetTool::parametersForMaintainChroot(const LinkMotionTargetTool::MaintainMode &mode, const Target &target, ProjectExplorer::ProcessParameters *params)
 {
     QString arguments;
     switch (mode) {
@@ -171,7 +174,7 @@ void LmTargetTool::parametersForMaintainChroot(const LmTargetTool::MaintainMode 
  * Opens a new terminal logged into the chroot specified by \a target
  * The terminal emulator used is specified in the Creator environment option page
  */
-void LmTargetTool::openChrootTerminal(const LmTargetTool::Target &target)
+void LinkMotionTargetTool::openTargetTerminal(const LinkMotionTargetTool::Target &target)
 {
     QStringList args = Utils::QtcProcess::splitArgs(Utils::ConsoleProcess::terminalEmulator(Core::ICore::settings()));
     QString     term = args.takeFirst();
@@ -227,7 +230,7 @@ bool LmTargetTool::getTargetFromUser(Target *target, const QString &framework)
 }
 #endif
 
-QString LmTargetTool::targetBasePath(const LmTargetTool::Target &target)
+QString LinkMotionTargetTool::targetBasePath(const LinkMotionTargetTool::Target &target)
 {
     static QMap<QString, QString> basePathCache;
     if (basePathCache.contains(target.containerName))
@@ -249,7 +252,7 @@ QString LmTargetTool::targetBasePath(const LmTargetTool::Target &target)
     return basePath;
 }
 
-bool LmTargetTool::parseContainerName(const QString &name, LmTargetTool::Target *target, QStringList *allExt)
+bool LinkMotionTargetTool::parseContainerName(const QString &name, LinkMotionTargetTool::Target *target, QStringList *allExt)
 {
     QStringList ext;
 
@@ -275,12 +278,12 @@ bool LmTargetTool::parseContainerName(const QString &name, LmTargetTool::Target 
  * \brief LmTargetTool::targetExists
  * checks if the target is still available
  */
-bool LmTargetTool::targetExists(const LmTargetTool::Target &target)
+bool LinkMotionTargetTool::targetExists(const LinkMotionTargetTool::Target &target)
 {
     return targetExists(target.containerName);
 }
 
-bool LmTargetTool::targetExists(const QString &targetName)
+bool LinkMotionTargetTool::targetExists(const QString &targetName)
 {
     QProcess proc;
     proc.start(Constants::LM_TARGET_TOOL,
@@ -297,7 +300,7 @@ bool LmTargetTool::targetExists(const QString &targetName)
  * @brief LmTargetTool::listAvailableTargets
  * @return all currently existing chroot targets in the system
  */
-QList<LmTargetTool::Target> LmTargetTool::listAvailableTargets(const QString &)
+QList<LinkMotionTargetTool::Target> LinkMotionTargetTool::listAvailableTargets(const QString &)
 {
     QProcess sdkTool;
     sdkTool.setProgram(Constants::LM_TARGET_TOOL);
@@ -350,17 +353,19 @@ QList<LmTargetTool::Target> LmTargetTool::listAvailableTargets(const QString &)
         Target t;
         t.architecture  = map.value(QStringLiteral("architecture")).toString();
         t.containerName = map.value(QStringLiteral("name")).toString();
+        t.distribution  = map.value(QStringLiteral("distribution")).toString();
+        t.version       = map.value(QStringLiteral("version")).toString();
         t.upgradesEnabled = map.value(QStringLiteral("updatesEnabled"),false).toBool();
         targets.append(t);
     }
     return targets;
 }
 
-QList<LmTargetTool::Target> LmTargetTool::listPossibleDeviceContainers()
+QList<LinkMotionTargetTool::Target> LinkMotionTargetTool::listPossibleDeviceContainers()
 {
     QString arch = hostArchitecture();
     if (arch.isEmpty())
-        return QList<LmTargetTool::Target>();
+        return QList<LinkMotionTargetTool::Target>();
 
     QList<Target> allTargets = listAvailableTargets();
 
@@ -378,7 +383,7 @@ QList<LmTargetTool::Target> LmTargetTool::listPossibleDeviceContainers()
  * Tries to get the Click target from a projectconfiguration,
  * \returns 0 if nothing was found
  */
-const LmTargetTool::Target *LmTargetTool::lmTargetFromTarget(ProjectExplorer::Target *t)
+const LinkMotionTargetTool::Target *LinkMotionTargetTool::lmTargetFromTarget(ProjectExplorer::Target *t)
 {
 #ifndef IN_TEST_PROJECT
     if(!t)
@@ -399,7 +404,7 @@ const LmTargetTool::Target *LmTargetTool::lmTargetFromTarget(ProjectExplorer::Ta
 #endif
 }
 
-bool LmTargetTool::setTargetUpgradesEnabled(const Target &target, const bool set)
+bool LinkMotionTargetTool::setTargetUpgradesEnabled(const Target &target, const bool set)
 {
     QProcess sdkTool;
     sdkTool.setProgram(Constants::LM_TARGET_TOOL);
@@ -416,42 +421,53 @@ bool LmTargetTool::setTargetUpgradesEnabled(const Target &target, const bool set
     return true;
 }
 
-QString LmTargetTool::findOrCreateGccWrapper (const LmTargetTool::Target &target)
+QString LinkMotionTargetTool::findOrCreateGccWrapper (const LinkMotionTargetTool::Target &target, const Core::Id &language)
 {
     QString compiler;
 
+    if (language == ProjectExplorer::Constants::CXX_LANGUAGE_ID)
+        compiler = QStringLiteral("g++");
+    else if (language == ProjectExplorer::Constants::C_LANGUAGE_ID)
+        compiler = QStringLiteral("gcc");
+    else {
+        qWarning()<<"Invalid language, can not create gcc wrapper link";
+        return QString();
+    }
+
+#if 0
     if(target.architecture == QStringLiteral("armhf"))
-        compiler = QStringLiteral("arm-linux-gnueabihf-gcc");
+        compiler = QStringLiteral("gcc");
     else if(target.architecture == QStringLiteral("i386"))
-        compiler = QStringLiteral("i686-linux-gnu-gcc");
+        compiler = QStringLiteral("gcc");
     else if(target.architecture == QStringLiteral("amd64"))
-        compiler = QStringLiteral("x86_64-linux-gnu-gcc");
+        compiler = QStringLiteral("gcc");
     else {
         qWarning()<<"Invalid architecture, can not create gcc wrapper link";
         return QString();
     }
+#endif
 
-    return LmTargetTool::findOrCreateToolWrapper(compiler,target);
+    return LinkMotionTargetTool::findOrCreateToolWrapper(compiler,target);
 }
 
-QString LmTargetTool::findOrCreateQMakeWrapper (const LmTargetTool::Target &target)
+QString LinkMotionTargetTool::findOrCreateQMakeWrapper (const LinkMotionTargetTool::Target &target)
 {
     QString qmake;
 
     if(target.architecture == QStringLiteral("armhf"))
-        qmake = QStringLiteral("qt5-qmake-arm-linux-gnueabihf");
+        qmake = QStringLiteral("qmake");
     else
         qmake = QStringLiteral("qmake");
 
-    return LmTargetTool::findOrCreateToolWrapper(qmake,target);
+    return LinkMotionTargetTool::findOrCreateToolWrapper(qmake,target);
 }
 
-QString LmTargetTool::findOrCreateMakeWrapper (const LmTargetTool::Target &target)
+QString LinkMotionTargetTool::findOrCreateMakeWrapper (const LinkMotionTargetTool::Target &target)
 {
-    return LmTargetTool::findOrCreateToolWrapper(QStringLiteral("make"),target);
+    return LinkMotionTargetTool::findOrCreateToolWrapper(QStringLiteral("make"),target);
 }
 
-CMakeProjectManager::CMakeTool::PathMapper LmTargetTool::mapIncludePathsForCMakeFactory(const ProjectExplorer::Target *t)
+CMakeProjectManager::CMakeTool::PathMapper LinkMotionTargetTool::mapIncludePathsForCMakeFactory(const ProjectExplorer::Target *t)
 {
     return [t](const Utils::FileName &in){
         if (in.isEmpty())
@@ -484,16 +500,18 @@ CMakeProjectManager::CMakeTool::PathMapper LmTargetTool::mapIncludePathsForCMake
     };
 }
 
-QString LmTargetTool::hostArchitecture()
+QString LinkMotionTargetTool::hostArchitecture()
 {
     static QString hostArch;
 
     if(!hostArch.isEmpty())
         return hostArch;
 
+    //change to uname -m to support other platforms besides Ubuntu
+
     QProcess proc;
-    proc.setProgram(QStringLiteral("dpkg"));
-    proc.setArguments(QStringList()<<QStringLiteral("--print-architecture"));
+    proc.setProgram(QStringLiteral("uname"));
+    proc.setArguments(QStringList()<<QStringLiteral("-m"));
     proc.start(QIODevice::ReadOnly);
     if (!proc.waitForFinished(3000) || proc.exitCode() != 0 || proc.exitStatus() != QProcess::NormalExit) {
         qWarning()<<"Could not determine the host architecture";
@@ -505,25 +523,19 @@ QString LmTargetTool::hostArchitecture()
     return hostArch;
 }
 
-bool LmTargetTool::compatibleWithHostArchitecture(const QString &targetArch)
+bool LinkMotionTargetTool::compatibleWithHostArchitecture(const QString &targetArch)
 {
     QString arch = hostArchitecture();
-    return (targetArch == arch || (QStringLiteral("amd64") == arch && targetArch == QStringLiteral("i386")));
+    return (targetArch == arch ||
+            (QStringLiteral("i686") == arch && targetArch == QStringLiteral("i386")) ||
+            (QStringLiteral("i386") == arch && targetArch == QStringLiteral("i686")) ||
+            (QStringLiteral("x86_64") == arch && targetArch == QStringLiteral("i686")) ||
+            (QStringLiteral("x86_64") == arch && targetArch == QStringLiteral("i386")));
 }
 
-QString LmTargetTool::findOrCreateToolWrapper (const QString &tool, const LmTargetTool::Target &target)
+QString LinkMotionTargetTool::findOrCreateToolWrapper (const QString &tool, const LinkMotionTargetTool::Target &target)
 {
-    QString baseDir = Internal::Settings::settingsPath()
-            .appendPath(target.containerName).toString();
-
-    QDir d(baseDir);
-    if(!d.exists()) {
-        if(!d.mkpath(baseDir)){
-            qWarning()<<"Could not create config directory.";
-            return QString();
-        }
-    }
-
+    QString baseDir = Utils::FileName::fromString(targetBasePath(target)).parentDir().toString();
     QString toolWrapper = (Utils::FileName::fromString(baseDir).appendPath(tool).toString());
     QString toolTarget  = Constants::LM_TARGET_WRAPPER;
 
@@ -543,7 +555,7 @@ QString LmTargetTool::findOrCreateToolWrapper (const QString &tool, const LmTarg
     return toolWrapper;
 }
 
-QDebug operator<<(QDebug dbg, const LmTargetTool::Target& t)
+QDebug operator<<(QDebug dbg, const LinkMotionTargetTool::Target& t)
 {
     dbg.nospace() << "("<<"container: "<<t.containerName<<" "
                         <<"arch: "<<t.architecture<<" "

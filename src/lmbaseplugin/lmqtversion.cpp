@@ -155,7 +155,7 @@ QtSupport::BaseQtVersion *LinkMotionQtVersionFactory::create(const Utils::FileNa
         return 0;
 
     QString containerName = qmakePath.toFileInfo().dir().dirName();
-    if (!LmTargetTool::targetExists(containerName))
+    if (!LinkMotionTargetTool::targetExists(containerName))
         return 0;
 
     return new LinkMotionQtVersion(containerName, qmakePath,isAutoDetected,autoDetectionSource);

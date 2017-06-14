@@ -28,6 +28,8 @@
 #include "lmwelcomepage.h"
 #include "processoutputdialog.h"
 
+#include <lmbaseplugin/lmsettingstargetpage.h>
+
 #if 0
 #include "ubuntudevicesmodel.h"
 #include "localportsmanager.h"
@@ -161,6 +163,8 @@ bool LinkMotionBasePlugin::initialize(const QStringList &arguments, QString *err
     connect(ProjectExplorer::KitManager::instance(),SIGNAL(kitsLoaded())
             ,this,SLOT(onKitsLoaded()));
 
+    //settings
+    addAutoReleasedObject(new LinkMotionSettingsTargetPage);
 
 #if 0
     qmlRegisterUncreatableType<UbuntuQmlDeviceConnectionState>("Ubuntu.DevicesModel",0,1,"DeviceConnectionState",QStringLiteral("Not instantiable"));
@@ -176,7 +180,6 @@ bool LinkMotionBasePlugin::initialize(const QStringList &arguments, QString *err
     m_ubuntuPackagingMode = new UbuntuPackagingMode();
     addAutoReleasedObject(m_ubuntuPackagingMode);
 
-    addAutoReleasedObject(new UbuntuSettingsClickPage);
     addAutoReleasedObject(new UbuntuSettingsProjectDefaultsPage);
     addAutoReleasedObject(new UbuntuSettingsDeviceConnectivityPage);
 
