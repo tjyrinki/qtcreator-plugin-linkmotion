@@ -22,11 +22,16 @@
 #include <QString>
 #include <QStandardPaths>
 
+#include <coreplugin/icore.h>
+
 namespace LmBase {
 namespace Constants {
 
-const QString LM_TARGET_TOOL = QStandardPaths::findExecutable(QStringLiteral("lmsdk-target"));
-const QString LM_TARGET_WRAPPER = QStandardPaths::findExecutable(QStringLiteral("lmsdk-wrapper"));
+const QString LM_RESOURCE_PATH = Core::ICore::resourcePath();
+const QString LM_SCRIPTPATH = LM_RESOURCE_PATH + QLatin1String("/linkmotion/scripts");
+
+const char LM_LOGO_ROUND[] = ":/linkmotionbase/icons/LM_logo.png";
+
 
 const char LM_SUDO_BINARY[]   = "pkexec";
 
@@ -44,9 +49,11 @@ const char LM_DEVICE_TYPE_ID[] = "LinkMotion.DeviceTypeId";
 //Container devices
 const int  LM_DESKTOP_PORT_START = 40000;
 const int  LM_DESKTOP_PORT_END = 41000;
-const char LM_CONTAINER_DEVICE_TYPE_ID[] = "UbuntuProjectManager.LocalDeviceTypeId.";
+const char LM_CONTAINER_DEVICE_TYPE_ID[] = "LinkMotion.LocalDeviceTypeId.";
 const char LM_CONTAINER_DEPLOY_PUBKEY_SCRIPT[] = "%0/container_publickey_deploy";
-const char LM_TASK_CATEGORY_DEVICE [] = "Task.Category.Ubuntu.ContainerDevice";
+const char LM_TASK_CATEGORY_DEVICE [] = "Task.Category.LinkMotion.ContainerDevice";
+const char LM_DEVICE_SSHIDENTITY[] = "lmdevice_id_rsa";
+const char LM_LOCAL_DEPLOYCONFIGURATION_ID[] = "LinkMotion.LocalDeployConfigurationId";
 
 
 

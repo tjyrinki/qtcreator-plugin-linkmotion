@@ -46,17 +46,15 @@ protected slots:
     void on_deleteTarget (const int index);
     void on_maintainTarget (const int index);
     void on_upgradeTarget (const int index);
-    void on_toggleTargetUpgradeEnabled (const int index);
 
 private:
     void listExistingClickTargets ();
 
 private:
-    Ui::LinkMotionSettingsTargetWidget *ui;
-    QSignalMapper* m_deleteMapper;
-    QSignalMapper* m_updateMapper;
-    QSignalMapper* m_maintainMapper;
-    QSignalMapper* m_toggleUpgradeMapper;
+    Ui::LinkMotionSettingsTargetWidget *ui = Q_NULLPTR;
+    QSignalMapper* m_deleteMapper = Q_NULLPTR;
+    QSignalMapper* m_updateMapper = Q_NULLPTR;
+    QSignalMapper* m_maintainMapper = Q_NULLPTR;
     QList<LinkMotionTargetTool::Target> m_availableTargets;
 };
 

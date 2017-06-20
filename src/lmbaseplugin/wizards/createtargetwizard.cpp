@@ -21,6 +21,7 @@
 #include "ui_createtargetnamepage.h"
 
 #include <lmbaseplugin/lmbaseplugin_constants.h>
+#include <lmbaseplugin/lmbaseplugin.h>
 #include <lmbaseplugin/lmtoolchain.h>
 
 #include <coreplugin/icore.h>
@@ -76,12 +77,17 @@ CreateTargetWizard::CreateTargetWizard(QWidget *parent)
 }
 
 
-CreateTargetWizard::CreateTargetWizard(const QString &arch, const QString &framework, QWidget *parent)
+CreateTargetWizard::CreateTargetWizard(const QString &arch, QWidget *parent)
     : Utils::Wizard(parent)
 {
     m_introPage = nullptr;
     m_imageSelectPage = new CreateTargetImagePage(this);
-    m_imageSelectPage->setFilter(arch, framework);
+    m_imageSelectPage->setFilter([arch](const QVariantMap &data){
+        QString tArch = data.value(QStringLiteral("variant"), QStringLiteral("error")).toString();
+        if (!LinkMotionToolChain::supportsArchitecture(arch))
+            return false;
+        return arch == tArch;
+    });
     addPage(m_imageSelectPage);
 
     m_namePage = new CreateTargetNamePage(this);
@@ -105,10 +111,10 @@ bool CreateTargetWizard::getNewTarget(LinkMotionTargetTool::Target *target, QWid
  * @brief UbuntuCreateNewChrootDialog::getNewChrootParams
  * Opens the CreateTargetWizard but skips the intro page and applies the given filters
  */
-bool CreateTargetWizard::getNewTarget(LinkMotionTargetTool::Target *target, const QString &arch, const QString &framework, QWidget *parent)
+bool CreateTargetWizard::getNewTarget(LinkMotionTargetTool::Target *target, const QString &arch, QWidget *parent)
 {
 
-    CreateTargetWizard dlg(arch, framework, parent ? parent : Core::ICore::mainWindow());
+    CreateTargetWizard dlg(arch, parent ? parent : Core::ICore::mainWindow());
     return doSelectImage(dlg, target);
 }
 
@@ -192,23 +198,30 @@ CreateTargetImagePage::~CreateTargetImagePage()
 void CreateTargetImagePage::setImageType(CreateTargetWizard::ImageType imageType)
 {
     if (imageType == CreateTargetWizard::DesktopImage) {
-        setFilter(LinkMotionTargetTool::hostArchitecture(), QString());
+        setFilter([](const QVariantMap &data){
+            QString arch = data.value(QStringLiteral("variant"), QStringLiteral("error")).toString();
+            if (!LinkMotionToolChain::supportsArchitecture(arch))
+                return false;
+            return LinkMotionTargetTool::compatibleWithHostArchitecture(arch);
+        });
     } else if (imageType == CreateTargetWizard::DeviceImage){
-        setFilter(QStringLiteral("(i386|aarch64|armhf)"), QString());
+        setFilter([](const QVariantMap &data){
+            QString arch = data.value(QStringLiteral("variant"), QStringLiteral("error")).toString();
+            if (!LinkMotionToolChain::supportsArchitecture(arch))
+                return false;
+            return arch == QStringLiteral("armv7tnhl")
+                    || arch == QStringLiteral("aarch64");
+        });
     } else {
-        setFilter(QString(), QString());
+        setFilter([](const QVariantMap &){
+            return true;
+        });
     }
 }
 
-void CreateTargetImagePage::setFilter(const QString &arch, const QString &framework)
+void CreateTargetImagePage::setFilter(Filter filter)
 {
-    QString fwFilter, archFilter = fwFilter = QStringLiteral("(.*)");
-    if(!framework.isEmpty())
-        fwFilter = framework;
-    if(!arch.isEmpty())
-        archFilter = arch;
-
-    m_filter = QString::fromLatin1("^%1-(.*)-%2-(dev|ota[0-9]+)$").arg(fwFilter).arg(archFilter);
+    m_filter = filter;
     load();
 }
 
@@ -276,7 +289,7 @@ void CreateTargetImagePage::load()
     m_loader = new QProcess(this);
     connect(m_loader, &QProcess::errorOccurred, this, &CreateTargetImagePage::loaderErrorOccurred);
     connect(m_loader, SIGNAL(finished(int)), this, SLOT(loaderFinished()));
-    m_loader->setProgram(Constants::LM_TARGET_TOOL);
+    m_loader->setProgram(LinkMotionBasePlugin::lmTargetTool());
     m_loader->setArguments(QStringList{QStringLiteral("images")});
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -309,8 +322,6 @@ void CreateTargetImagePage::loaderFinished()
         return;
     }
 
-    qDebug()<<"Filter is "<<m_filter;
-    QRegularExpression expr(m_filter);
     QList<QVariant> data = doc.toVariant().toList();
     foreach (const QVariant &entry, data) {
 
@@ -323,11 +334,8 @@ void CreateTargetImagePage::loaderFinished()
         if (version == QStringLiteral("error"))
             continue;
 
-        //@TODO enable filtering again
-        /*
-        if(!expr.match(alias).hasMatch())
+        if (m_filter && !m_filter(m))
             continue;
-            */
 
         //check arch compat
         QString arch = m.value(QStringLiteral("arch"), QStringLiteral("error")).toString();
@@ -340,13 +348,6 @@ void CreateTargetImagePage::loaderFinished()
 
         if (!LinkMotionTargetTool::compatibleWithHostArchitecture(arch))
             continue;
-
-#if 0
-        LinkMotionTargetTool::Target target;
-        QStringList extensions;
-        if (!LinkMotionTargetTool::parseContainerName(alias, &target, &extensions))
-            continue;
-#endif
 
         QTreeWidgetItem *item = new QTreeWidgetItem;
         item->setText(0, distribution);
@@ -435,4 +436,4 @@ bool CreateTargetNamePage::validatePage()
 }
 
 } // namespace Internal
-} // namespace Ubuntu
+} // namespace LmBase

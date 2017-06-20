@@ -25,10 +25,10 @@
 //#include "ubuntuclickdialog.h"
 #include "settings.h"
 
-/*
-#include <ubuntu/device/remote/ubuntudevice.h>
-#include <ubuntu/device/container/containerdevice.h>
-*/
+
+//#include <ubuntu/device/remote/ubuntudevice.h>
+#include <lmbaseplugin/device/container/containerdevice.h>
+
 
 #include <coreplugin/icore.h>
 #include <projectexplorer/kitmanager.h>
@@ -72,8 +72,7 @@ static bool equalKits(ProjectExplorer::Kit *a, ProjectExplorer::Kit *b)
 
 static void createOrFindDeviceAndType(ProjectExplorer::Kit *k, LinkMotionToolChain *tc)
 {
-#if 0
-    if (LmTargetTool::compatibleWithHostArchitecture(tc->lmTarget().architecture)) {
+    if (LinkMotionTargetTool::compatibleWithHostArchitecture(tc->lmTarget().architecture)) {
         Core::Id devId = ContainerDevice::createIdForContainer(tc->lmTarget().containerName);
         ProjectExplorer::IDevice::ConstPtr ptr
                 = ProjectExplorer::DeviceManager::instance()->find(devId);
@@ -87,11 +86,10 @@ static void createOrFindDeviceAndType(ProjectExplorer::Kit *k, LinkMotionToolCha
         ProjectExplorer::DeviceTypeKitInformation::setDeviceTypeId(k,devId);
         ProjectExplorer::DeviceKitInformation::setDevice(k, ptr);
     } else {
-#endif
         //a Kit that cannot take a Container Device
         Core::Id devTypeId = Core::Id(Constants::LM_DEVICE_TYPE_ID).withSuffix(tc->lmTarget().architecture);
         ProjectExplorer::DeviceTypeKitInformation::setDeviceTypeId(k,devTypeId);
-    //}
+    }
 }
 LinkMotionKitManager::LinkMotionKitManager()
 {
@@ -467,7 +465,7 @@ ProjectExplorer::Kit *LinkMotionKitManager::createKit(LinkMotionToolChainSet tcS
     //@TODO find a qt version
     ProjectExplorer::Kit* newKit = new ProjectExplorer::Kit;
     newKit->setAutoDetected(false); //let the user delete that stuff
-    //newKit->setIconPath(Utils::FileName::fromString(QLatin1String(Constants::UBUNTU_ICON)));
+    //newKit->setIconPath(Utils::FileName::fromString(QLatin1String(Constants::LM_ICON)));
     ProjectExplorer::ToolChainKitInformation::setToolChain(newKit, tcSet.cLangToolchain);
     ProjectExplorer::ToolChainKitInformation::setToolChain(newKit, tcSet.cxxLangToolchain);
 
@@ -553,7 +551,7 @@ void LinkMotionKitManager::fixKit(ProjectExplorer::Kit *k)
     Core::Id devId = ProjectExplorer::DeviceTypeKitInformation::deviceTypeId(k);
     bool devValid        = devId.isValid(); //invalid type
     bool hasLMDevType = devId.toString().startsWith(QLatin1String(Constants::LM_DEVICE_TYPE_ID));/* ||
-            devId.toString().startsWith(QLatin1String(Constants::UBUNTU_CONTAINER_DEVICE_TYPE_ID)); //kit has a wrong device type */
+            devId.toString().startsWith(QLatin1String(Constants::LM_CONTAINER_DEVICE_TYPE_ID)); //kit has a wrong device type */
 
     if (!devValid || !hasLMDevType) {
         createOrFindDeviceAndType(k, tc);
@@ -588,4 +586,4 @@ void LinkMotionKitManager::fixKit(ProjectExplorer::Kit *k)
 }
 
 } // namespace Internal
-} // namespace Ubuntu
+} // namespace LmBase

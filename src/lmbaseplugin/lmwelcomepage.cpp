@@ -96,5 +96,5 @@ void LinkMotionWelcomePage::openProject()
 
 void LinkMotionWelcomePage::openGallery()
 {
-    //QProcess::startDetached(QString::fromLatin1("%1/qtc_launch_gallery").arg(Constants::UBUNTU_SCRIPTPATH));
+    //QProcess::startDetached(QString::fromLatin1("%1/qtc_launch_gallery").arg(Constants::LM_SCRIPTPATH));
 }

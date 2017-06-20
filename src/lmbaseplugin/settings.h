@@ -1,5 +1,23 @@
-#ifndef UBUNTU_INTERNAL_SETTINGS_H
-#define UBUNTU_INTERNAL_SETTINGS_H
+/*
+ * Copyright 2013 - 2016 Canonical Ltd.
+ * Copyright 2017 Link Motion Oy
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; version 2.1.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Author: Benjamin Zeller <benjamin.zeller@link-motion.com>
+ */
+#ifndef LM_INTERNAL_SETTINGS_H
+#define LM_INTERNAL_SETTINGS_H
 
 #include <utils/fileutils.h>
 
@@ -29,9 +47,8 @@ public:
         bool overrideAppsByDefault  = false;
     };
 
-    struct ChrootSettings {
+    struct TargetSettings {
         bool useLocalMirror = false;
-        bool autoCheckForUpdates = true;
     };
 
     explicit Settings();
@@ -48,8 +65,8 @@ public:
     static ProjectDefaults projectDefaults ();
     static void setProjectDefaults (const ProjectDefaults &settings);
 
-    static ChrootSettings chrootSettings ();
-    static void setChrootSettings (const ChrootSettings &settings);
+    static TargetSettings chrootSettings ();
+    static void setChrootSettings (const TargetSettings &settings);
 
     static bool deviceAutoToggle ();
     static void setDeviceAutoToggle (const bool set);
@@ -65,6 +82,6 @@ private:
 };
 
 } // namespace Internal
-} // namespace Ubuntu
+} // namespace LmBase
 
-#endif // UBUNTU_INTERNAL_SETTINGS_H
+#endif // LM_INTERNAL_SETTINGS_H

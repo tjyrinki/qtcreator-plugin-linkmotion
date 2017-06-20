@@ -17,8 +17,8 @@
  * Author: Benjamin Zeller <benjamin.zeller@link-motion.com>
  */
 
-#ifndef UBUNTU_INTERNAL_UBUNTUKITMANAGER_H
-#define UBUNTU_INTERNAL_UBUNTUKITMANAGER_H
+#ifndef LM_INTERNAL_UBUNTUKITMANAGER_H
+#define LM_INTERNAL_UBUNTUKITMANAGER_H
 
 #include <lmbaseplugin/lmtoolchain.h>
 #include <projectexplorer/kit.h>
@@ -56,6 +56,6 @@ public:
 };
 
 } // namespace Internal
-} // namespace Ubuntu
+} // namespace LmBase
 
-#endif // UBUNTU_INTERNAL_UBUNTUKITMANAGER_H
+#endif // LM_INTERNAL_UBUNTUKITMANAGER_H

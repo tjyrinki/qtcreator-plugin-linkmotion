@@ -22,6 +22,7 @@
 #include "settings.h"
 
 #include <lmbaseplugin/lmtargettool.h>
+#include <lmbaseplugin/lmbaseplugin.h>
 //#include <ubuntu/device/container/containerdevice.h>
 #include <qtsupport/qtsupportconstants.h>
 
@@ -86,7 +87,7 @@ QSet<Core::Id> LinkMotionQtVersion::targetDeviceTypes() const
 {
 #if 0
     QSet<Core::Id> set{
-        Constants::UBUNTU_DEVICE_TYPE_ID
+        Constants::LM_DEVICE_TYPE_ID
     };
 
     auto hostAbi = ProjectExplorer::Abi::hostAbi();
@@ -151,7 +152,7 @@ QtSupport::BaseQtVersion *LinkMotionQtVersionFactory::create(const Utils::FileNa
     if(!qmakeInfo.absolutePath().contains(Settings::settingsPath().toString()))
         return 0;
 
-    if(!qmakeInfo.isSymLink() || qmakeInfo.symLinkTarget() != Constants::LM_TARGET_WRAPPER)
+    if(!qmakeInfo.isSymLink() || qmakeInfo.symLinkTarget() != LinkMotionBasePlugin::lmTargetWrapper())
         return 0;
 
     QString containerName = qmakePath.toFileInfo().dir().dirName();

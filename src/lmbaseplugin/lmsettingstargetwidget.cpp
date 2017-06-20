@@ -45,9 +45,7 @@ LinkMotionSettingsTargetWidget::LinkMotionSettingsTargetWidget(QWidget *parent) 
     //hide this setting for the moment, as we have no local mirror for lxd images
     ui->checkBoxLocalMirror->setVisible(false);
 
-    Settings::ChrootSettings def = Settings::chrootSettings();
-
-    ui->enableUpdateCheckerCheckBox->setChecked(def.autoCheckForUpdates);
+    Settings::TargetSettings def = Settings::chrootSettings();
     ui->checkBoxLocalMirror->setChecked(def.useLocalMirror);
 
     m_deleteMapper = new QSignalMapper(this);
@@ -56,11 +54,9 @@ LinkMotionSettingsTargetWidget::LinkMotionSettingsTargetWidget(QWidget *parent) 
     connect(m_maintainMapper, SIGNAL(mapped(int)),this, SLOT(on_maintainTarget(int)));
     m_updateMapper = new QSignalMapper(this);
     connect(m_updateMapper, SIGNAL(mapped(int)),this, SLOT(on_upgradeTarget(int)));
-    m_toggleUpgradeMapper = new QSignalMapper(this);
-    connect(m_toggleUpgradeMapper, SIGNAL(mapped(int)),this, SLOT(on_toggleTargetUpgradeEnabled(int)));
 
     QStringList headers;
-    headers << tr("Name")<< tr("Distribution")<< tr("Version") << tr("Architecture")<< tr("Autoupgrade") << QLatin1String("")<<QLatin1String("")<<QLatin1String("");
+    headers << tr("Name")<< tr("Distribution")<< tr("Version") << tr("Architecture") << QLatin1String("")<<QLatin1String("")<<QLatin1String("");
     ui->treeWidgetClickTargets->setHeaderLabels(headers);
     ui->treeWidgetClickTargets->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     ui->treeWidgetClickTargets->header()->setSectionResizeMode(1, QHeaderView::Stretch);
@@ -69,14 +65,12 @@ LinkMotionSettingsTargetWidget::LinkMotionSettingsTargetWidget(QWidget *parent) 
     ui->treeWidgetClickTargets->header()->setSectionResizeMode(4, QHeaderView::ResizeToContents);
     ui->treeWidgetClickTargets->header()->setSectionResizeMode(5, QHeaderView::ResizeToContents);
     ui->treeWidgetClickTargets->header()->setSectionResizeMode(6, QHeaderView::ResizeToContents);
-    ui->treeWidgetClickTargets->header()->setSectionResizeMode(7, QHeaderView::ResizeToContents);
     listExistingClickTargets();
 }
 
 void LinkMotionSettingsTargetWidget::apply() {
 
-    Settings::ChrootSettings set;
-    set.autoCheckForUpdates = ui->enableUpdateCheckerCheckBox->checkState() == Qt::Checked;
+    Settings::TargetSettings set;
     set.useLocalMirror = ui->checkBoxLocalMirror->checkState() == Qt::Checked;
     Settings::setChrootSettings(set);
     Settings::flushSettings();
@@ -121,19 +115,6 @@ void LinkMotionSettingsTargetWidget::on_upgradeTarget(const int index)
     Internal::LinkMotionTargetDialog::maintainTargetModal(m_availableTargets.at(index),LinkMotionTargetTool::Upgrade);
 }
 
-void LinkMotionSettingsTargetWidget::on_toggleTargetUpgradeEnabled(const int index)
-{
-    if(index < 0 || index > m_availableTargets.size())
-        return;
-
-    QCheckBox *c = qobject_cast<QCheckBox *>(m_toggleUpgradeMapper->mapping(index));
-    if(!c)
-        return;
-
-    LinkMotionTargetTool::setTargetUpgradesEnabled(m_availableTargets.at(index), c->checkState()==Qt::Checked);
-    listExistingClickTargets();
-}
-
 /**
  * @brief UbuntuSettingsClickWidget::listExistingClickTargets
  * Lists all existing link motion targets
@@ -159,26 +140,20 @@ void LinkMotionSettingsTargetWidget::listExistingClickTargets()
         chrootItem->setText(3,target.architecture);
         ui->treeWidgetClickTargets->addTopLevelItem(chrootItem);
 
-        QCheckBox* box = new QCheckBox();
-        m_toggleUpgradeMapper->setMapping(box,i);
-        box->setChecked(target.upgradesEnabled);
-        connect(box, SIGNAL(stateChanged(int)), m_toggleUpgradeMapper, SLOT(map()));
-        ui->treeWidgetClickTargets->setIndexWidget(model->index(i,4), box);
-
         QPushButton* push = new QPushButton(tr("Update"));
         m_updateMapper->setMapping(push,i);
         connect(push,SIGNAL(clicked()),m_updateMapper,SLOT(map()));
-        ui->treeWidgetClickTargets->setIndexWidget(model->index(i,5), push);
+        ui->treeWidgetClickTargets->setIndexWidget(model->index(i,4), push);
 
         push = new QPushButton(tr("Maintain"));
         m_maintainMapper->setMapping(push,i);
         connect(push,SIGNAL(clicked()),m_maintainMapper,SLOT(map()));
-        ui->treeWidgetClickTargets->setIndexWidget(model->index(i,6), push);
+        ui->treeWidgetClickTargets->setIndexWidget(model->index(i,5), push);
 
         push = new QPushButton(tr("Delete"));
         m_deleteMapper->setMapping(push,i);
         connect(push,SIGNAL(clicked()),m_deleteMapper,SLOT(map()));
-        ui->treeWidgetClickTargets->setIndexWidget(model->index(i,7), push);
+        ui->treeWidgetClickTargets->setIndexWidget(model->index(i,6), push);
     }
 }
 

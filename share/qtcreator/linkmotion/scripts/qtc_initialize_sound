@@ -1,0 +1,14 @@
+#!/bin/bash
+
+pacmd list-modules | grep protocol-tcp &> /dev/null
+if [ $? -ne 0 ]; then
+        NET_ADDR=$(grep "LXC_ADDR=" "/etc/default/lxc-net" | cut -d'=' -f 2)
+        NET_ADDR=${NET_ADDR//\"/}
+        if [ ! -z "${NET_ADDR}" ]; then
+            echo "Loading with net addr: ${NET_ADDR}"
+            pacmd load-module module-native-protocol-tcp auth-ip-acl="127.0.0.1;${NET_ADDR}"
+        else
+            echo "Loading without net addr"
+            pacmd load-module module-native-protocol-tcp
+        fi
+fi

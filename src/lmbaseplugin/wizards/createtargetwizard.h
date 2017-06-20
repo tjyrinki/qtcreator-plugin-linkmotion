@@ -16,8 +16,8 @@
  * Author: Benjamin Zeller <benjamin.zeller@canonical.com>
  */
 
-#ifndef UBUNTU_INTERNAL_UBUNTUCREATENEWCHROOTDIALOG_H
-#define UBUNTU_INTERNAL_UBUNTUCREATENEWCHROOTDIALOG_H
+#ifndef LM_INTERNAL_UBUNTUCREATENEWCHROOTDIALOG_H
+#define LM_INTERNAL_UBUNTUCREATENEWCHROOTDIALOG_H
 
 
 #include <lmbaseplugin/lmtargettool.h>
@@ -54,10 +54,10 @@ public:
     };
 
     explicit CreateTargetWizard(QWidget *parent = 0);
-    explicit CreateTargetWizard(const QString &arch, const QString &framework, QWidget *parent = 0);
+    explicit CreateTargetWizard(const QString &arch, QWidget *parent = 0);
 
     static bool getNewTarget(LinkMotionTargetTool::Target *target, QWidget *parent);
-    static bool getNewTarget(LinkMotionTargetTool::Target *target, const QString &arch, const QString &framework, QWidget *parent);
+    static bool getNewTarget(LinkMotionTargetTool::Target *target, const QString &arch, QWidget *parent);
 
 private:
     static bool doSelectImage(CreateTargetWizard &dlg, LinkMotionTargetTool::Target *target);
@@ -96,11 +96,14 @@ class CreateTargetImagePage : public Utils::WizardPage
     Q_PROPERTY(QString selectedDeviceArchitecture READ selectedDeviceArchitecture)
 
 public:
+
+    typedef std::function<bool (const QVariantMap&)> Filter;
+
     explicit CreateTargetImagePage(QWidget *parent = 0);
     ~CreateTargetImagePage();
 
     void setImageType (CreateTargetWizard::ImageType imageType);
-    void setFilter (const QString &arch, const QString &framework);
+    void setFilter (Filter filter);
 
     QString selectedDeviceArchitecture () const;
     QString selectedHostArchitecture () const;
@@ -120,7 +123,7 @@ protected slots:
     void loaderFinished();
 
 private:
-    QString m_filter;
+    Filter m_filter;
     QProcess *m_loader;
     Ui::CreateTargetImagePage *ui;
 };
@@ -146,5 +149,5 @@ private:
 
 
 } // namespace Internal
-} // namespace Ubuntu
-#endif // UBUNTU_INTERNAL_UBUNTUCREATENEWCHROOTDIALOG_H
+} // namespace LmBase
+#endif // LM_INTERNAL_UBUNTUCREATENEWCHROOTDIALOG_H

@@ -28,7 +28,7 @@ LinkMotionSettingsTargetPage::LinkMotionSettingsTargetPage() :
     setDisplayName(tr("Link Motion Target"));
     setCategory("Link Motion");
     setDisplayCategory(QStringLiteral("Link Motion"));
-    //setCategoryIcon(QLatin1String(Ubuntu::Constants::UBUNTU_SETTINGS_ICON));
+    setCategoryIcon(Utils::Icon(QLatin1String(Constants::LM_LOGO_ROUND)));
 }
 
 LinkMotionSettingsTargetPage::~LinkMotionSettingsTargetPage()

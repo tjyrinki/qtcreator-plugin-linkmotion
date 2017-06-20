@@ -3,5 +3,6 @@
         <file>qml/LM_logo_boxed_2.png</file>
         <file>qml/Nexa Light.otf</file>
         <file>qml/welcome.qml</file>
+        <file>icons/LM_logo.png</file>
     </qresource>
 </RCC>

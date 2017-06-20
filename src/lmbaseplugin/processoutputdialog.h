@@ -17,8 +17,8 @@
  * Author: Benjamin Zeller <benjamin.zeller@link-motion.com>
  */
 
-#ifndef UBUNTU_INTERNAL_PROCESSOUTPUTDIALOG_H
-#define UBUNTU_INTERNAL_PROCESSOUTPUTDIALOG_H
+#ifndef LM_INTERNAL_PROCESSOUTPUTDIALOG_H
+#define LM_INTERNAL_PROCESSOUTPUTDIALOG_H
 
 #include <QDialog>
 #include <QList>
@@ -75,6 +75,6 @@ private:
 };
 
 } // namespace Internal
-} // namespace Ubuntu
+} // namespace LmBase
 
-#endif // UBUNTU_INTERNAL_PROCESSOUTPUTDIALOG_H
+#endif // LM_INTERNAL_PROCESSOUTPUTDIALOG_H

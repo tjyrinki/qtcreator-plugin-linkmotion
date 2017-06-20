@@ -69,10 +69,10 @@ bool LinkMotionTargetDialog::createTargetModal(bool redetectKits, QWidget *paren
     return doCreateTarget(redetectKits, t, parent);
 }
 
-bool LinkMotionTargetDialog::createTargetModal(bool redetectKits, const QString &arch, const QString &framework, QWidget *parent)
+bool LinkMotionTargetDialog::createTargetModal(bool redetectKits, const QString &arch, QWidget *parent)
 {
     LinkMotionTargetTool::Target t;
-    if(!CreateTargetWizard::getNewTarget(&t,arch,framework,parent))
+    if(!CreateTargetWizard::getNewTarget(&t,arch,parent))
         return false;
     return doCreateTarget(redetectKits, t, parent);
 }

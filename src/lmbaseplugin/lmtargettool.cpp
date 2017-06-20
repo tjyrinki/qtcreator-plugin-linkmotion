@@ -19,6 +19,7 @@
 
 #include "lmtargettool.h"
 #include <lmbaseplugin/lmbaseplugin_constants.h>
+#include <lmbaseplugin/lmbaseplugin.h>
 #include <lmbaseplugin/lmtoolchain.h>
 #include <lmbaseplugin/lmshared.h>
 #include <lmbaseplugin/settings.h>
@@ -100,7 +101,7 @@ ProjectExplorer::ProcessParameters LinkMotionTargetTool::prepareToRunInTarget(Pr
     const Target &clickTarget = cTc->lmTarget();
 
     ProjectExplorer::ProcessParameters paramsOut;
-    paramsOut.setCommand(Constants::LM_TARGET_TOOL);
+    paramsOut.setCommand(Internal::LinkMotionBasePlugin::lmTargetTool());
 
     QStringList arguments{
         QStringLiteral("exec"),
@@ -138,7 +139,7 @@ void LinkMotionTargetTool::parametersForCreateTarget(const Target &target, Proje
             .arg(target.imageArchitecture)
             .arg(target.architecture);
 
-    params->setCommand(Constants::LM_TARGET_TOOL);
+    params->setCommand(Internal::LinkMotionBasePlugin::lmTargetTool());
     params->setEnvironment(Utils::Environment::systemEnvironment());
     params->setArguments(command);
 }
@@ -153,12 +154,12 @@ void LinkMotionTargetTool::parametersForMaintainChroot(const LinkMotionTargetToo
     QString arguments;
     switch (mode) {
         case Upgrade:
-            params->setCommand(Constants::LM_TARGET_TOOL);
+            params->setCommand(Internal::LinkMotionBasePlugin::lmTargetTool());
             arguments = QString::fromLatin1(UPGRADE_TARGET_ARGS)
                     .arg(target.containerName);
             break;
         case Delete:
-            params->setCommand(Constants::LM_TARGET_TOOL);
+            params->setCommand(Internal::LinkMotionBasePlugin::lmTargetTool());
             arguments = QString::fromLatin1(DESTROY_TARGET_ARGS)
                     .arg(target.containerName);
             break;
@@ -180,7 +181,7 @@ void LinkMotionTargetTool::openTargetTerminal(const LinkMotionTargetTool::Target
     QString     term = args.takeFirst();
 
     args << QString(QLatin1String(TARGET_OPEN_TERMINAL))
-            .arg(Constants::LM_TARGET_TOOL)
+            .arg(Internal::LinkMotionBasePlugin::lmTargetTool())
             .arg(target.containerName);
 
     if(!QProcess::startDetached(term,args,QDir::homePath())) {
@@ -193,14 +194,14 @@ bool LmTargetTool::getTargetFromUser(Target *target, const QString &framework)
 {
     QList<LmTargetTool::Target> targets = LmTargetTool::listAvailableTargets(framework);
     if (!targets.size()) {
-        QString message = QCoreApplication::translate("LmTargetTool",Constants::UBUNTU_CLICK_NOTARGETS_MESSAGE);
+        QString message = QCoreApplication::translate("LmTargetTool",Constants::LM_CLICK_NOTARGETS_MESSAGE);
         if(!framework.isEmpty()) {
-            message = QCoreApplication::translate("LmTargetTool",Constants::UBUNTU_CLICK_NOTARGETS_FRAMEWORK_MESSAGE)
+            message = QCoreApplication::translate("LmTargetTool",Constants::LM_CLICK_NOTARGETS_FRAMEWORK_MESSAGE)
                     .arg(framework);
         }
 
         QMessageBox::warning(Core::ICore::mainWindow(),
-                             QCoreApplication::translate("LmTargetTool",Constants::UBUNTU_CLICK_NOTARGETS_TITLE),
+                             QCoreApplication::translate("LmTargetTool",Constants::LM_CLICK_NOTARGETS_TITLE),
                              message);
         return false;
     }
@@ -217,8 +218,8 @@ bool LmTargetTool::getTargetFromUser(Target *target, const QString &framework)
 
     bool ok = false;
     QString item = QInputDialog::getItem(Core::ICore::mainWindow()
-                                         ,QCoreApplication::translate("LmTargetTool",Constants::UBUNTU_CLICK_SELECT_TARGET_TITLE)
-                                         ,QCoreApplication::translate("LmTargetTool",Constants::UBUNTU_CLICK_SELECT_TARGET_LABEL)
+                                         ,QCoreApplication::translate("LmTargetTool",Constants::LM_CLICK_SELECT_TARGET_TITLE)
+                                         ,QCoreApplication::translate("LmTargetTool",Constants::LM_CLICK_SELECT_TARGET_LABEL)
                                          ,items,0,false,&ok);
     //get index of item in the targets list
     int idx = items.indexOf(item);
@@ -238,7 +239,7 @@ QString LinkMotionTargetTool::targetBasePath(const LinkMotionTargetTool::Target 
 
     QProcess sdkTool;
     sdkTool.setReadChannel(QProcess::StandardOutput);
-    sdkTool.setProgram(Constants::LM_TARGET_TOOL);
+    sdkTool.setProgram(Internal::LinkMotionBasePlugin::lmTargetTool());
     sdkTool.setArguments(QStringList()<<QStringLiteral("rootfs")<<target.containerName);
     sdkTool.start(QIODevice::ReadOnly);
     if (!sdkTool.waitForFinished(3000)
@@ -286,7 +287,7 @@ bool LinkMotionTargetTool::targetExists(const LinkMotionTargetTool::Target &targ
 bool LinkMotionTargetTool::targetExists(const QString &targetName)
 {
     QProcess proc;
-    proc.start(Constants::LM_TARGET_TOOL,
+    proc.start(Internal::LinkMotionBasePlugin::lmTargetTool(),
                QStringList()<<QStringLiteral("exists")<<targetName);
     if(!proc.waitForFinished(3000)) {
         qWarning()<<"usdk-target did not return in time.";
@@ -303,7 +304,7 @@ bool LinkMotionTargetTool::targetExists(const QString &targetName)
 QList<LinkMotionTargetTool::Target> LinkMotionTargetTool::listAvailableTargets(const QString &)
 {
     QProcess sdkTool;
-    sdkTool.setProgram(Constants::LM_TARGET_TOOL);
+    sdkTool.setProgram(Internal::LinkMotionBasePlugin::lmTargetTool());
     sdkTool.setArguments(QStringList()<<QStringLiteral("list"));
     sdkTool.start(QIODevice::ReadOnly);
     if (!sdkTool.waitForFinished(3000)
@@ -322,7 +323,7 @@ QList<LinkMotionTargetTool::Target> LinkMotionTargetTool::listAvailableTargets(c
         QString baseFw = UbuntuClickFrameworkProvider::getBaseFramework(framework);
         if (!baseFw.isEmpty()) {
             if(debug) qDebug()<<"Filtering for base framework: "<<baseFw;
-            filterRegex = QString::fromLatin1(Constants::UBUNTU_CLICK_TARGETS_FRAMEWORK_REGEX)
+            filterRegex = QString::fromLatin1(Constants::LM_CLICK_TARGETS_FRAMEWORK_REGEX)
                     .arg(clickChrootSuffix())
                     .arg(baseFw);
         }
@@ -355,7 +356,6 @@ QList<LinkMotionTargetTool::Target> LinkMotionTargetTool::listAvailableTargets(c
         t.containerName = map.value(QStringLiteral("name")).toString();
         t.distribution  = map.value(QStringLiteral("distribution")).toString();
         t.version       = map.value(QStringLiteral("version")).toString();
-        t.upgradesEnabled = map.value(QStringLiteral("updatesEnabled"),false).toBool();
         targets.append(t);
     }
     return targets;
@@ -371,8 +371,7 @@ QList<LinkMotionTargetTool::Target> LinkMotionTargetTool::listPossibleDeviceCont
 
     QList<Target> deviceTargets;
     foreach(const Target &t, allTargets) {
-        if (t.architecture == arch
-                || (QStringLiteral("amd64") == arch && t.architecture == QStringLiteral("i386")))
+        if (compatibleWithHostArchitecture(t.architecture))
             deviceTargets.append(t);
     }
     return deviceTargets;
@@ -407,7 +406,7 @@ const LinkMotionTargetTool::Target *LinkMotionTargetTool::lmTargetFromTarget(Pro
 bool LinkMotionTargetTool::setTargetUpgradesEnabled(const Target &target, const bool set)
 {
     QProcess sdkTool;
-    sdkTool.setProgram(Constants::LM_TARGET_TOOL);
+    sdkTool.setProgram(Internal::LinkMotionBasePlugin::lmTargetTool());
     sdkTool.setArguments(QStringList{
         QStringLiteral("set"),
         target.containerName,
@@ -537,7 +536,7 @@ QString LinkMotionTargetTool::findOrCreateToolWrapper (const QString &tool, cons
 {
     QString baseDir = Utils::FileName::fromString(targetBasePath(target)).parentDir().toString();
     QString toolWrapper = (Utils::FileName::fromString(baseDir).appendPath(tool).toString());
-    QString toolTarget  = Constants::LM_TARGET_WRAPPER;
+    QString toolTarget  = Internal::LinkMotionBasePlugin::lmTargetWrapper();
 
     QFileInfo symlinkInfo(toolWrapper);
 

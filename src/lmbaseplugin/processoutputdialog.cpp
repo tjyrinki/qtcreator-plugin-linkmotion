@@ -179,4 +179,4 @@ void ProcessOutputDialog::on_processReadyReadStandardError(const QString txt)
 }
 
 } // namespace Internal
-} // namespace Ubuntu
+} // namespace LmBase

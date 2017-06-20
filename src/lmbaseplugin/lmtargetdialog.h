@@ -28,7 +28,7 @@ class LinkMotionTargetDialog : public ProcessOutputDialog
 
 public:
     static bool createTargetModal (bool redetectKits = true, QWidget *parent = 0);
-    static bool createTargetModal (bool redetectKits = true , const QString &arch = QString(), const QString &framework = QString(), QWidget *parent = 0);
+    static bool createTargetModal (bool redetectKits = true , const QString &arch = QString(), QWidget *parent = 0);
     static int maintainTargetModal (const LinkMotionTargetTool::Target &target, const LinkMotionTargetTool::MaintainMode &mode);
     static int maintainTargetModal (const QList<LinkMotionTargetTool::Target> &targetList, const LinkMotionTargetTool::MaintainMode &mode);
 

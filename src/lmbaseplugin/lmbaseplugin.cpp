@@ -30,6 +30,9 @@
 
 #include <lmbaseplugin/lmsettingstargetpage.h>
 
+#include <lmbaseplugin/device/container/containerdevicefactory.h>
+#include <lmbaseplugin/device/container/lmlocalrunconfigurationfactory.h>
+#include <lmbaseplugin/device/container/lmlocaldeployconfiguration.h>
 #if 0
 #include "ubuntudevicesmodel.h"
 #include "localportsmanager.h"
@@ -45,10 +48,8 @@
 #include "ubuntusettingsprojectdefaultspage.h"
 #include "processoutputdialog.h"
 
-#include <ubuntu/device/container/containerdevicefactory.h>
-#include <ubuntu/device/container/ubuntulocalrunconfigurationfactory.h>
+
 #include <ubuntu/device/container/ubuntulocalruncontrolfactory.h>
-#include <ubuntu/device/container/ubuntulocaldeployconfiguration.h>
 
 #include <ubuntu/device/remote/ubunturemoteruncontrolfactory.h>
 #include <ubuntu/device/remote/ubuntudevicefactory.h>
@@ -106,7 +107,7 @@ static void criticalError (const QString &err)
     QMessageBox::critical(Core::ICore::mainWindow(), qApp->applicationName(), err);
     qCritical("%s", qPrintable(err));
 
-    //the Qt exit loop does not stop so we force it
+    //the Qt event loop does not stop so we force it
     exit(1);
 }
 
@@ -132,15 +133,25 @@ bool LinkMotionBasePlugin::initialize(const QStringList &arguments, QString *err
         return false;
     }
 
-    if (Constants::LM_TARGET_WRAPPER.isEmpty()) {
+    if (LinkMotionBasePlugin::lmTargetWrapper().isEmpty()) {
         criticalError(tr("\nlmsdk-wrapper was not found in PATH."));
         return false;
     }
 
-    if (Constants::LM_TARGET_TOOL.isEmpty()) {
+    if (LinkMotionBasePlugin::lmTargetTool().isEmpty()) {
         criticalError(tr("\nlmsdk-target was not found in PATH."));
         return false;
     }
+
+    Utils::FileName toolName = Utils::FileName::fromString(LinkMotionBasePlugin::lmTargetWrapper());
+    QString toolsDir = toolName.parentDir().toString();
+
+    Utils::Environment env = Utils::Environment::systemEnvironment();
+    if (!env.path().contains(toolsDir))
+        qputenv("PATH",
+                QString::fromLatin1("%1:%2")
+                .arg(toolsDir)
+                .arg(env.value(QStringLiteral("PATH"))).toLocal8Bit());
 
     m_settings.restoreSettings();
 
@@ -159,6 +170,19 @@ bool LinkMotionBasePlugin::initialize(const QStringList &arguments, QString *err
     // Build support
     addAutoReleasedObject(new LinkMotionToolChainFactory);
 
+    CMakeProjectManager::CMakeToolManager::registerAutodetectionHelper([](){
+        QList<CMakeProjectManager::CMakeTool *> found;
+
+        QList<LinkMotionTargetTool::Target> targets = LinkMotionTargetTool::listAvailableTargets();
+        foreach (const LinkMotionTargetTool::Target &t, targets) {
+            CMakeProjectManager::CMakeTool *tool = LinkMotionKitManager::createCMakeTool(t);
+            if (tool)
+                found.append(tool);
+        }
+
+        return found;
+    });
+
     //trigger kit autodetection and update after projectexplorer loaded the kits
     connect(ProjectExplorer::KitManager::instance(),SIGNAL(kitsLoaded())
             ,this,SLOT(onKitsLoaded()));
@@ -166,13 +190,19 @@ bool LinkMotionBasePlugin::initialize(const QStringList &arguments, QString *err
     //settings
     addAutoReleasedObject(new LinkMotionSettingsTargetPage);
 
+    //device support
+    addAutoReleasedObject(new ContainerDeviceFactory);
+    addAutoReleasedObject(new LinkMotionLocalRunConfigurationFactory);
+    addAutoReleasedObject(new LinkMotionLocalDeployConfigurationFactory);
+    //addAutoReleasedObject(new UbuntuLocalPortsManager);
+
 #if 0
     qmlRegisterUncreatableType<UbuntuQmlDeviceConnectionState>("Ubuntu.DevicesModel",0,1,"DeviceConnectionState",QStringLiteral("Not instantiable"));
     qmlRegisterUncreatableType<UbuntuQmlDeviceDetectionState>("Ubuntu.DevicesModel",0,1,"DeviceDetectionState",QStringLiteral("Not instantiable"));
     qmlRegisterUncreatableType<UbuntuQmlFeatureState>("Ubuntu.DevicesModel",0,1,"FeatureState",QStringLiteral("Not instantiable"));
     qmlRegisterUncreatableType<UbuntuQmlDeviceMachineType>("Ubuntu.DevicesModel",0,1,"DeviceMachineType",QStringLiteral("Not instantiable"));
 
-    Utils::MimeDatabase::addMimeTypes(QLatin1String(Constants::UBUNTU_MIMETYPE_XML));
+    Utils::MimeDatabase::addMimeTypes(QLatin1String(Constants::LM_MIMETYPE_XML));
 
     m_ubuntuDeviceMode = new UbuntuDeviceMode();
     addAutoReleasedObject(m_ubuntuDeviceMode);
@@ -185,27 +215,11 @@ bool LinkMotionBasePlugin::initialize(const QStringList &arguments, QString *err
 
     // Handle new project type files
     addAutoReleasedObject(new UbuntuProjectManager);
-    addAutoReleasedObject(new UbuntuLocalRunConfigurationFactory);
     addAutoReleasedObject(new UbuntuRemoteRunControlFactory);
     addAutoReleasedObject(new UbuntuLocalRunControlFactory);
 
-    CMakeProjectManager::CMakeToolManager::registerAutodetectionHelper([](){
-        QList<CMakeProjectManager::CMakeTool *> found;
-
-        QList<UbuntuClickTool::Target> targets = UbuntuClickTool::listAvailableTargets();
-        foreach (const UbuntuClickTool::Target &t, targets) {
-            CMakeProjectManager::CMakeTool *tool = UbuntuKitManager::createCMakeTool(t);
-            if (tool)
-                found.append(tool);
-        }
-
-        return found;
-    });
-
     //ubuntu device support
     addAutoReleasedObject(new UbuntuDeviceFactory);
-    addAutoReleasedObject(new ContainerDeviceFactory);
-    addAutoReleasedObject(new UbuntuLocalPortsManager);
 
     //deploy support
     addAutoReleasedObject(new UbuntuRemoteDeployConfigurationFactory);
@@ -233,9 +247,7 @@ bool LinkMotionBasePlugin::initialize(const QStringList &arguments, QString *err
                     QStringLiteral("ubuntu-project-go"),
                     Core::IWizardFactory::ProjectWizard));
 
-    //disabled for now, keeping the code because we might need a deploy method
-    //for local applications in the future
-    //addAutoReleasedObject(new UbuntuLocalDeployConfigurationFactory);
+
     addAutoReleasedObject(new UbuntuDeployStepFactory);
 
     addAutoReleasedObject(new Internal::UbuntuManifestEditorFactory);
@@ -252,24 +264,6 @@ bool LinkMotionBasePlugin::initialize(const QStringList &arguments, QString *err
     Core::ActionContainer *msubproject =
             Core::ActionManager::actionContainer(ProjectExplorer::Constants::M_SUBPROJECTCONTEXT);
 
-    //support for the UbuntuProjectMigrateWizard
-    connect(ProjectExplorer::ProjectTree::instance(), SIGNAL(aboutToShowContextMenu(ProjectExplorer::Project*,ProjectExplorer::Node*)),
-            this, SLOT(updateContextMenu(ProjectExplorer::Project*,ProjectExplorer::Node*)));
-
-    m_migrateProjectAction = new QAction(tr("Migrate to Ubuntu project"), this);
-    Core::Command *command = Core::ActionManager::registerAction(m_migrateProjectAction, Constants::UBUNTU_MIGRATE_QMAKE_PROJECT, qmakeProjectContext);
-    command->setAttribute(Core::Command::CA_Hide);
-    mproject->addAction(command, ProjectExplorer::Constants::G_PROJECT_FILES);
-    msubproject->addAction(command, ProjectExplorer::Constants::G_PROJECT_FILES);
-
-    connect(m_migrateProjectAction, SIGNAL(triggered()), this, SLOT(migrateProject()));
-
-    /* Fix Bug lp:1340061 "Some dialogs have unreadable (too small) text"
-     * The Bug is caused by UITK that overrides the default Font that is based
-     * on the grid units, which is not useable in Widget based applications
-     */
-    QGuiApplication::setFont(defaultFont);
-
     #endif
 
     return true;
@@ -277,10 +271,9 @@ bool LinkMotionBasePlugin::initialize(const QStringList &arguments, QString *err
 
 void LinkMotionBasePlugin::extensionsInitialized()
 {
+    ProjectExplorer::TaskHub::addCategory(Constants::LM_TASK_CATEGORY_DEVICE,
+                         tr("LinkMotion", "Category for ubuntu device issues listed under 'Issues'"));
 #if 0
-    ProjectExplorer::TaskHub::addCategory(Constants::UBUNTU_TASK_CATEGORY_DEVICE,
-                         tr("Ubuntu", "Category for ubuntu device issues listed under 'Issues'"));
-
     if (m_ubuntuMenu) m_ubuntuMenu->initialize();
     m_ubuntuDeviceMode->initialize();
     m_ubuntuPackagingMode->initialize();
@@ -303,6 +296,36 @@ void LinkMotionBasePlugin::extensionsInitialized()
 #endif
 }
 
+static QString findToolInPathOrAppDir (const QString &tool)
+{
+    QString lmsdkTool = QStandardPaths::findExecutable(tool);
+    if (!lmsdkTool.isEmpty()){return lmsdkTool;}
+
+    Utils::FileName fName = Utils::FileName::fromString(QCoreApplication::applicationDirPath());
+    fName.appendPath(tool);
+    if (fName.exists()) {
+        lmsdkTool = fName.toString();
+    }
+
+    return lmsdkTool;
+}
+
+QString LinkMotionBasePlugin::lmTargetTool()
+{
+    static QString lmsdkTarget;
+    if (lmsdkTarget.isEmpty())
+        lmsdkTarget = findToolInPathOrAppDir(QStringLiteral("lmsdk-target"));
+    return lmsdkTarget;
+}
+
+QString LinkMotionBasePlugin::lmTargetWrapper()
+{
+    static QString lmsdkTarget;
+    if (lmsdkTarget.isEmpty())
+        lmsdkTarget = findToolInPathOrAppDir(QStringLiteral("lmsdk-wrapper"));
+    return lmsdkTarget;
+}
+
 void LinkMotionBasePlugin::onKitsLoaded()
 {
     LinkMotionKitManager::autoDetectKits();
@@ -322,7 +345,7 @@ void LinkMotionBasePlugin::showFirstStartWizard()
         UbuntuFirstRunWizard wiz(Core::ICore::mainWindow());
         if( wiz.exec() == QDialog::Accepted ) {
             if (wiz.field(QStringLiteral("createEmulator")).toBool()) {
-                Core::ModeManager::activateMode(Ubuntu::Constants::UBUNTU_MODE_DEVICES);
+                Core::ModeManager::activateMode(LmBase::Constants::LM_MODE_DEVICES);
 
                 //invoke the method the next time the event loop starts
                 QMetaObject::invokeMethod(m_ubuntuDeviceMode,"showAddEmulatorDialog",Qt::QueuedConnection);
@@ -342,23 +365,6 @@ void LinkMotionBasePlugin::showFirstStartWizard()
 
 void LinkMotionBasePlugin::updateContextMenu(ProjectExplorer::Project *project, ProjectExplorer::Node *node)
 {
-#if 0
-    m_currentContextMenuProject = project;
-    m_migrateProjectAction->setVisible(false);
-
-    QmakeProjectManager::QmakeProject *qProject = qobject_cast<QmakeProjectManager::QmakeProject *>(project);
-    QmakeProjectManager::QmakeProFileNode *qNode = static_cast<QmakeProjectManager::QmakeProFileNode *>(node);
-    if(qProject && qNode) {
-        if(qProject->rootProjectNode() == qNode &&
-                UbuntuProjectHelper::getManifestPath(project,QString()).isEmpty()) {
-            auto projectType = qNode->projectType();
-            if(projectType == QmakeProjectManager::ApplicationTemplate
-                    || projectType == QmakeProjectManager::SubDirsTemplate) {
-                m_migrateProjectAction->setVisible(true);
-            }
-        }
-    }
-#endif
 }
 
 bool LinkMotionBasePlugin::checkContainerSetup()
@@ -377,8 +383,8 @@ bool LinkMotionBasePlugin::checkContainerSetup()
 
     while (!ok) {
         QProcess proc;
-        qDebug()<<"Running "<<Constants::LM_TARGET_TOOL;
-        proc.setProgram(Constants::LM_TARGET_TOOL);
+        qDebug()<<"Running "<<LinkMotionBasePlugin::lmTargetTool();
+        proc.setProgram(LinkMotionBasePlugin::lmTargetTool());
 
         QStringList args{QStringLiteral("initialized")};
         if(!Settings::askForContainerSetup())
@@ -427,7 +433,7 @@ bool LinkMotionBasePlugin::checkContainerSetup()
 
                     if (choice == QMessageBox::Yes) {
                         QString arguments = Utils::QtcProcess::joinArgs(QStringList{
-                            Constants::LM_TARGET_TOOL,
+                            LinkMotionBasePlugin::lmTargetTool(),
                             QStringLiteral("autosetup"),
                             QStringLiteral("-y")
                         });
@@ -455,7 +461,7 @@ bool LinkMotionBasePlugin::checkContainerSetup()
                 int choice = box.exec();
                 if (choice == QMessageBox::Yes) {
                     QString arguments = Utils::QtcProcess::joinArgs(QStringList{
-                        Constants::LM_TARGET_TOOL,
+                        LinkMotionBasePlugin::lmTargetTool(),
                         QStringLiteral("autofix")
                     });
 
@@ -474,26 +480,23 @@ bool LinkMotionBasePlugin::checkContainerSetup()
                 break;
             }
             default:
-                criticalError(tr("The container backend returned an unknown error status.\nThis is a bug and should never happen, please contact the developers."));
+                criticalError(tr("The container backend returned an unknown error status."));
                 break;
         }
     }
 
-#if 0
     QProcess proc;
-    proc.setProgram(QString::fromLatin1("%0/qtc_initialize_sound").arg(Constants::UBUNTU_SCRIPTPATH));
+    proc.setProgram(QString::fromLatin1("%0/qtc_initialize_sound").arg(Constants::LM_SCRIPTPATH));
     proc.start();
     if (!proc.waitForFinished()) {
         QMessageBox::warning(Core::ICore::mainWindow(),
                               qApp->applicationName(),
                               tr("Initializing the sound backend did time out.\nPlaying sound from containers may not work."));
-    }
-    if (proc.exitStatus() != QProcess::NormalExit || proc.exitCode() != 0) {
+    } else if (proc.exitStatus() != QProcess::NormalExit || proc.exitCode() != 0) {
         QMessageBox::warning(Core::ICore::mainWindow(),
                               qApp->applicationName(),
                               tr("Initializing the sound backend failed.\nPlaying sound from containers may not work."));
     }
-#endif
 
     return true;
 }

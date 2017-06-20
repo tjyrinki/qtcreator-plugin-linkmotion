@@ -49,6 +49,9 @@ public:
     virtual bool initialize(const QStringList &arguments, QString *errorString) override;
     virtual void extensionsInitialized() override;
 
+    static QString lmTargetTool ();
+    static QString lmTargetWrapper ();
+
 private slots:
     void onKitsLoaded ();
     void showFirstStartWizard ();

@@ -28,5 +28,5 @@
 #endif
 
 
-#endif // UBUNTU_GLOBAL_H
+#endif // LM_GLOBAL_H
 
