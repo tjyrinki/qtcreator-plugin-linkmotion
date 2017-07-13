@@ -1,6 +1,6 @@
 #!/bin/bash
 # Copyright 2016 Canonical Ltd.
-# Copyright 2017 Nomovok Oy.
+# Copyright 2017 Link Motion Oy.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -26,6 +26,7 @@ fi
 SCRIPTPATH=`dirname $0`
 SSHIDENTITY=${CONFIGDIR}/lmdevice_id_rsa
 USERNAME=$(id -u -n)
+KEYFILE="/etc/ssh/authorized_keys.d/key"
 CONTAINER=$1
 
 if [ -z "$CONTAINER" ]; then
@@ -38,7 +39,7 @@ function deploy_key {
     echo "Checking for keys.."
     KEY=$(cat $SSHIDENTITY.pub)
     set +e
-    PHABLET_KEYS=$(lmsdk-target maint ${CONTAINER} -- bash -c "cat /etc/ssh/authorized_keys.d/$USERNAME")
+    PHABLET_KEYS=$(lmsdk-target maint ${CONTAINER} -- bash -c "cat ${KEYFILE}")
     KEYS=$(echo $PHABLET_KEYS | grep "$KEY")
     set -e
     echo
@@ -62,10 +63,10 @@ function push_key {
     KEY=`cat $SSHIDENTITY.pub`
     lmsdk-target maint ${CONTAINER} -- bash -c "mkdir -p /etc/ssh/authorized_keys.d"
     echo "..key folder created!"
-    lmsdk-target maint ${CONTAINER} -- bash -c "echo $KEY >> /etc/ssh/authorized_keys.d/$USERNAME"
+    lmsdk-target maint ${CONTAINER} -- bash -c "echo $KEY >> ${KEYFILE}"
     echo "..key deployed!"
-    lmsdk-target maint ${CONTAINER} -- bash -c "chown $USERNAME:$USERNAME /etc/ssh/authorized_keys.d/$USERNAME"
-    lmsdk-target maint ${CONTAINER} -- bash -c "chmod 0600 /etc/ssh/authorized_keys.d/$USERNAME"
+    lmsdk-target maint ${CONTAINER} -- bash -c "chown nobody:nobody ${KEYFILE}"
+    lmsdk-target maint ${CONTAINER} -- bash -c "chmod 0600 ${KEYFILE}"
     echo "..permissions updated!"
 }
 

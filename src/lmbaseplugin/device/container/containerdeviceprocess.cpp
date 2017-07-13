@@ -30,6 +30,7 @@
 #include <QTemporaryDir>
 
 #include <stdlib.h>
+#include <unistd.h>
 
 namespace LmBase {
 namespace Internal {
@@ -95,10 +96,6 @@ void ContainerDeviceProcess::start(const ProjectExplorer::Runnable &runnable)
 
         rc.environment.appendOrSet(QStringLiteral("XDG_RUNTIME_DIR"),
                                    m_westonDir->path());
-        rc.environment.appendOrSet(QStringLiteral("QT_QPA_PLATFORM"),
-                                   QStringLiteral("wayland"));
-        rc.environment.appendOrSet(QStringLiteral("QT_WAYLAND_DISABLE_WINDOWDECORATION"),
-                                   QStringLiteral("1"));
     }
     LinuxDeviceProcess::start(rc);
 }
@@ -168,7 +165,7 @@ QString ContainerDeviceProcess::fullCommandLine(const ProjectExplorer::StandardR
     if (!fullCommandLine.isEmpty())
         fullCommandLine += QLatin1Char(' ');
 
-    fullCommandLine.append(Utils::QtcProcess::quoteArgUnix(QStringLiteral("dbus-run-session")));
+    //fullCommandLine.append(Utils::QtcProcess::quoteArgUnix(QStringLiteral("dbus-run-session")));
     fullCommandLine += QString::fromLatin1(" bash -c \"echo \\$\\$ > %1; exec ").arg(m_pidFile);
     fullCommandLine.append(Utils::QtcProcess::quoteArgUnix(runnable.executable));
     if (!runnable.commandLineArguments.isEmpty()) {

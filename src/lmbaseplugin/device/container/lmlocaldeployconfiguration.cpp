@@ -117,21 +117,12 @@ LinkMotionLocalDeployConfiguration::LinkMotionLocalDeployConfiguration(ProjectEx
     : DeployConfiguration(target, id)
 {
     setDefaultDisplayName(tr("Link Motion SDK deploy locally"));
-
-    //this should run after the configurations are set up
-    //and selects us as the default one, its ugly but works
-    QTimer::singleShot(0,this,SLOT(selectAsDefaultHack()));
 }
 
 LinkMotionLocalDeployConfiguration::LinkMotionLocalDeployConfiguration(ProjectExplorer::Target *target, LinkMotionLocalDeployConfiguration *source)
     : DeployConfiguration(target, source)
 {
     cloneSteps(source);
-}
-
-void LinkMotionLocalDeployConfiguration::selectAsDefaultHack()
-{
-    //target()->setActiveDeployConfiguration(this);
 }
 
 } // namespace Internal

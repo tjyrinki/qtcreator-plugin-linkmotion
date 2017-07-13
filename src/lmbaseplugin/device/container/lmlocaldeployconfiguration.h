@@ -51,9 +51,6 @@ class LinkMotionLocalDeployConfiguration : public ProjectExplorer::DeployConfigu
 protected:
     LinkMotionLocalDeployConfiguration(ProjectExplorer::Target *target, const Core::Id id);
     LinkMotionLocalDeployConfiguration(ProjectExplorer::Target *target, LinkMotionLocalDeployConfiguration *source);
-
-protected slots:
-    void selectAsDefaultHack();
 };
 
 } // namespace Internal

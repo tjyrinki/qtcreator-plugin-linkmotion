@@ -63,11 +63,15 @@ void ContainerDevicePrivate::resetProcess()
 
 QString ContainerDevicePrivate::userName() const
 {
+    //we always map to the system user
+    return QStringLiteral("system");
+#if 0
     uid_t uid = geteuid();
     struct passwd *pw = getpwuid(uid);
     if (pw)
         return QString::fromLatin1(pw->pw_name);
     return QString();
+#endif
 }
 
 void ContainerDevicePrivate::reset()
