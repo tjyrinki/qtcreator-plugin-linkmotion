@@ -294,6 +294,11 @@ void CreateTargetImagePage::load()
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     env.insert(QStringLiteral("LC_ALL"), QStringLiteral("C"));
+    Internal::Settings::ImageServerCredentials creds = Internal::Settings::imageServerCredentials();
+    if (creds.useCredentials) {
+        env.insert(QStringLiteral("LM_USERNAME"), creds.user);
+        env.insert(QStringLiteral("LM_PASSWORD"), creds.pass);
+    }
     m_loader->setProcessEnvironment(env);
 
     m_loader->start();

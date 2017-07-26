@@ -29,7 +29,9 @@ HEADERS += \
     processoutputdialog.h \
     lmtargetdialog.h \
     lmsettingstargetwidget.h \
-    lmsettingstargetpage.h
+    lmsettingstargetpage.h \
+    simplecrypt.h \
+    cred_key.h
 
 DEFINES += LMBASE_LIBRARY
 
@@ -45,7 +47,8 @@ SOURCES += \
     lmshared.cpp \
     lmtargetdialog.cpp \
     lmsettingstargetwidget.cpp \
-    lmsettingstargetpage.cpp
+    lmsettingstargetpage.cpp \
+    simplecrypt.cpp
 
 DISTFILES += \
     lmbaseplugin_dependencies.pri \

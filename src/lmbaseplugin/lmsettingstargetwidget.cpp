@@ -48,6 +48,11 @@ LinkMotionSettingsTargetWidget::LinkMotionSettingsTargetWidget(QWidget *parent) 
     Settings::TargetSettings def = Settings::chrootSettings();
     ui->checkBoxLocalMirror->setChecked(def.useLocalMirror);
 
+    Settings::ImageServerCredentials creds = Settings::imageServerCredentials();
+    ui->groupBoxAuth->setChecked(creds.useCredentials);
+    ui->lineEditUser->setText(creds.user);
+    ui->lineEditPass->setText(creds.pass);
+
     m_deleteMapper = new QSignalMapper(this);
     connect(m_deleteMapper, SIGNAL(mapped(int)),this, SLOT(on_deleteTarget(int)));
     m_maintainMapper = new QSignalMapper(this);
@@ -73,6 +78,13 @@ void LinkMotionSettingsTargetWidget::apply() {
     Settings::TargetSettings set;
     set.useLocalMirror = ui->checkBoxLocalMirror->checkState() == Qt::Checked;
     Settings::setChrootSettings(set);
+
+    Settings::ImageServerCredentials creds;
+    creds.useCredentials = ui->groupBoxAuth->isChecked();
+    creds.user = ui->lineEditUser->text();
+    creds.pass = ui->lineEditPass->text();
+    Settings::setImageServerCredentials(creds);
+
     Settings::flushSettings();
 }
 

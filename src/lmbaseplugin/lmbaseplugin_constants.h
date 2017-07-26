@@ -24,6 +24,26 @@
 
 #include <coreplugin/icore.h>
 
+/*the file cred_key.h contains the encryption key used to cypher passwords in the settings file
+  it is intentionally not part of the repository, but it contains code similar to:
+
+    #ifndef LM_CRED_KEY_H
+    #define LM_CRED_KEY_H
+
+    #include <qglobal.h>
+
+    namespace LmBase {
+    namespace Constants {
+
+       const quint64 LM_CREDENTIALS = Q_UINT64_C(0xd52472ee500973d5);
+
+    }}
+
+    #endif
+
+*/
+#include "cred_key.h"
+
 namespace LmBase {
 namespace Constants {
 
@@ -54,6 +74,8 @@ const char LM_CONTAINER_DEPLOY_PUBKEY_SCRIPT[] = "%0/container_publickey_deploy"
 const char LM_TASK_CATEGORY_DEVICE [] = "Task.Category.LinkMotion.ContainerDevice";
 const char LM_DEVICE_SSHIDENTITY[] = "lmdevice_id_rsa";
 const char LM_LOCAL_DEPLOYCONFIGURATION_ID[] = "LinkMotion.LocalDeployConfigurationId";
+
+
 
 
 

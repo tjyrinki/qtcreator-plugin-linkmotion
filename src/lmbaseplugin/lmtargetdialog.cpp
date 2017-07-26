@@ -26,6 +26,12 @@
 #include <projectexplorer/projectexplorer.h>
 #include <projectexplorer/toolchainmanager.h>
 #include <projectexplorer/kitmanager.h>
+#include <projectexplorer/kitinformation.h>
+#include <projectexplorer/devicesupport/devicemanager.h>
+#include <cmakeprojectmanager/cmaketoolmanager.h>
+#include <cmakeprojectmanager/cmakekitinformation.h>
+#include <qtsupport/qtversionmanager.h>
+#include <qtsupport/qtkitinformation.h>
 #include <coreplugin/helpmanager.h>
 #include <coreplugin/icore.h>
 #include <qtsupport/qtversionmanager.h>
@@ -107,7 +113,32 @@ int LinkMotionTargetDialog::maintainTargetModal(const QList<LinkMotionTargetTool
             //remove all kits using the target
             QList<ProjectExplorer::Kit *> kitsToDelete = LinkMotionKitManager::findKitsUsingTarget(target);
             foreach(ProjectExplorer::Kit *curr, kitsToDelete) {
+
+                ProjectExplorer::ToolChainManager::deregisterToolChain(
+                    ProjectExplorer::ToolChainKitInformation::toolChain(curr, ProjectExplorer::Constants::CXX_LANGUAGE_ID)
+                );
+
+                ProjectExplorer::ToolChainManager::deregisterToolChain(
+                    ProjectExplorer::ToolChainKitInformation::toolChain(curr, ProjectExplorer::Constants::C_LANGUAGE_ID)
+                );
+
+                ProjectExplorer::ToolChainManager::instance()->saveToolChains();
+
+                ProjectExplorer::DeviceManager::instance()->removeDevice(
+                    ProjectExplorer::DeviceKitInformation::deviceId(curr)
+                );
+
+                QtSupport::QtVersionManager::removeVersion(QtSupport::QtKitInformation::qtVersion(curr));
+
+                CMakeProjectManager::CMakeTool *cmakeTool = CMakeProjectManager::CMakeKitInformation::cmakeTool(curr);
+                if (cmakeTool) {
+                    CMakeProjectManager::CMakeToolManager::deregisterCMakeTool(
+                        cmakeTool->id()
+                    );
+                }
+
                 ProjectExplorer::KitManager::deregisterKit(curr);
+                ProjectExplorer::KitManager::saveKits();
             }
 
             //make sure no help files are still opened

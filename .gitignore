@@ -8,3 +8,4 @@ Makefile
 builddir
 *.log
 pkg
+src/lmbaseplugin/cred_key.h

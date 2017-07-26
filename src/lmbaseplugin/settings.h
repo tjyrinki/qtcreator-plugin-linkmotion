@@ -34,10 +34,10 @@ class Settings : public QObject
     Q_OBJECT
 public:
 
-    struct DeviceConnectivity {
-        QString user = QStringLiteral("phablet");
-        QString ip   = QStringLiteral("127.0.0.1");
-        int sshPort  = 2222;
+    struct ImageServerCredentials {
+        bool    useCredentials = false;
+        QString user = QStringLiteral("");
+        QString pass = QStringLiteral("");
     };
 
     struct ProjectDefaults {
@@ -59,8 +59,8 @@ public:
 
     static Utils::FileName settingsPath ();
 
-    static DeviceConnectivity deviceConnectivity ();
-    static void setDeviceConnectivity (const DeviceConnectivity &settings);
+    static ImageServerCredentials imageServerCredentials ();
+    static void setImageServerCredentials (const ImageServerCredentials &settings);
 
     static ProjectDefaults projectDefaults ();
     static void setProjectDefaults (const ProjectDefaults &settings);

@@ -132,6 +132,13 @@ ProjectExplorer::ProcessParameters LinkMotionTargetTool::prepareToRunInTarget(Pr
 void LinkMotionTargetTool::parametersForCreateTarget(const Target &target, ProjectExplorer::ProcessParameters *params)
 {
     Utils::Environment env = Utils::Environment::systemEnvironment();
+
+    Internal::Settings::ImageServerCredentials creds = Internal::Settings::imageServerCredentials();
+    if (creds.useCredentials) {
+        env.set(QStringLiteral("LM_USERNAME"), creds.user);
+        env.set(QStringLiteral("LM_PASSWORD"), creds.pass);
+    }
+
     QString command = QString::fromLatin1(CREATE_TARGET_ARGS)
             .arg(target.containerName)
             .arg(target.distribution)
@@ -140,7 +147,7 @@ void LinkMotionTargetTool::parametersForCreateTarget(const Target &target, Proje
             .arg(target.architecture);
 
     params->setCommand(Internal::LinkMotionBasePlugin::lmTargetTool());
-    params->setEnvironment(Utils::Environment::systemEnvironment());
+    params->setEnvironment(env);
     params->setArguments(command);
 }
 

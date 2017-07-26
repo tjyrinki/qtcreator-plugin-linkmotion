@@ -19,6 +19,8 @@
 #include "settings.h"
 #include "lmbaseplugin_constants.h"
 
+#include <lmbaseplugin/simplecrypt.h>
+
 #include <coreplugin/icore.h>
 #include <utils/fileutils.h>
 #include <utils/persistentsettings.h>
@@ -39,7 +41,9 @@ static const char LMSDK_FILENAME[] = "/qtcreator/lm-sdk/config.xml";
 static const bool DEFAULT_DEVICES_AUTOTOGGLE = true;
 static const bool DEFAULT_ASK_FOR_CONTAINER_SETUP = true;
 
-static const char KEY_USERNAME[] = "DeviceConnectivity.Username";
+static const char KEY_CRED_USERNAME[] = "ImageServerCredentials.Username";
+static const char KEY_CRED_PASSWORD[] = "ImageServerCredentials.Password";
+static const char KEY_CRED_ENABLED[]  = "ImageServerCredentials.Enabled";
 static const char KEY_IP[] = "DeviceConnectivity.IP";
 static const char KEY_SSH[] = "DeviceConnectivity.SSH";
 static const char KEY_AUTOTOGGLE[] = "Devices.Auto_Toggle";
@@ -73,7 +77,7 @@ Settings::Settings()
 
     //set default values
     setChrootSettings(TargetSettings());
-    setDeviceConnectivity(DeviceConnectivity());
+    setImageServerCredentials(ImageServerCredentials());
     setProjectDefaults(ProjectDefaults());
     setDeviceAutoToggle(DEFAULT_DEVICES_AUTOTOGGLE);
 
@@ -131,20 +135,26 @@ void Settings::flushSettings()
     m_instance->m_writer->save(m_instance->m_settings, Core::ICore::mainWindow());
 }
 
-Settings::DeviceConnectivity Settings::deviceConnectivity()
+Settings::ImageServerCredentials Settings::imageServerCredentials()
 {
-    DeviceConnectivity val;
-    val.ip = m_instance->m_settings.value(QLatin1String(KEY_IP),val.ip).toString();
-    val.user = m_instance->m_settings.value(QLatin1String(KEY_USERNAME),val.user).toString();
-    val.sshPort = m_instance->m_settings.value(QLatin1String(KEY_SSH),val.sshPort).toInt();
+    ImageServerCredentials val;
+    val.useCredentials = m_instance->m_settings.value(QLatin1String(KEY_CRED_ENABLED),val.useCredentials).toBool();
+    val.user = m_instance->m_settings.value(QLatin1String(KEY_CRED_USERNAME),val.user).toString();
+    val.pass = m_instance->m_settings.value(QLatin1String(KEY_CRED_PASSWORD),val.pass).toString();
+
+    SimpleCrypt sc(Constants::LM_CREDENTIALS);
+    val.pass = sc.decryptToString(val.pass);
+
     return val;
 }
 
-void Settings::setDeviceConnectivity(const Settings::DeviceConnectivity &settings)
+void Settings::setImageServerCredentials(const Settings::ImageServerCredentials &settings)
 {
-    m_instance->m_settings[QLatin1String(KEY_IP)] = settings.ip;
-    m_instance->m_settings[QLatin1String(KEY_USERNAME)] = settings.user;
-    m_instance->m_settings[QLatin1String(KEY_SSH)] = settings.sshPort;
+    m_instance->m_settings[QLatin1String(KEY_CRED_ENABLED)]  = settings.useCredentials;
+    m_instance->m_settings[QLatin1String(KEY_CRED_USERNAME)] = settings.user;
+
+    SimpleCrypt sc(Constants::LM_CREDENTIALS);
+    m_instance->m_settings[QLatin1String(KEY_CRED_PASSWORD)] = sc.encryptToString(settings.pass);
 }
 
 Settings::ProjectDefaults Settings::projectDefaults()
