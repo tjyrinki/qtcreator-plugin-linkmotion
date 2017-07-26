@@ -41,6 +41,7 @@ public:
 
 public slots:
     void handleDetectionStepFinished();
+    void triggerDeviceRedetection();
 
 public:
 

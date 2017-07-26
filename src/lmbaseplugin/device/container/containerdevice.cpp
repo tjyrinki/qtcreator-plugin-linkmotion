@@ -32,6 +32,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QStandardPaths>
+#include <QTimer>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -101,7 +102,8 @@ void ContainerDevicePrivate::handleDetectionStepFinished()
 
             QString tool = LinkMotionBasePlugin::lmTargetTool();
             if (tool.isEmpty()) {
-                showWarningMessage(tr("Could not find lmsdk-target."));
+                showWarningMessage(tr("Could not find lmsdk-target. Container backend will not work."));
+                triggerDeviceRedetection();
                 return;
             }
 
@@ -116,6 +118,7 @@ void ContainerDevicePrivate::handleDetectionStepFinished()
             if ((m_detectionProcess->exitStatus() != QProcess::NormalExit || m_detectionProcess->exitStatus() != 0)) {
                 printProcessError();
                 resetProcess();
+                triggerDeviceRedetection();
                 return;
             }
 
@@ -125,18 +128,22 @@ void ContainerDevicePrivate::handleDetectionStepFinished()
                 showWarningMessage(tr("There was a error in the device detection of %1, it was not possible to parse the status:\n%2")
                                    .arg(q->containerName())
                                    .arg(err.errorString()));
+                triggerDeviceRedetection();
                 return;
             }
 
             if (!doc.isObject()) {
                 showWarningMessage(tr("There was a error in the device detection of %1, the returned format was not a JSON object.")
                                    .arg(q->containerName()));
+                triggerDeviceRedetection();
+                return;
             }
 
             QVariantMap obj = doc.object().toVariantMap();
             if (!obj.contains(QStringLiteral("ipv4"))) {
                 showWarningMessage(tr("There was a error in the device detection of %1, no IP address was returned.")
                                    .arg(q->containerName()));
+                triggerDeviceRedetection();
                 return;
             }
 
@@ -153,6 +160,8 @@ void ContainerDevicePrivate::handleDetectionStepFinished()
             if ((m_detectionProcess->exitStatus() != QProcess::NormalExit || m_detectionProcess->exitStatus() != 0)) {
                 printProcessError();
                 resetProcess();
+
+                triggerDeviceRedetection();
                 return;
             }
 
@@ -184,7 +193,14 @@ void ContainerDevicePrivate::handleDetectionStepFinished()
                            .arg(m_detectionProcess->program())
                            .arg(m_detectionProcess->arguments().join(QStringLiteral(" "))));
         resetProcess();
+        triggerDeviceRedetection();
     }
+}
+
+void ContainerDevicePrivate::triggerDeviceRedetection()
+{
+    //trigger device redetection
+    QTimer::singleShot(1000, this, &ContainerDevicePrivate::reset);
 }
 
 void ContainerDevicePrivate::printProcessError()
