@@ -8,7 +8,7 @@ Version:    1.0.0
 Release:    1%{?dist}
 Group:      User Interface/Desktops
 License:    Proprietary
-URL:        https://lm-cgit.nomovok.info/cgit.cgi/lmmw-ivi-sdkexample
+URL:        http://localhost
 Source0:    %{name}-%{version}.tar.bz2
 
 BuildRequires:  pkgconfig(Qt5Core)

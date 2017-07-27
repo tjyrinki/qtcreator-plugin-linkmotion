@@ -1,3 +1,0 @@
-module Clock
-plugin clock
-typeinfo plugins.qmltypes

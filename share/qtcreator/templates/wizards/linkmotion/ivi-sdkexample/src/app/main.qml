@@ -3,11 +3,14 @@ import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.0
 import Components 1.0
 import Clock 1.0
+import QtQuick.Window 2.2
 
 import "pages"
 
 ApplicationWindow {
     visible: true
+    visibility: Window.FullScreen
+
     header: NotificationBar {
         objectName: "NotificationBar"
         areaMiddle: Row {

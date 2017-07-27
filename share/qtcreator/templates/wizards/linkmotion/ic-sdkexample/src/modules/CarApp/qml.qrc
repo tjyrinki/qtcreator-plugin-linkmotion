@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/apps/car">
-        <file>CarApp.qml</file>
-        <file>qmldir</file>
-        <file>plugins.qmltypes</file>
-    </qresource>
-</RCC>

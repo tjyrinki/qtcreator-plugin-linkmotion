@@ -117,6 +117,7 @@ public:
 
 protected:
     void load ();
+    void cleanupLoader ();
     void loaderErrorOccurred(QProcess::ProcessError error);
 
 protected slots:

@@ -43,7 +43,7 @@ include($$QTCREATOR_SOURCES/src/qtcreatorplugin.pri)
 INCLUDEPATH += $$PWD
 
 LMSDK_DATA_DIRS = \
-    #$$PWD/../share/qtcreator/templates \
+    $$PWD/../share/qtcreator/templates \
     $$PWD/../share/qtcreator/linkmotion \
 
 for(data_dir, LMSDK_DATA_DIRS) {

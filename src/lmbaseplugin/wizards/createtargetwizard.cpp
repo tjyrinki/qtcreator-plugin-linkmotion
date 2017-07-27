@@ -192,6 +192,7 @@ CreateTargetImagePage::CreateTargetImagePage(QWidget *parent) :
 
 CreateTargetImagePage::~CreateTargetImagePage()
 {
+    cleanupLoader();
     delete ui;
 }
 
@@ -273,15 +274,7 @@ bool CreateTargetImagePage::validatePage()
 
 void CreateTargetImagePage::load()
 {
-    if (m_loader) {
-        m_loader->disconnect(this);
-        if (m_loader->state() != QProcess::NotRunning) {
-            m_loader->kill();
-            m_loader->waitForFinished(1000);
-        }
-        m_loader->deleteLater();
-        m_loader = nullptr;
-    }
+    cleanupLoader();
 
     ui->treeWidgetImages->clear();
     ui->stackedWidget->setCurrentIndex(Constants::INDEX_LOADING);
@@ -302,6 +295,19 @@ void CreateTargetImagePage::load()
     m_loader->setProcessEnvironment(env);
 
     m_loader->start();
+}
+
+void CreateTargetImagePage::cleanupLoader()
+{
+    if (m_loader) {
+        m_loader->disconnect(this);
+        if (m_loader->state() != QProcess::NotRunning) {
+            m_loader->kill();
+            m_loader->waitForFinished(1000);
+        }
+        m_loader->deleteLater();
+        m_loader = nullptr;
+    }
 }
 
 void CreateTargetImagePage::loaderErrorOccurred(QProcess::ProcessError)

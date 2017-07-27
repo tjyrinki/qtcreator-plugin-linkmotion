@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>qmldir</file>
-        <file>plugins.qmltypes</file>
-    </qresource>
-</RCC>

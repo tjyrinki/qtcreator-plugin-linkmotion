@@ -1,8 +1,5 @@
 TEMPLATE = subdirs
 
-SUBDIRS += src tests
+SUBDIRS += src
 
 OTHER_FILES += %ProjectName%.spec
-
-LM_CHECKS = tests
-CONFIG += lm_check
