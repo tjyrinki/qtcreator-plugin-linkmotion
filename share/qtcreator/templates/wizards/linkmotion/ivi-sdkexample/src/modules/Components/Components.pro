@@ -7,7 +7,7 @@ QT += qml quick quickcontrols2
 #QT_PRIVATE += quick-private quickcontrols2-private quicktemplates2-private
 CONFIG += qt plugin c++11
 
-TARGET.path = /altdata/apps/$$APPNAME/modules/$$LIBNAME/
+TARGET.path = /usr/apps/$$APPNAME/modules/$$LIBNAME/
 TARGET = $$qtLibraryTarget($$TARGET)
 
 OTHER_FILES += qmldir
@@ -33,7 +33,7 @@ OTHER_FILES += qmldir
 }
 
 qmldir.files = qmldir
-installPath = /altdata/apps/$$APPNAME/modules/$$replace(uri, \\., /)
+installPath = /usr/apps/$$APPNAME/modules/$$replace(uri, \\., /)
 qmldir.path = $$installPath
 target.path = $$installPath
 INSTALLS += target qmldir

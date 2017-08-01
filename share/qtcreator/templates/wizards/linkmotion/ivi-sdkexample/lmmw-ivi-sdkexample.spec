@@ -55,7 +55,7 @@ make install INSTALL_ROOT=%{buildroot}
 
 %files
 %defattr(-,root,root,-)
-/altdata/apps/*
+/usr/apps/*
 # >> files
 # << files
 
