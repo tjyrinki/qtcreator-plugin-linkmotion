@@ -1,6 +1,9 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QDebug>
+#include <QQmlContext>
+
+#include "servicenotifier.h"
 
 int main(int argc, char *argv[])
 {
@@ -13,6 +16,8 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QString::fromLatin1("Example"));
 
     QQmlApplicationEngine engine;
+    ServiceNotifier serviceNotifier;
+    engine.rootContext()->setContextProperty("serviceNotifier", &serviceNotifier);
     engine.addImportPath(QString("%0/../modules").arg(app.applicationDirPath()));
 
 #ifdef QT_DEBUG

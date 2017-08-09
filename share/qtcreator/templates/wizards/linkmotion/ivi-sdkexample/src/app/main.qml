@@ -11,6 +11,10 @@ ApplicationWindow {
     visible: true
     visibility: Window.FullScreen
 
+    Component.onCompleted: {
+        serviceNotifier.appReady()
+    }
+
     header: NotificationBar {
         objectName: "NotificationBar"
         areaMiddle: Row {

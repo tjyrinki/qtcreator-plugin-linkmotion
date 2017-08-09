@@ -27,6 +27,8 @@
         <file source="src/modules/modules.pro" openeditor="false"/>
         <file source="src/app/qml.qrc" openeditor="false"/>
         <file source="src/app/app.pro" openeditor="false"/>
+        <file source="src/app/servicenotifier.h" openeditor="false"/>
+        <file source="src/app/servicenotifier.cpp" openeditor="false"/>
         <file source="src/app/pages/PageEnjoy.qml" openeditor="false"/>
         <file source="src/app/pages/PageComfort.qml" openeditor="false"/>
         <file source="src/app/pages/PageSettings.qml" openeditor="false"/>
