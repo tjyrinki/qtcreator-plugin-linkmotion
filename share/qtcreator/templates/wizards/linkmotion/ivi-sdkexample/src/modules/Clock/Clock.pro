@@ -13,7 +13,7 @@ TARGET = $$qtLibraryTarget($$TARGET)
 
 OTHER_FILES += qmldir
 
-!linux-g++-armv7l {
+!linux-halti-g++ {
         OTHER_FILES += $$OUT_PWD/plugins.qmltypes
         DISTFILES = $$OUT_PWD/plugins.qmltypes
 
