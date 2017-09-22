@@ -41,6 +41,7 @@
 #include <debugger/debuggeritem.h>
 #include <debugger/debuggerkitinformation.h>
 #include <qtsupport/qtkitinformation.h>
+#include <remotelinux/remotelinux_constants.h>
 
 #include <cmakeprojectmanager/cmaketoolmanager.h>
 #include <cmakeprojectmanager/cmaketool.h>
@@ -70,6 +71,15 @@ static bool equalKits(ProjectExplorer::Kit *a, ProjectExplorer::Kit *b)
             == ProjectExplorer::ToolChainKitInformation::ToolChainKitInformation::toolChain(b, ProjectExplorer::Constants::CXX_LANGUAGE_ID);
 }
 
+static Core::Id requiredDeviceType (LinkMotionToolChain *tc)
+{
+    if (LinkMotionTargetTool::compatibleWithHostArchitecture(tc->lmTarget().architecture)) {
+        return ContainerDevice::createIdForContainer(tc->lmTarget().containerName);
+    }
+    //a Kit that cannot take a Container Device
+    return Core::Id(RemoteLinux::Constants::GenericLinuxOsType);
+}
+
 static void createOrFindDeviceAndType(ProjectExplorer::Kit *k, LinkMotionToolChain *tc)
 {
     if (LinkMotionTargetTool::compatibleWithHostArchitecture(tc->lmTarget().architecture)) {
@@ -87,7 +97,7 @@ static void createOrFindDeviceAndType(ProjectExplorer::Kit *k, LinkMotionToolCha
         ProjectExplorer::DeviceKitInformation::setDevice(k, ptr);
     } else {
         //a Kit that cannot take a Container Device
-        Core::Id devTypeId = Core::Id(Constants::LM_DEVICE_TYPE_ID).withSuffix(tc->lmTarget().architecture);
+        Core::Id devTypeId = Core::Id(RemoteLinux::Constants::GenericLinuxOsType);
         ProjectExplorer::DeviceTypeKitInformation::setDeviceTypeId(k,devTypeId);
     }
 }
@@ -547,13 +557,12 @@ void LinkMotionKitManager::fixKit(ProjectExplorer::Kit *k)
         ProjectExplorer::SysRootKitInformation::setSysRoot(k,Utils::FileName::fromString(LinkMotionTargetTool::targetBasePath(tc->lmTarget())));
     }
 
-    //make sure we point to a ubuntu device
+    //make sure we point to a linkmotion device
     Core::Id devId = ProjectExplorer::DeviceTypeKitInformation::deviceTypeId(k);
-    bool devValid        = devId.isValid(); //invalid type
-    bool hasLMDevType = devId.toString().startsWith(QLatin1String(Constants::LM_DEVICE_TYPE_ID));/* ||
-            devId.toString().startsWith(QLatin1String(Constants::LM_CONTAINER_DEVICE_TYPE_ID)); //kit has a wrong device type */
+    bool devValid     = devId.isValid(); //invalid type
 
-    if (!devValid || !hasLMDevType) {
+    Core::Id reqId = requiredDeviceType(tc);
+    if (!devValid || devId != reqId) {
         createOrFindDeviceAndType(k, tc);
     }
 
