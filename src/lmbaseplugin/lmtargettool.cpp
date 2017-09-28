@@ -238,16 +238,16 @@ bool LmTargetTool::getTargetFromUser(Target *target, const QString &framework)
 }
 #endif
 
-QString LinkMotionTargetTool::targetBasePath(const LinkMotionTargetTool::Target &target)
+QString LinkMotionTargetTool::targetBasePath(const QString &targetName)
 {
     static QMap<QString, QString> basePathCache;
-    if (basePathCache.contains(target.containerName))
-        return basePathCache.value(target.containerName);
+    if (basePathCache.contains(targetName))
+        return basePathCache.value(targetName);
 
     QProcess sdkTool;
     sdkTool.setReadChannel(QProcess::StandardOutput);
     sdkTool.setProgram(Internal::LinkMotionBasePlugin::lmTargetTool());
-    sdkTool.setArguments(QStringList()<<QStringLiteral("rootfs")<<target.containerName);
+    sdkTool.setArguments(QStringList()<<QStringLiteral("rootfs")<<targetName);
     sdkTool.start(QIODevice::ReadOnly);
     if (!sdkTool.waitForFinished(3000)
             || sdkTool.exitCode() != 0
@@ -256,8 +256,35 @@ QString LinkMotionTargetTool::targetBasePath(const LinkMotionTargetTool::Target 
 
     QTextStream in(&sdkTool);
     QString basePath = in.readAll().trimmed();
-    basePathCache.insert(target.containerName, basePath);
+    basePathCache.insert(targetName, basePath);
     return basePath;
+}
+
+QString LinkMotionTargetTool::targetDefaultUser(const QString &targetName)
+{
+    static QMap<QString, QString> usernameCache;
+    if (usernameCache.contains(targetName))
+        return usernameCache.value(targetName);
+
+    QProcess sdkTool;
+    sdkTool.setReadChannel(QProcess::StandardOutput);
+    sdkTool.setProgram(Internal::LinkMotionBasePlugin::lmTargetTool());
+    sdkTool.setArguments(QStringList()<<QStringLiteral("username")<<targetName);
+    sdkTool.start(QIODevice::ReadOnly);
+    if (!sdkTool.waitForFinished(3000)
+            || sdkTool.exitCode() != 0
+            || sdkTool.exitStatus() != QProcess::NormalExit)
+        return QString();
+
+    QTextStream in(&sdkTool);
+    QString username = in.readAll().trimmed();
+    usernameCache.insert(targetName, username);
+    return username;
+}
+
+QString LinkMotionTargetTool::targetBasePath(const LinkMotionTargetTool::Target &target)
+{
+    return targetBasePath(target.containerName);
 }
 
 bool LinkMotionTargetTool::parseContainerName(const QString &name, LinkMotionTargetTool::Target *target, QStringList *allExt)

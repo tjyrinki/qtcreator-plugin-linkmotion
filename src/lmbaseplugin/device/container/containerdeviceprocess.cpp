@@ -19,6 +19,7 @@
 
 #include "containerdeviceprocess.h"
 #include <lmbaseplugin/lmbaseplugin_constants.h>
+#include <lmbaseplugin/device/container/containerdevice.h>
 
 #include <utils/qtcassert.h>
 #include <utils/qtcprocess.h>
@@ -40,6 +41,15 @@ ContainerDeviceProcess::ContainerDeviceProcess(const QSharedPointer<const Projec
     : LinuxDeviceProcess(device, parent)
 {
     m_pidFile = QString::fromLatin1("/tmp/qtc.%1.pid").arg(QString::fromLatin1(QUuid::createUuid().toRfc4122().toHex()));
+
+    QTC_ASSERT(device->type().toString().startsWith(Constants::LM_CONTAINER_DEVICE_TYPE_ID), return);
+
+    const ContainerDevice *dev = static_cast<const ContainerDevice *>(device.data());
+    if (dev) {
+        m_westonConf = dev->westonConfig();
+    }
+
+
 }
 
 ContainerDeviceProcess::~ContainerDeviceProcess()
@@ -77,9 +87,15 @@ void ContainerDeviceProcess::start(const ProjectExplorer::Runnable &runnable)
         }
 
         m_westonProc = new QProcess(this);
-        m_westonProc->setArguments(QStringList{
-            QString::fromLatin1("-c%1/../weston.ini").arg(Constants::LM_SCRIPTPATH)
-        });
+        if (m_westonConf.exists()) {
+            m_westonProc->setArguments(QStringList{
+                QString::fromLatin1("-c%1").arg(m_westonConf.toString())
+            });
+        } else {
+            m_westonProc->setArguments(QStringList{
+                QString::fromLatin1("-c%1/../weston.ini").arg(Constants::LM_SCRIPTPATH)
+            });
+        }
 
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         env.insert("XDG_RUNTIME_DIR", m_westonDir->path()); // Add an environment variable

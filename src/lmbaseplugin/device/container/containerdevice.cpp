@@ -23,6 +23,7 @@
 #include <lmbaseplugin/lmbaseplugin_constants.h>
 #include <lmbaseplugin/lmbaseplugin.h>
 #include <lmbaseplugin/settings.h>
+#include <lmbaseplugin/lmtargettool.h>
 
 #include <projectexplorer/devicesupport/devicemanager.h>
 #include <projectexplorer/taskhub.h>
@@ -64,15 +65,7 @@ void ContainerDevicePrivate::resetProcess()
 
 QString ContainerDevicePrivate::userName() const
 {
-    //we always map to the system user
-    return QStringLiteral("system");
-#if 0
-    uid_t uid = geteuid();
-    struct passwd *pw = getpwuid(uid);
-    if (pw)
-        return QString::fromLatin1(pw->pw_name);
-    return QString();
-#endif
+    return LinkMotionTargetTool::targetDefaultUser(q_ptr->containerName());
 }
 
 void ContainerDevicePrivate::reset()
@@ -258,6 +251,17 @@ Core::Id ContainerDevice::createIdForContainer(const QString &name)
 QString ContainerDevice::containerName() const
 {
     return id().suffixAfter(Constants::LM_CONTAINER_DEVICE_TYPE_ID);
+}
+
+Utils::FileName ContainerDevice::westonConfig() const
+{
+    Utils::FileName rootfsDir = Utils::FileName::fromString(
+                LinkMotionTargetTool::targetBasePath(QDir::cleanPath(containerName())));
+    if (!rootfsDir.exists()) {
+        return Utils::FileName();
+    }
+
+    return rootfsDir.appendPath("weston.ini");
 }
 
 ProjectExplorer::IDeviceWidget *ContainerDevice::createWidget()

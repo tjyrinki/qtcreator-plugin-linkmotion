@@ -20,6 +20,7 @@
 #define LM_INTERNAL_CONTAINERDEVICE_H
 
 #include <remotelinux/linuxdevice.h>
+#include <utils/fileutils.h>
 
 
 namespace LmBase {
@@ -38,6 +39,7 @@ public:
 
     static Core::Id createIdForContainer(const QString &name);
     QString containerName() const;
+    Utils::FileName westonConfig() const;
 
     // IDevice interface
     virtual ProjectExplorer::IDeviceWidget *createWidget() override;

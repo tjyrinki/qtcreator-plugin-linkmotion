@@ -53,6 +53,7 @@ private:
     // SshDeviceProcess interface
     virtual QString fullCommandLine(const ProjectExplorer::StandardRunnable &) const override;
     QString m_pidFile;
+    Utils::FileName m_westonConf;
     QProcess *m_westonProc = nullptr;
     QTemporaryDir *m_westonDir = nullptr;
 };

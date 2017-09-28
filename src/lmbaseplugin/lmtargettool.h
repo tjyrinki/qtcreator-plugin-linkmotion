@@ -79,6 +79,9 @@ public:
     static void openTargetTerminal (const Target& target);
 
     static QString targetBasePath (const Target& target);
+    static QString targetBasePath (const QString &targetName);
+    static QString targetDefaultUser (const QString &targetName);
+
     static bool parseContainerName (const QString &name, Target *target, QStringList *allExt = 0);
     //static bool getTargetFromUser (Target* target, const QString &framework=QString());
     static QStringList getSupportedFrameworks (const Target *target);
