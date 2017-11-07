@@ -62,6 +62,6 @@ FORMS += \
     lmsettingstargetwidget.ui
 
 include(wizards/wizards.pri)
-include(device/container/container.pri)
+include(device/device.pri)
 
 

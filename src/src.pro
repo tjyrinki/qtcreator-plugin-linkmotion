@@ -2,7 +2,7 @@
 #
 # This file is part of the LinkMotion plugins.
 #
-# License: Proprietary
+# License: GNU Lesser General Public License v 2.1
 # Author: Juhapekka Piiroinen <juhapekka.piiroinen@link-motion.com>
 #
 # All rights reserved.
@@ -12,14 +12,3 @@
 TEMPLATE = subdirs
 
 SUBDIRS += lmbaseplugin
-
-#SUBDIRS += lmbuildplugin \
-#           lmdeployplugin \
-#           lmdeviceplugin \
-#           lmprojectplugin \
-#           lmwelcomeplugin \
-#           lmwizardplugin \
-#           lmrunplugin \
-#           lmvmplugin \
-#           lmkitplugin \
-#           lmapiplugin

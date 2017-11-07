@@ -2,7 +2,7 @@
 #
 # This file is part of the LinkMotion Welcome plugin.
 #
-# License: Proprietary
+# License: GNU Lesser General Public License v 2.1
 # Author: Juhapekka Piiroinen <juhapekka.piiroinen@link-motion.com>
 #
 # All rights reserved.
