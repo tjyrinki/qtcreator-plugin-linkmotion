@@ -36,6 +36,8 @@ public:
     // BaseQtVersion interface
     virtual void fromMap(const QVariantMap &map) override;
     virtual QVariantMap toMap() const override;
+    virtual void addToEnvironment(const ProjectExplorer::Kit *k, Utils::Environment &env) const override;
+    virtual Utils::Environment qmakeRunEnvironment() const override;
 
     LinkMotionQtVersion *clone() const override;
 
@@ -53,6 +55,9 @@ public:
     virtual bool hasQmlDump() const override;
     virtual bool hasQmlDumpWithRelocatableFlag() const override;
     virtual bool needsQmlDump() const override;
+
+private:
+    void addPathToEnv (Utils::Environment &env) const;
 
 private:
     QString m_containerName;

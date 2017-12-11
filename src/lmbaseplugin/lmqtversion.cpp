@@ -123,6 +123,26 @@ bool LinkMotionQtVersion::needsQmlDump() const
     return false;
 }
 
+void LinkMotionQtVersion::addPathToEnv(Utils::Environment &env) const
+{
+    QString path = env.value(QStringLiteral("PATH"));
+    path.prepend(qmakeCommand().parentDir().toString()+":");
+    env.set(QStringLiteral("PATH"), path);
+}
+
+void LinkMotionQtVersion::addToEnvironment(const ProjectExplorer::Kit *k, Utils::Environment &env) const
+{
+    QtSupport::BaseQtVersion::addToEnvironment(k, env);
+    addPathToEnv(env);
+}
+
+Utils::Environment LinkMotionQtVersion::qmakeRunEnvironment() const
+{
+    auto env = Utils::Environment::systemEnvironment();
+    addPathToEnv(env);
+    return env;
+}
+
 
 bool LinkMotionQtVersionFactory::canRestore(const QString &type)
 {
